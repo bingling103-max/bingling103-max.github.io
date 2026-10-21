@@ -1,6 +1,6 @@
 name = "ling-classroom"
 main = "src/worker.js"
-compatibility_date = "2025-09-01"
+compatibility_date = "2025-09-01"  # deploys automatically from main via Workers Builds
 
 # Created in the dashboard; these match the live Worker.
 [[d1_databases]]
