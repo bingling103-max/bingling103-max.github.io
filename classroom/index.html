@@ -1,7 +1,9 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ling's Classroom</title>
+<script>/* Cloudflare Worker that stores answers. Empty = offline copy. */
+window.LINGS_API = "";  // <-- paste the Worker URL here</script>
 <style>
 :root{--ink:#183e35;--ink2:#56706a;--green:#1b5b48;--green-d:#123f33;--mint:#e3f0e9;--line:#dbe4dd;--bg:#f6f4ec;--card:#fff;--amber:#e7ac56;--amber-l:#fff3d6;--ok:#2f8a5f;--ok-l:#dcf1e4;--bad:#c4573f;--bad-l:#fbe5df;--r:16px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);font-size:18px}
-*{box-sizing:border-box}body{margin:0;background:var(--bg)}a{color:inherit}
+*{box-sizing:border-box}[hidden]{display:none!important}img{max-width:100%}body{margin:0;background:var(--bg)}a{color:inherit}
 button,.btn,select,input,textarea{font:inherit;color:inherit}
 button,.btn{padding:10px 16px;border:1px solid #c6d6cd;border-radius:12px;background:#fff;color:var(--green);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 button:hover,.btn:hover{background:var(--mint)}
@@ -216,7 +218,7 @@ function library(){
   <div class="recent"><h3>Recently opened</h3>${recent.slice(1,5).map(f=>`<button data-open="${esc(f.id)}"><span>${KMAP[kindOf(f)][1]} ${esc(fullTitle(f))}</span><span>${doneCount(f)}/${qsOf(f).length}</span></button>`).join('')||'<p class="muted">Activities you open will appear here, so you can jump back quickly.</p>'}</div></div>`}
  else{const first=fs.filter(f=>kindOf(f)==='book').sort(bySort)[0]||fs[0];hero=`<div class="hero"><button class="continue" data-open="${esc(first.id)}"><span class="k">👋 Welcome</span><h2>Start with ${esc(fullTitle(first))}</h2><span style="opacity:.85">${fs.length} activities · ${total} questions. Your answers save on this device automatically.</span><span class="go">Start →</span></button><div class="recent howto"><h3>How it works</h3><p class="muted" style="margin:6px 4px;line-height:1.6">1. Pick an activity below.<br>2. Answer the questions — they save by themselves.<br>3. Press <b>Check answers</b> to see your score.<br>4. Use the question map to jump around.</p></div></div>`}
  const kind=KMAP[state.kind]?state.kind:'',vis=fs.filter(shown);
- $('view').innerHTML=`<main>${!state.hideNote?`<div class="note"><span>📱 Offline copy — your answers are saved <b>only on this device</b>, not sent to your teacher.</span><button id="noteMore">More</button><button id="noteX" aria-label="Hide">✕</button></div>`:''}${!storageOK?'<div class="note"><span>⚠️ This browser cannot store answers. Use ⋯ → Export my progress before closing.</span></div>':''}
+ $('view').innerHTML=`<main>${!state.hideNote?`<div class="note"><span>${window.LINGS_API?'🎓 Tap <b>👋 Join your class</b> (bottom left) so your teacher can see your answers.':'📱 Offline copy — your answers are saved <b>only on this device</b>, not sent to your teacher.'}</span><button id="noteMore">More</button><button id="noteX" aria-label="Hide">✕</button></div>`:''}${!storageOK?'<div class="note"><span>⚠️ This browser cannot store answers. Use ⋯ → Export my progress before closing.</span></div>':''}
  ${hero}
  <div class="kinds" id="kinds"><button class="kind" data-k="" aria-pressed="${!kind}"><span class="ki">📚</span><span><b>All</b><small>全部 · ${vis.length}</small></span></button>${KINDS.filter(k=>!HIDDEN.has(k[0])&&fs.some(f=>kindOf(f)===k[0])).map(k=>`<button class="kind k-${k[0]}" data-k="${k[0]}" aria-pressed="${kind===k[0]}"><span class="ki">${k[1]}</span><span><b>${k[2]}</b><small>${k[3]} · ${fs.filter(f=>kindOf(f)===k[0]).length}</small></span></button>`).join('')}</div>
  <div class="filters"><label class="search"><input id="search" aria-label="Search activities" placeholder="Search activities…  (press /)" value="${esc(libQuery)}"></label>
@@ -469,7 +471,7 @@ mountBar();
     if (!db) { chip.hidden = true; return; }
     chip.hidden = false;
     if (!me) { chip.innerHTML = '<span class="av">👋</span><b>Join your class</b>'; return; }
-    chip.title = !uid ? 'Sign in to Claude so your teacher can see your answers' : status === 'on' ? 'Sent to your teacher' : status === 'off' ? 'Not sent yet — ask your teacher to invite you' : '';
+    chip.title = status === 'on' ? 'Sent to your teacher' : status === 'off' ? 'Not sent yet — check your internet connection' : 'Connecting…';
     chip.innerHTML = '<span class="av">' + h(me.a) + '</span><b>' + h(me.n) + ' · ' + h(me.c) + '</b><span class="lv-dot ' + status + '"></span>';
   }
   function ask(prefill) {
@@ -633,21 +635,102 @@ mountBar();
   function closeDrawer() { openStudent = null; document.querySelectorAll('.tb-scrim,.tb-drawer').forEach(function (x) { x.remove(); }); }
   addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (document.querySelector('.tb-drawer')) closeDrawer(); else if (T) closeBoard(); } });
 
-  /* ---------- start ---------- */
+  /* ---------- start: Cloudflare Worker backend ---------- */
+  var API = (window.LINGS_API || '').replace(/\/+$/, '');
+  var TKEY = 'ling-teacher-key-v1', DKEY = 'ling-device-v1';
+
+  function post(path, body) {
+    return fetch(API + path, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      if (r.ok) return r.json();
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        var e = new Error(j.error || ('http_' + r.status));
+        // Reuse the page's existing "stop retrying" path for anything a retry cannot fix.
+        e.code = ['bad_request', 'missing_identity', 'too_large', 'bad_json'].indexOf(j.error) < 0
+          ? j.error : 'invalid_argument';
+        throw e;
+      });
+    });
+  }
+  function getJSON(path) {
+    return fetch(API + path, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('http_' + r.status);
+      return r.json();
+    });
+  }
+
+  /* Stand-in for the two artifact-db calls this page was written against:
+     db.doc(p).set(obj) to write, db.collection(p).limit(n).onSnapshot(cb, err) to watch. */
+  function makeDb(key) {
+    return {
+      doc: function (path) {
+        var id = path.split('/').pop();
+        return { set: function (obj) { return post('/submit', { id: id, data: obj }); } };
+      },
+      collection: function () {
+        return { limit: function () {
+          return { onSnapshot: function (cb, errcb) {
+            var stop = false, timer = null;
+            function tick() {
+              if (stop) return;
+              getJSON('/docs?key=' + encodeURIComponent(key)).then(function (res) {
+                if (stop) return;
+                cb({ docs: (res.docs || []).map(function (d) {
+                  return { id: d.id, data: function () { return d.data; } };
+                }) });
+              }).catch(function (e) {
+                if (!stop && errcb) errcb(e);
+              }).then(function () { if (!stop) timer = setTimeout(tick, 6000); });
+            }
+            tick();
+            return function () { stop = true; clearTimeout(timer); };
+          } };
+        } };
+      }
+    };
+  }
+
   (async function boot() {
-    if (!window.claude || !window.claude.use) return;
-    var r = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-    db = r[0]; U = r[1];
-    if (!db) return;                                     // offline / not granted → page works as before
-    try { var v = U ? await U.me() : null; uid = v && v.id; isOwner = !!(v && v.isOwner); var nm = v && v.name; } catch (e) {}
+    if (!API) return;                                   // no backend configured -> offline copy, unchanged
+
+    // Anonymous, per-device id. No account, no sign-in.
+    try { uid = localStorage.getItem(DKEY) || ''; } catch (e) {}
+    if (!uid) {
+      uid = 's-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+      try { localStorage.setItem(DKEY, uid); } catch (e) {}
+    }
+
+    // Teacher arrives once at ?teacher=KEY; the key is then kept on that device only.
+    var key = '';
+    try {
+      var q = new URLSearchParams(location.search).get('teacher');
+      if (q) {
+        key = q;
+        localStorage.setItem(TKEY, q);
+        history.replaceState(null, '', location.pathname + location.hash);
+      } else { key = localStorage.getItem(TKEY) || ''; }
+    } catch (e) {}
+
+    db = makeDb(key);
+
+    if (key) {
+      try { await getJSON('/verify?key=' + encodeURIComponent(key)); isOwner = true; }
+      catch (e) { try { localStorage.removeItem(TKEY); } catch (x) {} }
+    }
+
+    var badge = document.querySelector('.brand small');
+    if (badge) badge.textContent = isOwner ? 'teacher' : 'online';
+
     paintChip();
     if (isOwner) {
-      var b = document.createElement('button'); b.className = 'lv-tb'; b.type = 'button'; b.textContent = '👩‍🏫 Teacher board';
+      var b = document.createElement('button'); b.className = 'lv-tb'; b.type = 'button'; b.textContent = '\U0001f469‍\U0001f3eb Teacher board';
       b.onclick = openBoard; document.body.appendChild(b);
-      chip.hidden = true;                                 // the teacher doesn't need to join
+      chip.hidden = true;                               // the teacher doesn't join the class
       return;
     }
-    if (me) sendAll(); else ask(nm || '');
+    if (me) sendAll(); else ask('');
   })();
 })();
 
