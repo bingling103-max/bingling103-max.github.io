@@ -23,7 +23,45 @@ One row per student device:
 No email address, IP, or account is recorded. A student who clears their browser
 data gets a new id and appears as a new row.
 
-## Deploy
+## Deploy — no terminal, in the browser
+
+Everything below can be done with a mouse at <https://dash.cloudflare.com>. A free
+account is enough.
+
+1. **Workers & Pages** → **Create** → **Start with Hello World!** → name it
+   `lings-classroom` → **Deploy**.
+2. **Edit code**. Select everything in the editor, delete it, and paste the whole
+   of [`src/worker.js`](src/worker.js). **Deploy**.
+3. **Storage & Databases** → **D1 SQL Database** → **Create** → name it
+   `lings-classroom` → **Create**.
+4. Open that database → **Console** tab → paste the whole of
+   [`schema.sql`](schema.sql) → **Execute**.
+5. Back to your Worker → **Settings** → **Bindings** → **Add** → **D1 database**.
+   Variable name must be exactly `DB`, database `lings-classroom` → **Deploy**.
+6. Still in **Settings** → **Variables and Secrets** → **Add**:
+   - type **Secret**, name `TEACHER_KEY`, value: a long password of your own.
+   - type **Text**, name `ALLOWED_ORIGINS`, value `https://bingling103-max.github.io`
+   → **Deploy**.
+7. The Worker's address is on its overview page, like
+   `https://lings-classroom.<you>.workers.dev`. That is what goes into
+   `classroom/index.html`.
+
+Check it worked: open `https://<your-worker-url>/` in a browser. It should say
+*Ling's Classroom API is running.*
+
+## Deploy — one command
+
+If you'd rather use a terminal, from inside this folder:
+
+```sh
+node deploy.mjs
+```
+
+It signs you in (a browser window opens — click Allow), creates the database,
+creates the table, asks for your teacher password, and deploys. Running it twice
+is safe; it skips whatever is already done.
+
+## Deploy — step by step
 
 You need a free Cloudflare account. Run these from inside this folder.
 
