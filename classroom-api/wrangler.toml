@@ -1,12 +1,12 @@
-name = "lings-classroom"
+name = "ling-classroom"
 main = "src/worker.js"
 compatibility_date = "2025-09-01"
 
-# `npx wrangler d1 create lings-classroom` prints the database_id — paste it below.
+# Created in the dashboard; these match the live Worker.
 [[d1_databases]]
 binding = "DB"
-database_name = "lings-classroom"
-database_id = "PASTE_DATABASE_ID_HERE"
+database_name = "ling-classroom"
+database_id = "f5eb0a24-9b56-4beb-87bb-eb37994612e0"
 
 [vars]
 # Where the student page is served from. Only these origins may post answers.

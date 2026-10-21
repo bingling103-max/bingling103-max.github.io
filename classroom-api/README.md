@@ -68,7 +68,7 @@ You need a free Cloudflare account. Run these from inside this folder.
 ```sh
 npx wrangler login                      # 1. opens a browser, sign in, Allow
 
-npx wrangler d1 create lings-classroom  # 2. prints a database_id
+npx wrangler d1 create ling-classroom
 #    paste that id into wrangler.toml, replacing PASTE_DATABASE_ID_HERE
 
 npx wrangler d1 execute lings-classroom --remote --file=schema.sql   # 3. create the table
