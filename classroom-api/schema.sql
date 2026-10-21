@@ -8,3 +8,7 @@ CREATE TABLE IF NOT EXISTS progress (
 );
 CREATE INDEX IF NOT EXISTS idx_progress_class   ON progress(class_code);
 CREATE INDEX IF NOT EXISTS idx_progress_updated ON progress(updated_at);
+
+-- v2 · live class (the Worker also creates these by itself on first use)
+CREATE TABLE IF NOT EXISTS class_state (class_code TEXT PRIMARY KEY, data TEXT NOT NULL, updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS feedback (id TEXT PRIMARY KEY, data TEXT NOT NULL, updated_at INTEGER);

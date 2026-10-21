@@ -1,12 +1,26 @@
-# Ling's Classroom — answer collection (Cloudflare Worker + D1)
+# Ling's Classroom — live class (Cloudflare Worker + D1)
 
-Students open the page and answer. No account, no sign-in. Their answers go to a
-D1 database that only you can read, with a secret key.
+Students open the class link and answer. No account, no sign-in: they tap a picture and type their name.
+Answers go to a D1 database that only you can read.
 
-- **Student page** — `https://bingling103-max.github.io/classroom/`
-- **Teacher board** — the same page with `?teacher=YOUR_KEY` once; the key is then
-  remembered on that device and removed from the address bar.
-- **Spreadsheet export** — `https://<your-worker-url>/export.csv?key=YOUR_KEY`
+- **Student link** — one per class, e.g. `https://bingling103-max.github.io/classroom/?class=PM`
+  (copy it from the Teacher Board → 🔗 Student link). The class comes from the link, so students never type it.
+- **Teacher** — open `https://bingling103-max.github.io/classroom/?teacher` and type your teacher password
+  on the page. It is sent in a request header, never in the address, and remembered on that device.
+- **Teacher Board** — start an activity for the whole class (students' pages follow), class timer,
+  raised hands, live answers per student and per question, 📺 show an answer big on the projector,
+  written feedback to a student, CSV export.
+
+## Update to v2 (from the first version)
+
+1. Cloudflare dashboard → **Workers & Pages** → your Worker → **Edit code**.
+2. Select everything, delete it, paste the whole of [`src/worker.js`](src/worker.js) → **Deploy**.
+3. Nothing else: the two new tables (`class_state`, `feedback`) are created automatically, and the
+   bindings / `TEACHER_KEY` / `ALLOWED_ORIGINS` stay as they are.
+
+Check: `https://<your-worker-url>/` now says *Ling's Classroom API is running (v2).*
+Until step 2 is done the page still works (answers, Teacher Board), but **Start in class**, the timer,
+hands and feedback need v2.
 
 ## What is stored
 
@@ -95,8 +109,8 @@ Leaving it empty allows any site to post.
 
 ## Day to day
 
-- Change the teacher key at any time: `npx wrangler secret put TEACHER_KEY`, then
-  open the board again with the new `?teacher=` value.
+- Change the teacher key at any time: dashboard → Worker → Settings → Variables and Secrets → `TEACHER_KEY`
+  (or `npx wrangler secret put TEACHER_KEY`), then open `…/classroom/?teacher` and sign in again.
 - Read the raw rows: `npx wrangler d1 execute lings-classroom --remote --command "SELECT class_code, student, updated_at FROM progress ORDER BY updated_at DESC LIMIT 20"`
 - Clear a class after term ends: `npx wrangler d1 execute lings-classroom --remote --command "DELETE FROM progress WHERE class_code = 'MORNING'"`
 
@@ -105,9 +119,13 @@ Leaving it empty allows any site to post.
 Anonymous posting is what makes "no login" possible, and it cuts both ways:
 anyone who finds the Worker URL can post a row under any name. For a classroom
 that is normally fine — the cost of a junk row is deleting it. What is protected
-is **reading**: `/docs`, `/verify` and `/export.csv` all require `TEACHER_KEY`,
+is **reading and running the class**: `/docs`, `/verify`, `/export.csv` and `/teacher/*` all require `TEACHER_KEY`
+in the `Authorization` header (10 wrong tries per IP → 15-minute pause),
 so nobody can see your students' answers without it. Treat the key like a
 password and don't put it in anything you hand to students.
 
-Free-plan limits (100k Worker requests/day, 5 GB D1) are far above what a
-classroom uses — the page writes at most once every 2.5 seconds per student.
+Free-plan limit: 100k Worker requests/day. A joined student uses about 15 requests a minute while an
+activity is running (answers are sent at most every 3 s; the page checks the class every 7 s, every 20 s
+when nothing is running, and pauses when the phone screen is off). That is roughly **100 student-hours a
+day** — e.g. two classes of 15 for 3 hours each. The free plan simply stops answering for the rest of the
+day if that is exceeded; nothing is charged.
