@@ -11,3 +11,12 @@ database_id = "f5eb0a24-9b56-4beb-87bb-eb37994612e0"
 [vars]
 # Where the student page is served from. Only these origins may post answers.
 ALLOWED_ORIGINS = "https://bingling103-max.github.io"
+
+# v3 · real-time: one Durable Object (SQLite storage, available on the free plan) per class
+[[durable_objects.bindings]]
+name = "ROOM"
+class_name = "ClassRoom"
+
+[[migrations]]
+tag = "v1-classroom"
+new_sqlite_classes = ["ClassRoom"]

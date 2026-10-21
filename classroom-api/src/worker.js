@@ -1,5 +1,12 @@
+import { DurableObject } from 'cloudflare:workers';
+
 /**
- * Ling's Classroom — live class API (v2).
+ * Ling's Classroom — live class API (v3: real-time).
+ *
+ * v3 adds GET /ws?class=XX — a WebSocket to one Durable Object per class. The
+ * teacher's actions reach every phone at once and each answer reaches the
+ * teacher at once, without polling. Everything below keeps working as before
+ * and is what the page falls back to if the WebSocket cannot connect.
  *
  * Students post anonymously (no login). The teacher signs in with the secret
  * TEACHER_KEY, sent in the Authorization header (never in the address), and
@@ -152,17 +159,12 @@ async function setState(request, env) {
   const body = await readBody(request);
   const cls = classOf(body && body.class);
   if (!cls) return json({ error: 'bad_request' }, request, env, 400);
-  const st = body.state && typeof body.state === 'object' ? body.state : {};
-  const clean = {
-    activity: st.activity && st.activity.id ? { id: str(st.activity.id, 120), title: str(st.activity.title, 200), at: Number(st.activity.at) || Date.now() } : null,
-    timer: st.timer && Number(st.timer.end) ? { end: Number(st.timer.end), minutes: Number(st.timer.minutes) || 0, at: Number(st.timer.at) || Date.now() } : null,
-    notice: st.notice ? { text: str(st.notice.text, 300), at: Number(st.notice.at) || Date.now() } : null,
-    updated_at: Date.now(),
-  };
+  const clean = cleanState(body.state && typeof body.state === 'object' ? body.state : {});
   await env.DB.prepare(
     `INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3)
      ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`
   ).bind(cls, JSON.stringify(clean), Date.now()).run();
+  await tellRoom(env, cls, { kind: 'state' });
   return json({ ok: true, state: clean }, request, env);
 }
 
@@ -183,6 +185,8 @@ async function setFeedback(request, env) {
     `INSERT INTO feedback (id, data, updated_at) VALUES (?1, ?2, ?3)
      ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`
   ).bind(id, JSON.stringify(fb), Date.now()).run();
+  const prow = await env.DB.prepare('SELECT class_code FROM progress WHERE id = ?1').bind(id).first();
+  await tellRoom(env, prow && prow.class_code, { kind: 'feedback', id });
   return json({ ok: true, feedback: fb }, request, env);
 }
 
@@ -190,6 +194,8 @@ async function removeStudent(request, env) {
   const body = await readBody(request);
   const id = str(body && body.id, 80);
   if (!id) return json({ error: 'bad_request' }, request, env, 400);
+  const prow = await env.DB.prepare('SELECT class_code FROM progress WHERE id = ?1').bind(id).first();
+  await tellRoom(env, (prow && prow.class_code) || classOf(body.class), { kind: 'delete', id });
   await env.DB.batch([
     env.DB.prepare('DELETE FROM progress WHERE id = ?1').bind(id),
     env.DB.prepare('DELETE FROM feedback WHERE id = ?1').bind(id),
@@ -222,7 +228,15 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url), path = url.pathname;
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request, env) });
-    if (path === '/') return new Response("Ling's Classroom API is running (v2).\n", { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    if (path === '/') return new Response("Ling's Classroom API is running (v3 real-time).\n", { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    if (path === '/ws') {
+      if (request.headers.get('Upgrade') !== 'websocket') return json({ error: 'expected_websocket' }, request, env, 426);
+      const list = allowedOrigins(env), origin = request.headers.get('Origin') || '';
+      if (list.length && !list.includes(origin)) return new Response('forbidden origin', { status: 403 });
+      const cls = classOf(url.searchParams.get('class'));
+      if (!cls || !env.ROOM) return new Response('no class', { status: 400 });
+      return env.ROOM.get(env.ROOM.idFromName(cls)).fetch(request);
+    }
     try {
       await ensureSchema(env);
       if (path === '/submit' && request.method === 'POST') return await submit(request, env);
@@ -246,3 +260,174 @@ export default {
     }
   },
 };
+
+/* ================= real-time: one Durable Object per class =================
+   Phones and the teacher board keep one WebSocket open here. Sockets hibernate
+   between messages, so a quiet class costs nothing; incoming messages are
+   billed at 20:1 and outgoing ones are free. */
+export class ClassRoom extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.env = env;
+    this.docs = null;        // id -> student doc (latest)
+    this.st = null;          // class state
+    this.fb = new Map();     // id -> feedback (cache)
+    this.cls = '';
+    this.flushedAt = 0;
+    ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
+  }
+
+  async load() {
+    if (this.docs) return;
+    this.docs = new Map();
+    const list = await this.ctx.storage.list({ prefix: 's:' });
+    for (const [k, v] of list) this.docs.set(k.slice(2), v);
+    this.cls = (await this.ctx.storage.get('cls')) || this.cls;
+  }
+  async state() {
+    if (this.st) return this.st;
+    await ensureSchema(this.env);
+    const row = this.cls ? await this.env.DB.prepare('SELECT data FROM class_state WHERE class_code = ?1').bind(this.cls).first() : null;
+    this.st = row ? parse(row.data, {}) : {};
+    return this.st;
+  }
+  async feedbackOf(id) {
+    if (this.fb.has(id)) return this.fb.get(id);
+    await ensureSchema(this.env);
+    const row = await this.env.DB.prepare('SELECT data FROM feedback WHERE id = ?1').bind(id).first();
+    const f = row ? parse(row.data, {}) : {};
+    this.fb.set(id, f);
+    return f;
+  }
+  sockets(role) { return this.ctx.getWebSockets(role); }
+  send(ws, obj) { try { ws.send(JSON.stringify(obj)); } catch (e) {} }
+  toTeachers(obj) { for (const ws of this.sockets('teacher')) { const a = ws.deserializeAttachment() || {}; if (a.ok) this.send(ws, obj); } }
+  taken() { const since = Date.now() - 12 * 3600 * 1000; return [...this.docs.entries()].filter(([, d]) => (d.updated_at || 0) > since && d.avatar).map(([id, d]) => ({ id, avatar: d.avatar })); }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (url.pathname === '/internal/changed') {            // an HTTP teacher action changed D1: refresh and broadcast
+      const body = await request.json();
+      this.cls = body.class || this.cls; await this.ctx.storage.put('cls', this.cls);
+      if (body.kind === 'state') { this.st = null; await this.broadcastState(); }
+      if (body.kind === 'feedback' && body.id) { this.fb.delete(body.id); await this.pushFeedback(body.id); }
+      if (body.kind === 'delete' && body.id) { await this.load(); this.docs.delete(body.id); await this.ctx.storage.delete('s:' + body.id); this.fb.delete(body.id); this.toTeachers({ type: 'gone', id: body.id }); }
+      return new Response('ok');
+    }
+    const cls = classOf(url.searchParams.get('class'));
+    if (cls && cls !== this.cls) { this.cls = cls; await this.ctx.storage.put('cls', cls); }
+    const pair = new WebSocketPair();
+    const role = url.searchParams.get('role') === 'teacher' ? 'teacher' : 'student';
+    this.ctx.acceptWebSocket(pair[1], [role]);
+    pair[1].serializeAttachment({ role, ok: false, id: '' });
+    return new Response(null, { status: 101, webSocket: pair[0] });
+  }
+
+  async webSocketMessage(ws, raw) {
+    let m; try { m = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw)); } catch { return; }
+    if (!m || typeof m !== 'object') return;
+    const a = ws.deserializeAttachment() || {};
+    await this.load();
+
+    /* ----- students ----- */
+    if (a.role === 'student') {
+      if (m.type === 'hello') {
+        const id = str(m.id, 80); if (!id) return;
+        ws.serializeAttachment({ role: 'student', ok: true, id });
+        this.send(ws, { type: 'state', now: Date.now(), state: await this.state(), feedback: await this.feedbackOf(id), taken: this.taken() });
+        return;
+      }
+      if (m.type === 'progress' && a.ok && m.data && typeof m.data === 'object') {
+        const d = m.data, student = str(d.student, 60);
+        if (!student) return;
+        const doc = { class_code: this.cls, student, avatar: str(d.avatar, 8), updated_at: Date.now(), hand_at: Number(d.hand_at) || 0, at_form: str(d.at_form, 120),
+          forms: d.forms && typeof d.forms === 'object' ? d.forms : {} };
+        if (JSON.stringify(doc).length > MAX_BODY) return;
+        this.docs.set(a.id, doc);
+        await this.ctx.storage.put('s:' + a.id, doc);
+        this.toTeachers({ type: 'doc', id: a.id, data: doc, feedback: this.fb.get(a.id) });
+        if (!(await this.ctx.storage.getAlarm())) await this.ctx.storage.setAlarm(Date.now() + 20000);
+      }
+      return;
+    }
+
+    /* ----- teacher ----- */
+    if (m.type === 'auth') {
+      if (!sameSecret(m.key, this.env.TEACHER_KEY)) { this.send(ws, { type: 'denied' }); ws.close(4003, 'denied'); return; }
+      ws.serializeAttachment({ role: 'teacher', ok: true, id: '' });
+      const docs = [];
+      for (const [id, data] of this.docs) docs.push({ id, data, feedback: await this.feedbackOf(id) });
+      this.send(ws, { type: 'snapshot', now: Date.now(), cls: this.cls, state: await this.state(), docs, online: this.online() });
+      return;
+    }
+    if (!a.ok) return;
+    if (m.type === 'setState' && m.state) {
+      const clean = cleanState(m.state);
+      await ensureSchema(this.env);
+      await this.env.DB.prepare(`INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`).bind(this.cls, JSON.stringify(clean), Date.now()).run();
+      this.st = clean; await this.broadcastState();
+      return;
+    }
+    if (m.type === 'feedback' && m.id) {
+      const id = str(m.id, 80), fb = await this.feedbackOf(id);
+      fb.forms = fb.forms && typeof fb.forms === 'object' ? fb.forms : {};
+      if (m.form_id) { const fid = str(m.form_id, 120), text = str(m.text, 2000); if (text) fb.forms[fid] = { text, at: Date.now() }; else delete fb.forms[fid]; }
+      if (m.hand_ack) fb.hand_ack = Date.now();
+      await ensureSchema(this.env);
+      await this.env.DB.prepare(`INSERT INTO feedback (id, data, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`).bind(id, JSON.stringify(fb), Date.now()).run();
+      this.fb.set(id, fb); await this.pushFeedback(id);
+      return;
+    }
+    if (m.type === 'delete' && m.id) {
+      const id = str(m.id, 80);
+      this.docs.delete(id); this.fb.delete(id); await this.ctx.storage.delete('s:' + id);
+      await this.env.DB.batch([this.env.DB.prepare('DELETE FROM progress WHERE id = ?1').bind(id), this.env.DB.prepare('DELETE FROM feedback WHERE id = ?1').bind(id)]);
+      this.toTeachers({ type: 'gone', id });
+    }
+  }
+
+  online() { const ids = {}; for (const ws of this.sockets('student')) { const a = ws.deserializeAttachment() || {}; if (a.id) ids[a.id] = 1; } return Object.keys(ids); }
+  async broadcastState() {
+    const st = await this.state();
+    for (const ws of this.sockets('student')) { const a = ws.deserializeAttachment() || {}; if (a.ok) this.send(ws, { type: 'state', now: Date.now(), state: st, feedback: await this.feedbackOf(a.id) }); }
+    this.toTeachers({ type: 'state', state: st });
+  }
+  async pushFeedback(id) {
+    const fb = await this.feedbackOf(id);
+    for (const ws of this.sockets('student')) { const a = ws.deserializeAttachment() || {}; if (a.id === id) this.send(ws, { type: 'feedback', feedback: fb }); }
+    this.toTeachers({ type: 'fb', id, feedback: fb });
+  }
+  async webSocketClose(ws) {
+    const a = ws.deserializeAttachment() || {};
+    if (a.role === 'student' && a.id) this.toTeachers({ type: 'presence', online: this.online().filter((x) => x !== a.id) });
+    try { ws.close(); } catch (e) {}
+  }
+  async webSocketError(ws) { try { ws.close(); } catch (e) {} }
+
+  /* Copy recent answers to D1 (for the board's other classes, CSV and backups) at most every 20 s. */
+  async alarm() {
+    await this.load(); await ensureSchema(this.env);
+    const since = this.flushedAt, now = Date.now(), stmts = [];
+    for (const [id, d] of this.docs) {
+      if ((d.updated_at || 0) <= since) continue;
+      stmts.push(this.env.DB.prepare(`INSERT INTO progress (id, class_code, student, updated_at, data) VALUES (?1, ?2, ?3, ?4, ?5)
+        ON CONFLICT(id) DO UPDATE SET class_code = excluded.class_code, student = excluded.student, updated_at = excluded.updated_at, data = excluded.data`)
+        .bind(id, d.class_code || this.cls, d.student, d.updated_at || now, JSON.stringify(d)));
+    }
+    for (let i = 0; i < stmts.length; i += 50) await this.env.DB.batch(stmts.slice(i, i + 50));
+    this.flushedAt = now;
+  }
+}
+
+function cleanState(st) {
+  return {
+    activity: st.activity && st.activity.id ? { id: str(st.activity.id, 120), title: str(st.activity.title, 200), at: Number(st.activity.at) || Date.now() } : null,
+    timer: st.timer && Number(st.timer.end) ? { end: Number(st.timer.end), minutes: Number(st.timer.minutes) || 0, at: Number(st.timer.at) || Date.now() } : null,
+    notice: st.notice ? { text: str(st.notice.text, 300), at: Number(st.notice.at) || Date.now() } : null,
+    updated_at: Date.now(),
+  };
+}
+async function tellRoom(env, cls, body) {
+  if (!env.ROOM || !cls) return;
+  try { await env.ROOM.get(env.ROOM.idFromName(cls)).fetch('https://room/internal/changed', { method: 'POST', body: JSON.stringify({ ...body, class: cls }) }); } catch (e) {}
+}

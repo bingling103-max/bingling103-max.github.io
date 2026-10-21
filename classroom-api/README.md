@@ -11,16 +11,27 @@ Answers go to a D1 database that only you can read.
   raised hands, live answers per student and per question, 📺 show an answer big on the projector,
   written feedback to a student, CSV export.
 
-## Update to v2 (from the first version)
+## Real-time (v3) — one-time setup, then updates deploy by themselves
 
-1. Cloudflare dashboard → **Workers & Pages** → your Worker → **Edit code**.
-2. Select everything, delete it, paste the whole of [`src/worker.js`](src/worker.js) → **Deploy**.
-3. Nothing else: the two new tables (`class_state`, `feedback`) are created automatically, and the
-   bindings / `TEACHER_KEY` / `ALLOWED_ORIGINS` stay as they are.
+v3 keeps one live connection open between each phone and the class, so the teacher's actions
+reach every phone at once and every answer reaches the Teacher Board at once. It uses a
+Durable Object, which is free on the Workers Free plan — but it cannot be pasted into the
+dashboard editor, so connect the Worker to this GitHub repository once:
 
-Check: `https://<your-worker-url>/` now says *Ling's Classroom API is running (v2).*
-Until step 2 is done the page still works (answers, Teacher Board), but **Start in class**, the timer,
-hands and feedback need v2.
+1. Cloudflare dashboard → **Workers & Pages** → `ling-classroom` → **Settings** → **Build** →
+   **Connect** (Git repository).
+2. Choose GitHub → `bingling103-max/bingling103-max.github.io`, branch `main`.
+3. **Root directory**: `classroom-api` · **Build command**: leave empty ·
+   **Deploy command**: `npx wrangler deploy` → **Save / Connect**.
+4. Wait for the first build to finish (Deployments tab). Check
+   `https://<your-worker-url>/` says *running (v3 real-time)*.
+
+From then on every change pushed to `main` deploys the Worker automatically. `TEACHER_KEY`
+stays as it is (secrets are not in this repository). The database tables are created by the
+Worker itself.
+
+Until this is done the page still works over plain requests (answers arrive every few
+seconds); the board shows **Live · every 4 s** instead of **Live · instant**.
 
 ## What is stored
 
@@ -124,8 +135,7 @@ in the `Authorization` header (10 wrong tries per IP → 15-minute pause),
 so nobody can see your students' answers without it. Treat the key like a
 password and don't put it in anything you hand to students.
 
-Free-plan limit: 100k Worker requests/day. A joined student uses about 15 requests a minute while an
-activity is running (answers are sent at most every 3 s; the page checks the class every 7 s, every 20 s
-when nothing is running, and pauses when the phone screen is off). That is roughly **100 student-hours a
-day** — e.g. two classes of 15 for 3 hours each. The free plan simply stops answering for the rest of the
-day if that is exceeded; nothing is charged.
+Free plan: with real-time on, a phone sends about two tiny messages a minute and these are
+counted 20 to 1, so a whole class uses only a few hundred requests a day out of 100,000.
+Answers are copied from the class room into D1 every 20 s for the CSV and other classes.
+If a limit were ever reached the Worker stops answering until midnight UTC; nothing is charged.

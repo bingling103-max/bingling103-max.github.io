@@ -627,7 +627,7 @@ mountBar();
       if (n.length < 2) return fail('Please type your name.');
       var first = !me; me = { c: c, n: n, a: pick }; store(IK, me); s.remove(); SFX.join(); confetti(70);
       note(pick + ' Hi ' + h(n.split(' ')[0]) + '! ' + (first ? 'You joined class ' + h(c) + '.' : 'Saved.'));
-      paintChip(); sendAll(); poll(true);
+      paintChip(); sendAll(); poll(true); connectStudent();
     };
     s.querySelector('#lvN').addEventListener('keydown', function (e) { if (e.key === 'Enter') s.querySelector('#lvGo').click(); });
   }
@@ -639,13 +639,15 @@ mountBar();
       correct: r ? r.c : null, total: r ? r.t : null, answered: qs.filter(function (q) { return filled(a[q.iid]); }).length, questions: qs.length,
       checked_at: r && r.at ? r.at : null, updated_at: Date.now() };
   }
-  function queue(id, now) { if (!me || !id || !canWrite || !uid || !API || isOwner) return; pending[id] = 1; clearTimeout(timer); timer = setTimeout(flush, now ? 300 : 3000); }
+  function queue(id, now) { if (!me || !id || !canWrite || !uid || !API || isOwner) return; pending[id] = 1; clearTimeout(timer); timer = setTimeout(flush, now ? 250 : (sws && swsReady ? 700 : 3000)); }
   function flush() {
     if (!API || !me || !uid || !canWrite || isOwner) return;
     if (busy) { dirty = true; return; }
     Object.keys(pending).forEach(function (id) { var f = forms().find(function (x) { return x.id === id; }); if (f) sent[id] = formPayload(f); });
-    pending = {}; busy = true; dirty = false;
+    pending = {}; dirty = false;
     var body = { class_code: me.c, student: me.n, avatar: me.a, updated_at: Date.now(), hand_at: handAt, at_form: cur() || '', forms: sent };
+    if (sws && sws.readyState === 1 && swsReady) { try { sws.send(JSON.stringify({ type: 'progress', data: body })); status = 'on'; paintChip(); return; } catch (e) {} }
+    busy = true;
     call('POST', '/submit', { id: uid, data: body }).then(function () { status = 'on'; }, function (e) {
       status = 'off'; if (e && ['bad_request', 'missing_identity', 'too_large', 'bad_json'].indexOf(e.code) >= 0) canWrite = false; else dirty = true;
     }).then(function () { busy = false; paintChip(); if (dirty && canWrite) setTimeout(flush, 2500); });
@@ -683,9 +685,36 @@ mountBar();
   /* ---------- following the teacher: current activity, timer, feedback ---------- */
   var follow = {}; try { follow = JSON.parse(localStorage.getItem(FKEY) || '{}') || {}; } catch (e) {}
   var LIVE = { state: {}, feedback: {}, skew: 0 }, pollTimer = null, tickTimer = null, nowBar = null, timerBox = null;
+  /* Real-time: one WebSocket to the class room. HTTP polling below is only the fallback. */
+  var sws = null, swsReady = false, swsTries = 0, swsPing = null, swsClass = '';
+  function wsURL(c, role) { return API.replace(/^http/, 'ws') + '/ws?class=' + encodeURIComponent(c) + '&role=' + role; }
+  function connectStudent() {
+    if (!API || isOwner || !me || !uid || !('WebSocket' in window)) return;
+    if (sws && sws.readyState <= 1 && swsClass === me.c) return;
+    try { if (sws) sws.close(); } catch (e) {}
+    swsClass = me.c; swsReady = false;
+    var ws; try { ws = new WebSocket(wsURL(me.c, 'student')); } catch (e) { return; }
+    sws = ws;
+    ws.onopen = function () { ws.send(JSON.stringify({ type: 'hello', id: uid })); };
+    ws.onmessage = function (ev) {
+      var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.type === 'state') {
+        var first = !swsReady; swsReady = true; swsTries = 0; status = 'on'; paintChip();
+        LIVE.skew = (m.now || Date.now()) - Date.now(); LIVE.state = m.state || {}; if (m.feedback) LIVE.feedback = m.feedback; applyLive();
+        if (first) { clearTimeout(pollTimer); sendAll(); }
+      } else if (m.type === 'feedback') { LIVE.feedback = m.feedback || {}; applyLive(); }
+    };
+    ws.onclose = function () {
+      if (sws !== ws) return; swsReady = false; clearInterval(swsPing); swsTries++;
+      setTimeout(connectStudent, Math.min(15000, 800 * swsTries)); poll(true);
+    };
+    clearInterval(swsPing); swsPing = setInterval(function () { if (ws.readyState === 1) ws.send('ping'); }, 25000);
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && me && !isOwner) connectStudent(); });
   function poll(soon) {
     clearTimeout(pollTimer);
     if (!API || isOwner || !me || !uid) return;
+    if (swsReady) return;
     if (soon !== true && document.hidden) { pollTimer = setTimeout(poll, 15000); return; }
     call('GET', '/state?class=' + encodeURIComponent(me.c) + '&id=' + encodeURIComponent(uid)).then(function (r) {
       LIVE.skew = (r.now || Date.now()) - Date.now(); LIVE.state = r.state || {}; LIVE.feedback = r.feedback || {}; applyLive();
@@ -770,13 +799,47 @@ mountBar();
     return Object.values(m).sort(function (a, b) { var ia = BASE_CLASSES.indexOf(a.code), ib = BASE_CLASSES.indexOf(b.code); if (ia >= 0 || ib >= 0) return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); return b.last - a.last; });
   }
   function classLink(c) { return location.origin + location.pathname + '?class=' + encodeURIComponent(c); }
+  var tws = null, twsCls = '', twsReady = false, twsTries = 0, twsPing = null, wsDocs = new Map(), wsOnline = {}, drawSoon = null;
+  function rebuildRows() {
+    var byId = {}; docs.forEach(function (d) { byId[d.id] = d; });
+    wsDocs.forEach(function (d, id) { byId[id] = Object.assign({}, byId[id] || {}, d); });
+    docs = Object.values(byId); allRows = [];
+    docs.forEach(function (d) { var x = d.data || {}, fs = x.forms || {}; Object.keys(fs).forEach(function (k) { var r = Object.assign({}, fs[k]); r.class_code = x.class_code; r.student = x.student; r.avatar = x.avatar; r._id = d.id; allRows.push(r); }); });
+  }
+  function redraw() { clearTimeout(drawSoon); drawSoon = setTimeout(function () { if (T && !document.querySelector('.tb-drawer textarea:focus')) drawBoard(); }, 250); }
+  function connectTeacher() {
+    if (!T || !API || !('WebSocket' in window) || !cls) return;
+    if (tws && tws.readyState <= 1 && twsCls === cls) return;
+    try { if (tws) { var old = tws; tws = null; old.close(); } } catch (e) {}
+    twsCls = cls; twsReady = false; wsDocs = new Map(); wsOnline = {};
+    var ws; try { ws = new WebSocket(wsURL(cls, 'teacher')); } catch (e) { return; }
+    tws = ws;
+    ws.onopen = function () { ws.send(JSON.stringify({ type: 'auth', key: key })); };
+    ws.onmessage = function (ev) {
+      if (tws !== ws) return; var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.type === 'snapshot') { twsReady = true; twsTries = 0; (m.docs || []).forEach(function (d) { wsDocs.set(d.id, { id: d.id, data: d.data, feedback: d.feedback || {} }); }); states[cls] = m.state || {}; wsOnline = {}; (m.online || []).forEach(function (id) { wsOnline[id] = 1; }); }
+      else if (m.type === 'doc') { wsDocs.set(m.id, { id: m.id, data: m.data, feedback: m.feedback || (wsDocs.get(m.id) || {}).feedback || {} }); wsOnline[m.id] = 1; }
+      else if (m.type === 'state') states[cls] = m.state || {};
+      else if (m.type === 'fb') { var d = wsDocs.get(m.id) || docs.find(function (x) { return x.id === m.id; }); if (d) wsDocs.set(m.id, Object.assign({}, d, { feedback: m.feedback })); }
+      else if (m.type === 'gone') { wsDocs.delete(m.id); docs = docs.filter(function (x) { return x.id !== m.id; }); }
+      else if (m.type === 'presence') { wsOnline = {}; (m.online || []).forEach(function (id) { wsOnline[id] = 1; }); }
+      else if (m.type === 'denied') { twsReady = false; return; }
+      rebuildRows(); redraw();
+    };
+    ws.onclose = function () { clearInterval(twsPing); if (tws !== ws) return; twsReady = false; twsTries++; if (T) setTimeout(connectTeacher, Math.min(15000, 800 * twsTries)); redraw(); };
+    clearInterval(twsPing); twsPing = setInterval(function () { if (ws.readyState === 1) ws.send('ping'); }, 25000);
+  }
+  function tact(kind, payload) {
+    if (tws && tws.readyState === 1 && twsReady) { tws.send(JSON.stringify(Object.assign({ type: kind }, payload))); return Promise.resolve({ ok: true, ws: true }); }
+    var path = kind === 'setState' ? '/teacher/state' : kind === 'feedback' ? '/teacher/feedback' : '/teacher/delete';
+    return call('POST', path, kind === 'setState' ? { class: cls, state: payload.state } : Object.assign({ class: cls }, payload), true);
+  }
   function loadDocs() {
     return call('GET', '/docs', null, true).then(function (res) {
-      online = true; docs = res.docs || []; states = res.states || {}; allRows = [];
-      docs.forEach(function (d) { var x = d.data || {}, fs = x.forms || {}; Object.keys(fs).forEach(function (k) { var r = Object.assign({}, fs[k]); r.class_code = x.class_code; r.student = x.student; r.avatar = x.avatar; r._id = d.id; allRows.push(r); }); });
+      online = true; docs = res.docs || []; var st = res.states || {}; if (twsReady && states[cls]) st[cls] = states[cls]; states = st; rebuildRows();
     }, function (e) { online = false; if (e && e.status === 403) { store(TKEY, null); location.reload(); } });
   }
-  function boardLoop() { clearTimeout(boardTimer); if (!T) return; loadDocs().then(function () { if (T && !document.querySelector('.tb-drawer textarea:focus')) drawBoard(); boardTimer = setTimeout(boardLoop, document.hidden ? 15000 : 4000); }); }
+  function boardLoop() { clearTimeout(boardTimer); if (!T) return; connectTeacher(); loadDocs().then(function () { if (T && !document.querySelector('.tb-drawer textarea:focus')) drawBoard(); boardTimer = setTimeout(boardLoop, twsReady ? 30000 : (document.hidden ? 15000 : 4000)); }); }
   function openBoard() {
     buildForms();
     T = document.createElement('div'); T.className = 'tb'; T.setAttribute('role', 'dialog'); T.setAttribute('aria-label', 'Teacher board');
@@ -784,11 +847,11 @@ mountBar();
     T.innerHTML = '<div class="tbbar"><h1>👩‍🏫 Teacher Board</h1><span class="live"><i></i>Loading…</span></div>';
     boardLoop();
   }
-  function closeBoard() { closeDrawer(); clearTimeout(boardTimer); if (T) T.remove(); T = null; document.documentElement.style.overflow = ''; }
+  function closeBoard() { closeDrawer(); clearTimeout(boardTimer); try { if (tws) { var w = tws; tws = null; w.close(); } } catch (e) {} if (T) T.remove(); T = null; document.documentElement.style.overflow = ''; }
   function classDocs() { return docs.filter(function (d) { return d.data.class_code === cls; }); }
   function setClassState(next) {
     var st = Object.assign({}, states[cls] || {}, next);
-    return call('POST', '/teacher/state', { class: cls, state: st }, true).then(function (r) { states[cls] = r.state; drawBoard(); }, function () { alert('Could not reach the class server. Please try again.'); });
+    return tact('setState', { state: st }).then(function (r) { states[cls] = (r && r.state) ? r.state : Object.assign({}, st, { updated_at: Date.now() }); drawBoard(); }, function () { alert('Could not reach the class server. Please try again.'); });
   }
   function controls() {
     var st = states[cls] || {}, a = st.activity, t = st.timer, cd = classDocs();
@@ -811,7 +874,7 @@ mountBar();
     if (q('#tbTStart')) q('#tbTStart').onclick = function () { var n = Math.min(60, Math.max(1, Number(q('#tbMin').value) || 3)); setClassState({ timer: { minutes: n, end: Date.now() + n * 60000, at: Date.now() } }); };
     if (q('#tbTStop')) q('#tbTStop').onclick = function () { setClassState({ timer: null }); };
     if (q('#tbCopy')) q('#tbCopy').onclick = function () { var u = classLink(cls); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { q('#tbCopy').textContent = '✓ Copied'; }, function () { prompt('Copy this link for your students:', u); }); };
-    m.querySelectorAll('[data-ack]').forEach(function (b) { b.onclick = function () { call('POST', '/teacher/feedback', { id: b.dataset.ack, hand_ack: true }, true).then(boardLoop); b.disabled = true; }; });
+    m.querySelectorAll('[data-ack]').forEach(function (b) { b.onclick = function () { tact('feedback', { id: b.dataset.ack, hand_ack: true }).then(function (r) { if (!r.ws) boardLoop(); }); b.disabled = true; }; });
   }
   function drawBoard() {
     if (!T) return;
@@ -822,11 +885,11 @@ mountBar();
     T.innerHTML = '<div class="tbbar"><h1>👩‍🏫 Teacher Board</h1>' +
       '<select id="tbCls" aria-label="Class">' + cl.map(function (c) { var n = Object.keys(c.st).length; return '<option value="' + h(c.code) + '"' + (c.code === cls ? ' selected' : '') + '>' + h(c.code) + ' · ' + n + ' student' + (n === 1 ? '' : 's') + '</option>'; }).join('') + '<option value="__new">＋ New class…</option></select>' +
       '<select id="tbAct" aria-label="Activity"><option value="">📊 All activities</option>' + acts.map(function (a) { return '<option value="' + h(a.id) + '"' + (a.id === act ? ' selected' : '') + '>' + h(a.title) + '</option>'; }).join('') + '</select>' +
-      '<span class="sp"></span><span class="live' + (online ? '' : ' off') + '"><i></i>' + (online ? 'Live' : 'Offline — retrying') + '</span>' +
+      '<span class="sp"></span><span class="live' + (online || twsReady ? '' : ' off') + '"><i></i>' + (twsReady ? 'Live · instant' : online ? 'Live · every 4 s' : 'Offline — retrying') + '</span>' +
       '<button id="tbCsv">⬇ CSV</button><button id="tbBlur" aria-pressed="' + blur + '">🙈 Hide names</button><button id="tbX">✕ Close</button></div><main id="tbMain"></main>';
     T.querySelector('#tbCls').onchange = function (e) {
       var v = e.target.value; if (v === '__new') { v = (prompt('New class name (e.g. MORNING):') || '').trim().toUpperCase().replace(/\s+/g, '-').slice(0, 40); if (!v) { drawBoard(); return; } }
-      cls = v; store('ling-t-class', cls); act = ''; openQ = null; drawBoard();
+      cls = v; store('ling-t-class', cls); act = ''; openQ = null; connectTeacher(); drawBoard();
     };
     T.querySelector('#tbAct').onchange = function (e) { act = e.target.value; openQ = null; drawBoard(); };
     T.querySelector('#tbBlur').onclick = function () { blur = !blur; document.body.classList.toggle('tb-blur', blur); drawBoard(); };
@@ -852,7 +915,7 @@ mountBar();
     var ss = students(), by = {}; rows.forEach(function (r) { by[r._id + '|' + r.form_id] = r; });
     m.innerHTML = '<h2 class="t">' + h(cls) + ' <small>' + ss.length + ' student' + (ss.length === 1 ? '' : 's') + ' · ' + acts.length + ' activit' + (acts.length === 1 ? 'y' : 'ies') + ' · click a name or an activity</small></h2>' +
       '<div class="scroll"><table><thead><tr><th class="name">Student</th><th>Last active</th>' + acts.map(function (a) { return '<th class="act" data-act="' + h(a.id) + '">' + h(a.title) + '</th>'; }).join('') + '</tr></thead><tbody>' +
-      ss.map(function (s) { return '<tr class="rowlink" data-st="' + h(s.id) + '"><td class="name"><span class="av">' + h(s.av || '🙂') + '</span><span class="nm">' + h(s.name) + '</span>' + (handOf(s.id) ? ' ✋' : '') + '</td><td class="ago">' + ago(s.last) + '</td>' + acts.map(function (a) { return '<td>' + cellHtml(by[s.id + '|' + a.id]) + '</td>'; }).join('') + '</tr>'; }).join('') +
+      ss.map(function (s) { return '<tr class="rowlink" data-st="' + h(s.id) + '"><td class="name"><span class="av">' + h(s.av || '🙂') + '</span><span class="nm">' + h(s.name) + '</span>' + (handOf(s.id) ? ' ✋' : '') + '</td><td class="ago">' + (wsOnline[s.id] ? '<span class="now">● online</span>' : ago(s.last)) + '</td>' + acts.map(function (a) { return '<td>' + cellHtml(by[s.id + '|' + a.id]) + '</td>'; }).join('') + '</tr>'; }).join('') +
       '</tbody></table></div><p class="muted">Green ≥ 80% · amber 50–79% · red &lt; 50% (auto-marked questions) · grey = answered so far.</p>';
     m.querySelectorAll('[data-act]').forEach(function (th) { th.onclick = function () { act = th.dataset.act; openQ = null; drawBoard(); }; });
     m.querySelectorAll('[data-st]').forEach(function (tr) { tr.onclick = function () { studentDrawer(tr.dataset.st); }; });
@@ -906,12 +969,12 @@ mountBar();
       }).join('');
     document.body.appendChild(s); document.body.appendChild(d); d.scrollTop = sc;
     d.querySelector('#tdX').onclick = closeDrawer;
-    if (d.querySelector('#tdHand')) d.querySelector('#tdHand').onclick = function () { call('POST', '/teacher/feedback', { id: id, hand_ack: true }, true).then(boardLoop); };
-    d.querySelectorAll('[data-send]').forEach(function (b) { b.onclick = function () { var fid = b.dataset.send, t = d.querySelector('textarea[data-fb="' + CSS.escape(fid) + '"]'); b.disabled = true; b.textContent = 'Sending…'; call('POST', '/teacher/feedback', { id: id, form_id: fid, text: t.value }, true).then(function () { t.dataset.fb = ''; b.textContent = '✓ Sent'; loadDocs().then(function () { studentDrawer(id, true); }); }, function () { b.disabled = false; b.textContent = 'Send'; alert('Could not send. Please try again.'); }); }; });
-    d.querySelectorAll('[data-clear]').forEach(function (b) { b.onclick = function () { call('POST', '/teacher/feedback', { id: id, form_id: b.dataset.clear, text: '' }, true).then(function () { loadDocs().then(function () { studentDrawer(id, true); }); }); }; });
+    if (d.querySelector('#tdHand')) d.querySelector('#tdHand').onclick = function () { tact('feedback', { id: id, hand_ack: true }).then(function (r) { if (!r.ws) boardLoop(); }); };
+    d.querySelectorAll('[data-send]').forEach(function (b) { b.onclick = function () { var fid = b.dataset.send, t = d.querySelector('textarea[data-fb="' + CSS.escape(fid) + '"]'); b.disabled = true; b.textContent = 'Sending…'; tact('feedback', { id: id, form_id: fid, text: t.value }).then(function (r) { t.dataset.fb = ''; b.textContent = '✓ Sent'; if (r.ws) setTimeout(function () { studentDrawer(id, true); }, 400); else loadDocs().then(function () { studentDrawer(id, true); }); }, function () { b.disabled = false; b.textContent = 'Send'; alert('Could not send. Please try again.'); }); }; });
+    d.querySelectorAll('[data-clear]').forEach(function (b) { b.onclick = function () { tact('feedback', { id: id, form_id: b.dataset.clear, text: '' }).then(function () { setTimeout(function () { loadDocs().then(function () { studentDrawer(id, true); }); }, 400); }); }; });
     d.querySelector('#tdDel').onclick = function () {
       if (!confirm('Remove ' + name + ' and all their answers from ' + cls + '? This cannot be undone.')) return;
-      call('POST', '/teacher/delete', { id: id }, true).then(function () { closeDrawer(); boardLoop(); }, function () { alert('Could not remove. Please try again.'); });
+      tact('delete', { id: id }).then(function () { wsDocs.delete(id); docs = docs.filter(function (x) { return x.id !== id; }); rebuildRows(); closeDrawer(); boardLoop(); }, function () { alert('Could not remove. Please try again.'); });
     };
   }
   function closeDrawer() { openStudent = null; document.querySelectorAll('.tb-scrim,.tb-drawer').forEach(function (x) { x.remove(); }); }
@@ -957,7 +1020,7 @@ mountBar();
       b.onclick = openBoard; document.body.appendChild(b); paintChip(); openBoard(); return;
     }
     paintChip();
-    if (me) { sendAll(); poll(true); } else ask();
+    if (me) { sendAll(); poll(true); connectStudent(); } else ask();
   })();
 })();
 </script>
