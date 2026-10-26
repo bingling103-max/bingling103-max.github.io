@@ -136,6 +136,21 @@ function defaultWhiteboard() {
     open: false,
     boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: '', clearedAt: 0, isDefault: true, createdAt: 0, status: 'open' }],
     lines: [],
+    places: [],
+  };
+}
+function cleanPlace(p) {
+  if (!p || typeof p !== 'object') return null;
+  const id = str(p.id, 40);
+  if (!id) return null;
+  return {
+    id,
+    boardId: str(p.boardId, 40) || 'default',
+    studentId: str(p.studentId, 80),
+    name: str(p.name, 60),
+    avatar: str(p.avatar, 8),
+    text: str(p.text, 500),
+    at: Number(p.at) || 0,
   };
 }
 function cleanWhiteboard(wb) {
@@ -169,7 +184,15 @@ function cleanWhiteboard(wb) {
     if (!text || !id) return null;
     return { id, name: str(l.name, 60) || 'Student', avatar: str(l.avatar, 8), text, at: Number(l.at) || Date.now(), boardId: str(l.boardId, 40) || 'default' };
   }).filter(Boolean);
-  return { activeId, open: wb.open === true, boards, lines };
+  const seenPlace = {};
+  const places = [];
+  (Array.isArray(wb.places) ? wb.places : []).slice(0, 16).forEach((p) => {
+    const place = cleanPlace(p);
+    if (!place || seenPlace[place.id]) return;
+    seenPlace[place.id] = 1;
+    places.push(place);
+  });
+  return { activeId, open: wb.open === true, boards, lines, places };
 }
 async function writeClassState(env, cls, clean) {
   await env.DB.prepare(
@@ -190,6 +213,18 @@ function upsertBoardLine(clean, line) {
   clean.whiteboard = wb;
   return { clean };
 }
+function upsertPlaceText(clean, line) {
+  const wb = clean.whiteboard || defaultWhiteboard();
+  if (!wb.open) return { clean, error: 'closed' };
+  const place = (wb.places || []).find((p) => p.id === line.placeId);
+  if (!place || !place.studentId || place.studentId !== line.id) return { clean, error: 'closed' };
+  place.text = line.text;
+  place.at = line.at;
+  if (line.name) place.name = line.name;
+  if (line.avatar) place.avatar = line.avatar;
+  clean.whiteboard = wb;
+  return { clean };
+}
 async function postBoard(request, env) {
   if (boardLimited(request)) return json({ error: 'too_many_attempts' }, request, env, 429);
   const body = await readBody(request);
@@ -198,11 +233,14 @@ async function postBoard(request, env) {
   const name = str(body && body.name, 60);
   const text = str(body && body.text, 500);
   const boardId = str(body && body.boardId, 40) || 'default';
+  const placeId = str(body && body.placeId, 40);
   const avatar = str(body && body.avatar, 8);
   if (!cls || !id || !name) return json({ error: 'bad_request' }, request, env, 400);
   const row = await env.DB.prepare('SELECT data FROM class_state WHERE class_code = ?1').bind(cls).first();
   const clean = cleanState(row ? parse(row.data, {}) : {});
-  const saved = upsertBoardLine(clean, { id, name, avatar, text, at: Date.now(), boardId });
+  const saved = placeId
+    ? upsertPlaceText(clean, { id, name, avatar, text, at: Date.now(), placeId })
+    : upsertBoardLine(clean, { id, name, avatar, text, at: Date.now(), boardId });
   if (saved.error) return json({ error: saved.error }, request, env, 403);
   await writeClassState(env, cls, saved.clean);
   return json({ ok: true, state: saved.clean }, request, env);
@@ -426,12 +464,15 @@ export class ClassRoom extends DurableObject {
       if (m.type === 'board' && a.ok) {
         const text = str(m.text, 500);
         const boardId = str(m.boardId, 40) || 'default';
+        const placeId = str(m.placeId, 40);
         const known = this.docs.get(a.id) || {};
         const name = known.student || str(m.name, 60);
         const avatar = known.avatar || str(m.avatar, 8);
         if (!name) return;
         const clean = cleanState(await this.state());
-        const saved = upsertBoardLine(clean, { id: a.id, name, avatar, text, at: Date.now(), boardId });
+        const saved = placeId
+          ? upsertPlaceText(clean, { id: a.id, name, avatar, text, at: Date.now(), placeId })
+          : upsertBoardLine(clean, { id: a.id, name, avatar, text, at: Date.now(), boardId });
         if (!saved.error) {
           await ensureSchema(this.env);
           await this.env.DB.prepare(`INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`).bind(this.cls, JSON.stringify(saved.clean), Date.now()).run();

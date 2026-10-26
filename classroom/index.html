@@ -991,14 +991,21 @@ mountBar();
 
   /* ---------- class whiteboard: the board on the wall, not a card ---------- */
   var wbRoot = null, stuRoot = null, stuPill = null, wbNeedServer = false, wbShowOld = false, wbMode = '', wbFocus = false, stuHide = '', stuDraft = '', mineLine = null, pubSig = '', pubTimer = null, wbClock = null;
-  var WB_FORM = '__whiteboard__';
+  var stuView = 'class', stuHold = false, myDraft = null, mySaved = null, stuPlaceDraft = null, placeMine = null, wbStudent = '';
+  var WB_FORM = '__whiteboard__', WB_MINE = '__myboard__';
 
   function absorbWb(prev, incoming, fromServer) {
     var next = incoming || {};
     if (prev && prev.whiteboard && !next.whiteboard) {
       next.whiteboard = prev.whiteboard;
       if (fromServer) wbNeedServer = true;
-    } else if (fromServer && next.whiteboard) wbNeedServer = false;
+    } else if (fromServer && next.whiteboard) {
+      wbNeedServer = false;
+      if (!Array.isArray(next.whiteboard.places) && prev && prev.whiteboard && Array.isArray(prev.whiteboard.places)) {
+        next.whiteboard.places = prev.whiteboard.places;
+        wbNeedServer = true;
+      }
+    }
     return next;
   }
   function localPreview() {
@@ -1048,8 +1055,36 @@ mountBar();
     if (raw && Array.isArray(raw.boards)) for (i = 0; i < raw.boards.length && boards.length < 40; i++) { b = copyBoard(raw.boards[i]); if (b && !boards.some(function (x) { return x.id === b.id; })) boards.push(b); }
     if (!boards.some(function (x) { return x.id === 'default'; })) boards.unshift({ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: '', clearedAt: 0, isDefault: true, createdAt: 0, status: 'open', checked: false });
     if (raw && Array.isArray(raw.lines)) for (i = Math.max(0, raw.lines.length - 100); i < raw.lines.length; i++) { l = copyLine(raw.lines[i]); if (l) lines.push(l); }
-    return { activeId: raw && raw.activeId && boards.some(function (x) { return x.id === raw.activeId; }) ? raw.activeId : 'default', open: !!(raw && raw.open === true), boards: boards, lines: lines };
+    var places = [], p, seenP = {};
+    if (raw && Array.isArray(raw.places)) for (i = 0; i < raw.places.length && places.length < 16; i++) { p = copyPlace(raw.places[i]); if (p && !seenP[p.id]) { seenP[p.id] = 1; places.push(p); } }
+    return { activeId: raw && raw.activeId && boards.some(function (x) { return x.id === raw.activeId; }) ? raw.activeId : 'default', open: !!(raw && raw.open === true), boards: boards, lines: lines, places: places };
   }
+  function copyPlace(p) {
+    if (!p || typeof p !== 'object') return null;
+    var id = String(p.id || '').slice(0, 40);
+    if (!id) return null;
+    return { id: id, boardId: String(p.boardId || 'default').slice(0, 40), studentId: String(p.studentId || '').slice(0, 80), name: String(p.name || '').slice(0, 60), avatar: String(p.avatar || '').slice(0, 8), text: String(p.text || '').replace(/\s+/g, ' ').trim().slice(0, 500), at: Number(p.at) || 0 };
+  }
+  function placesFor(wb, board) {
+    if (!board) return [];
+    return (wb.places || []).filter(function (p) { return p.boardId === board.id; });
+  }
+  function roster() {
+    var list = [], seen = {};
+    if (typeof classDocs === 'function') classDocs().forEach(function (d) {
+      if (!d || !d.id || seen[d.id]) return;
+      seen[d.id] = 1;
+      list.push({ id: d.id, name: (d.data && d.data.student) || 'Student', avatar: (d.data && d.data.avatar) || '' });
+    });
+    return list.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+  }
+  function myBoardOf(id) {
+    var doc = null, i, f;
+    for (i = 0; i < docs.length; i++) if (docs[i].id === id) doc = docs[i];
+    f = doc && doc.data && doc.data.forms && doc.data.forms[WB_MINE];
+    return f && f.answers ? String(f.answers.text || '').replace(/\s+/g, ' ').trim() : '';
+  }
+  function myText() { return mySaved != null ? mySaved : myBoardOf(uid); }
   function currentWb() { return normalizeWb(rawWb()); }
   function activeBoard(wb) {
     var i, id = (wb && wb.activeId) || 'default';
@@ -1183,13 +1218,35 @@ mountBar();
       '.wb-pill{position:fixed;top:12px;right:12px;z-index:70;background:#1b5b48;color:#fff;border:0;border-radius:999px;padding:10px 16px;font-weight:700;box-shadow:0 8px 20px rgba(15,46,37,.28);cursor:pointer}',
       '@media(min-width:900px){.wb{overflow:hidden}.wb-stage{flex:1 1 auto;min-height:0}.slate{height:100%;min-height:0}.surface{min-height:0}}',
       '@media(max-width:800px){.wb{overflow-x:hidden}.wb-stage{grid-template-columns:minmax(0,1fr)}.wb-title h1{font-size:24px}.side{max-height:none}.stick{width:28px}.eraser{width:36px}.looks button{padding:3px 6px;font-size:11px}.q-text{font-size:26px}.line{font-size:22px}}',
+      '.places{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 4px;min-width:0}',
+      '.place{min-width:0;overflow:hidden;border:2px dashed rgba(255,255,255,.38);border-radius:14px;padding:8px 10px;background:rgba(0,0,0,.14)}',
+      '.frame.dry .place{border-color:rgba(22,58,122,.28);background:rgba(255,255,255,.62)}',
+      '.place.mine{box-shadow:inset 0 0 0 2px rgba(255,229,106,.85)}',
+      '.frame.dry .place.mine{box-shadow:inset 0 0 0 2px rgba(27,91,72,.55)}',
+      '.place .who{display:flex;align-items:center;gap:6px;font-family:system-ui,sans-serif;font-size:14px;margin:0 0 6px}.place .who .texty{margin-left:auto}',
+      '.place .txt,.place .wait{margin:0;font-family:Kalam,"Segoe Print","Comic Sans MS",cursive;font-size:clamp(20px,2.2vw,28px);line-height:1.3;overflow-wrap:anywhere}',
+      '.place .wait{opacity:.7}',
+      '.place .seat{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-family:system-ui,sans-serif;font-size:13px}',
+      '.place select{display:block;width:100%;min-width:0;max-width:100%;padding:4px 8px;font-size:14px;margin-top:6px}',
+      '.place select,.wb textarea{max-width:100%;min-width:0;box-sizing:border-box}',
+      '.wb textarea{min-height:72px;background:transparent;border:0;border-bottom:2px dashed rgba(255,255,255,.5);border-radius:0;box-shadow:none;padding:2px 0 6px;font-family:Kalam,"Segoe Print","Comic Sans MS",cursive;font-size:clamp(22px,2.4vw,32px);line-height:1.3;color:inherit}',
+      '.frame.dry textarea,.frame.dry .place select{border-bottom-color:rgba(22,58,122,.35);color:#163a7a;background:transparent}',
+      '.frame.chalk textarea{color:#f7f4ea}',
+      '.place .put,.surface>.put{margin-top:8px}',
+      '.switch{display:flex;gap:6px}.switch button{padding:6px 10px;border-radius:999px;font-size:14px}.switch button[aria-pressed=true]{background:#1b5b48;color:#fff;border-color:#1b5b48}',
+      '.stu-board{display:flex;width:100%;justify-content:space-between;gap:8px;white-space:normal;text-align:left;margin:0 0 6px;padding:8px 10px}.stu-board small{color:#5c6b64;flex:none}.stu-board.on{background:#e3f0e9;border-color:#1b5b48}',
+      '.composer-bar:empty{display:none;padding:0}',
+      '@media(max-width:800px){.places{grid-template-columns:1fr}}',
       '@media(prefers-reduced-motion:reduce){.wb-status .dot,.lamp.on{box-shadow:none}}'
     ].join('');
     document.head.appendChild(css);
   }
   function lineItems(who, board) {
     var lines = linesFor(currentWb(), board), look = boardLook(), i, html = '';
-    if (!lines.length) return (board && board.note) ? '' : '<p class="empty-lines">Your ideas belong here. Start with one sentence.</p>';
+    if (!lines.length) {
+      if ((board && board.note) || placesFor(currentWb(), board).length || who === 'teacher') return '';
+      return '<p class="empty-lines">Your ideas belong here. Start with one sentence.</p>';
+    }
     for (i = 0; i < lines.length; i++) {
       var line = lines[i], words = wordCount(line.text), mark = '';
       if (board && board.checked) mark = words >= 3 ? '<span class="tick">✓ </span>' : '<span class="tick dim">short · </span>';
@@ -1208,7 +1265,58 @@ mountBar();
     else if (who === 'teacher' && wbMode === 'new') body = '<p class="q-kicker">NEW QUESTION</p><input class="ink q" id="wbNewQ" aria-label="Question for the new board" placeholder="Type the question and press Enter"><button type="button" class="put" id="wbMake">Make this board</button>';
     else body = '<p class="q-kicker">QUESTION</p><h2 class="q-text">' + h((board && board.question) || 'Write your answer here.') + '</h2>';
     var note = board && board.note ? '<p class="line t"><span class="who">★ Teacher · on every student\'s board</span><span class="txt">' + h(board.note) + '</span></p>' : '';
-    return body + '<p class="live-quiet">Live · sentences appear here on their own</p>' + note;
+    return body + '<p class="live-quiet">Each place is one student. They write, then submit.</p>' + note;
+  }
+  function shownPlaceText(p) {
+    if (placeMine && placeMine.id === p.id && placeMine.at >= (p.at || 0)) return placeMine.text;
+    return p.text || '';
+  }
+  function placeCard(p, who) {
+    var look = boardLook(), text = shownPlaceText(p);
+    var mine = who === 'student' && p.studentId && p.studentId === (uid || 'me');
+    var whoLine = (p.avatar ? '<span class="av">' + h(p.avatar) + '</span> ' : '') + h(p.studentId ? (p.name || 'Student') : 'Empty place') + (mine ? ' · your place' : '') + (who === 'teacher' ? '<button type="button" class="texty" data-act="remove-place" data-place="' + h(p.id) + '">Remove</button>' : '');
+    var body;
+    if (!p.studentId) body = '<p class="wait">Choose a student for this place.</p>';
+    else if (mine && (stuPlaceDraft != null || !text)) body = '<textarea id="stuPlace" maxlength="500" aria-label="Your place on the board" placeholder="Write here, then submit.">' + h(stuPlaceDraft == null ? text : stuPlaceDraft) + '</textarea><button type="button" class="put" id="stuPlaceSend">Submit</button>';
+    else if (text) body = '<p class="txt" style="color:' + inkFor(p.studentId, look) + '">' + h(text) + '</p>' + (mine ? '<button type="button" class="texty" id="stuPlaceEdit">Write again</button>' : '');
+    else body = '<p class="wait">Waiting for ' + h(p.name || 'this student') + ' to submit.</p>';
+    var controls = '';
+    if (who === 'teacher') {
+      var opts = '<option value="">Choose a student…</option>' + roster().map(function (s) {
+        return '<option value="' + h(s.id) + '"' + (s.id === p.studentId ? ' selected' : '') + '>' + h((s.avatar ? s.avatar + ' ' : '') + s.name) + '</option>';
+      }).join('');
+      controls = '<select class="wb-seat" data-place="' + h(p.id) + '" aria-label="Student for this place">' + opts + '</select>';
+    }
+    return '<section class="place' + (mine ? ' mine' : '') + '"><p class="who">' + whoLine + '</p>' + body + controls + '</section>';
+  }
+  function placesBlock(who, board) {
+    var places = placesFor(currentWb(), board);
+    if (!places.length && who !== 'teacher') return '';
+    var cards = places.map(function (p) { return placeCard(p, who); }).join('');
+    var hint = !places.length ? '<p class="empty-lines">Add a place, then choose the student who writes there.</p>' : '';
+    var add = who === 'teacher' ? '<button type="button" class="put" data-act="add-place">Add a place</button>' : '';
+    return hint + (cards ? '<div class="places">' + cards + '</div>' : '') + add;
+  }
+  function frameShell(plateName, surfaceInner, composer, open) {
+    var clock = clockText();
+    var expand = isOwner ? 'wbExpand' : 'stuExpand';
+    return '<div class="slate"><div class="' + (boardLook() === 'dry' ? 'frame dry' : 'frame chalk') + '">' +
+      '<i class="screw a" aria-hidden="true"></i><i class="screw b" aria-hidden="true"></i><i class="screw c" aria-hidden="true"></i><i class="screw d" aria-hidden="true"></i>' +
+      '<div class="plate"><i class="lamp' + (open ? ' on' : '') + '"></i><span class="name">' + h(plateName) + '</span><span class="clock" data-clock' + (clock ? '' : ' hidden') + '>' + (clock ? '⏱ ' + h(clock) : '') + '</span><button type="button" id="' + expand + '">Expand</button></div>' +
+      '<div class="surface" data-wb="surface">' + surfaceInner + '</div>' +
+      '<div class="composer-bar">' + (composer || '') + '</div><div class="ledge">' + trayHtml() + '</div></div></div>';
+  }
+  function myBoardSurface() {
+    var saved = myText();
+    var submitted = myDraft == null && !!saved;
+    if (submitted) return '<p class="q-kicker">MY BOARD</p><h2 class="q-text">' + h(saved) + '</h2><p class="live-quiet">Submitted. Your teacher can open this board.</p>';
+    return '<p class="q-kicker">MY BOARD</p><textarea id="stuOwn" maxlength="500" aria-label="Your own board" placeholder="Write on your own board. Submit when it is ready.">' + h(myDraft == null ? saved : myDraft) + '</textarea>';
+  }
+  function myBoardComposer() {
+    var saved = myText();
+    var submitted = myDraft == null && !!saved;
+    if (submitted) return '<div class="composer mine"><label>Your sentence is with the teacher.</label><div class="write"><button type="button" class="put" id="stuOwnEdit">Write again</button></div></div>';
+    return '<div class="composer mine"><label for="stuOwn">Submit sends this board to your teacher.</label><div class="write"><button type="button" class="put" id="stuOwnSend">Submit</button></div></div>';
   }
   function trayHtml() {
     var dry = boardLook() === 'dry';
@@ -1217,25 +1325,38 @@ mountBar();
       : '<span class="chalks" aria-hidden="true"><i class="stick" style="background:#f6f3ea"></i><i class="stick" style="background:#ffe56a"></i><i class="stick" style="background:#ffd0dc"></i><i class="eraser"></i></span>';
     return deco + '<span class="looks" role="group" aria-label="Board look"><button type="button" data-look="chalk" aria-pressed="' + (!dry) + '">Blackboard</button><button type="button" data-look="dry" aria-pressed="' + dry + '">Whiteboard</button></span>';
   }
+  function personalSurface(id) {
+    var person = null, people = roster(), i, text = myBoardOf(id);
+    for (i = 0; i < people.length; i++) if (people[i].id === id) person = people[i];
+    var name = person ? person.name : 'Student';
+    return { name: name, html: '<p class="q-kicker">STUDENT BOARD</p><h2 class="q-text">' + h(text || 'Nothing submitted yet.') + '</h2><p class="live-quiet">' + h(name) + (person && person.avatar ? ' ' + h(person.avatar) : '') + ' writes on this board, then submits.</p><button type="button" class="texty" data-act="class-board">Back to the class board</button>' };
+  }
   function slateHtml(who) {
     var wb = currentWb(), board = activeBoard(wb), open = !!(wb.open && board && board.status !== 'closed' && wb.activeId === board.id);
-    var clock = clockText();
+    if (who === 'teacher' && wbStudent) {
+      var viewed = personalSurface(wbStudent);
+      return frameShell(viewed.name + "'s board", viewed.html, '', true);
+    }
+    if (who === 'student' && stuView === 'mine') return frameShell('My board', myBoardSurface(), myBoardComposer(), true);
     var composer = who === 'teacher'
       ? '<div class="composer"><label for="wbNote">Write to everyone — shows on every student\'s board</label><div class="write"><input class="ink" id="wbNote" maxlength="1200" placeholder="Write a sentence for the whole class."><button type="button" class="put" id="wbPut">Put on the board</button></div></div>'
-      : '<div class="composer mine"><label for="stuMine">Your sentence</label><div class="write"><input class="ink" id="stuMine" maxlength="500" placeholder="Start with one sentence." value="' + h(stuDraft) + '"><button type="button" class="put" id="stuSend">Put it on the board</button></div></div>';
-    var expand = who === 'teacher' ? 'wbExpand' : 'stuExpand';
-    return '<div class="slate"><div class="' + (boardLook() === 'dry' ? 'frame dry' : 'frame chalk') + '">' +
-      '<i class="screw a" aria-hidden="true"></i><i class="screw b" aria-hidden="true"></i><i class="screw c" aria-hidden="true"></i><i class="screw d" aria-hidden="true"></i>' +
-      '<div class="plate"><i class="lamp' + (open ? ' on' : '') + '"></i><span class="name">OUR CLASSROOM</span><span class="clock" data-clock' + (clock ? '' : ' hidden') + '>' + (clock ? '⏱ ' + h(clock) : '') + '</span><button type="button" id="' + expand + '">Expand</button></div>' +
-      '<div class="surface" data-wb="surface"><div class="qblock">' + questionBlock(board, who) + '</div><div id="' + (who === 'teacher' ? 'wbLines' : 'stuLines') + '" aria-live="polite">' + lineItems(who, board) + '</div></div>' +
-      '<div class="composer-bar">' + composer + '</div><div class="ledge">' + trayHtml() + '</div></div></div>';
+      : (open ? '<div class="composer mine"><p class="live-quiet">Write in the place with your name, then submit.</p></div>' : '');
+    var inner = open
+      ? '<div class="qblock">' + questionBlock(board, who) + '</div>' + placesBlock(who, board) + '<div id="' + (who === 'teacher' ? 'wbLines' : 'stuLines') + '" aria-live="polite">' + lineItems(who, board) + '</div>'
+      : '<p class="empty-lines">The teacher has not opened this board yet.</p>';
+    return frameShell('OUR CLASSROOM', inner, composer, open);
   }
   function sideHtml(wb) {
     var today = extraBoards(wb, false), older = extraBoards(wb, true), shown = wbShowOld ? today.concat(older) : today;
     var list = shown.map(function (b) {
       return '<label class="row"><input type="checkbox" class="wb-tick" value="' + h(b.id) + '"> <span>' + h(b.question || b.title || 'Board') + (wbShowOld && dayKey(b.createdAt) !== dayKey(Date.now()) ? ' <small class="older">earlier</small>' : '') + '</span></label>';
     }).join('');
-    return '<aside class="side"><h2>Today\'s boards · ' + today.length + '</h2><p>When class is over, tick the boards you no longer need and delete them — or tick Select all. The class whiteboard is never listed.</p>' +
+    var people = roster();
+    var own = '<h2>Student boards</h2><p>Each student has their own board. They write, then submit. Open one to read it.</p>' + (people.length ? people.map(function (s) {
+      var text = myBoardOf(s.id);
+      return '<button type="button" class="stu-board' + (wbStudent === s.id ? ' on' : '') + '" data-act="see-student" data-id="' + h(s.id) + '"><span>' + h((s.avatar ? s.avatar + ' ' : '') + s.name) + '</span><small>' + (text ? 'Submitted' : 'Not yet') + '</small></button>';
+    }).join('') : '<p>No students on this class link yet.</p>');
+    return '<aside class="side">' + own + '<h2>Today\'s boards · ' + today.length + '</h2><p>When class is over, tick the boards you no longer need and delete them — or tick Select all. The class whiteboard is never listed.</p>' +
       (list ? '<label class="row"><input type="checkbox" id="wbAll"> <span>Select all</span></label>' + list + '<button type="button" id="wbDel">Delete selected</button>' : '<p>No boards made today.</p>') +
       '<button type="button" id="wbOlder">' + (wbShowOld ? 'Hide older boards' : 'Show older boards too') + '</button></aside>';
   }
@@ -1279,7 +1400,7 @@ mountBar();
     var top = sc ? sc.scrollTop : 0;
     var wb = currentWb(), board = activeBoard(wb);
     wbRoot.className = 'wb' + (big ? ' is-big' : '');
-    wbRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>One question. Everyone together.</p></div><label class="cls">Class <select id="wbCls" aria-label="Class">' + classOptions() + '</select></label><button type="button" class="go" id="wbOpenDefault">▶ Open default board</button><button type="button" id="wbNew">New board / question</button><button type="button" id="wbRecords">Class records</button><button type="button" id="wbLibrary">Library</button>' + statusHtml(wb, board) + '</div><div class="wb-stage">' + slateHtml('teacher') + sideHtml(wb) + '</div>' + dockHtml(wb, board);
+    wbRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>One question. Each place has one student.</p></div><label class="cls">Class <select id="wbCls" aria-label="Class">' + classOptions() + '</select></label><button type="button" class="go" id="wbOpenDefault">▶ Open default board</button><button type="button" id="wbNew">New board / question</button><button type="button" id="wbRecords">Class records</button><button type="button" id="wbLibrary">Library</button>' + statusHtml(wb, board) + '</div><div class="wb-stage">' + slateHtml('teacher') + sideHtml(wb) + '</div>' + dockHtml(wb, board);
     var sc2 = wbRoot.querySelector('.surface'); if (sc2) sc2.scrollTop = top;
     if (wbFocus) { wbFocus = false; var el = wbRoot.querySelector('#wbNewQ, #wbQ, #wbNote'); if (el) el.focus(); }
     var ex = wbRoot.querySelector('#wbExpand'); if (ex && big) ex.textContent = 'Close';
@@ -1290,21 +1411,23 @@ mountBar();
       stuRoot = document.createElement('div'); stuRoot.className = 'wb stu'; stuRoot.setAttribute('role', 'dialog'); stuRoot.setAttribute('aria-label', 'Class whiteboard');
       stuRoot.addEventListener('click', onStudentClick);
       stuRoot.addEventListener('keydown', onStudentKey);
+      stuRoot.addEventListener('input', onStudentInput);
       document.body.appendChild(stuRoot); armClock();
     }
     hidePill();
     var big = stuRoot.classList.contains('is-big');
     var sc = stuRoot.querySelector('.surface'), top = sc ? sc.scrollTop : 0;
     stuRoot.className = 'wb stu' + (big ? ' is-big' : '');
-    stuRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>One question. Everyone together.</p></div><button type="button" id="stuHand">✋ Hand</button><button type="button" id="stuLeave">Activities</button></div><div class="wb-stage">' + slateHtml('student') + '</div>';
+    var sub = stuView === 'mine' ? 'Your own board. Write, then submit.' : 'The teacher\'s board. Write in your place, then submit.';
+    stuRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>' + sub + '</p></div><div class="switch" role="group" aria-label="Which board"><button type="button" data-view="mine" aria-pressed="' + (stuView === 'mine') + '">My board</button><button type="button" data-view="class" aria-pressed="' + (stuView === 'class') + '">Teacher\'s board</button></div><button type="button" id="stuHand">✋ Hand</button><button type="button" id="stuLeave">Activities</button></div><div class="wb-stage">' + slateHtml('student') + '</div>';
     var sc2 = stuRoot.querySelector('.surface'); if (sc2) sc2.scrollTop = top;
     var ex = stuRoot.querySelector('#stuExpand'); if (ex && big) ex.textContent = 'Close';
-    var mine = stuRoot.querySelector('#stuMine'); if (mine && document.activeElement !== mine && wbFocus) { wbFocus = false; mine.focus(); }
+    var mine = stuRoot.querySelector('#stuOwn, #stuPlace, #stuMine'); if (mine && document.activeElement !== mine && wbFocus) { wbFocus = false; mine.focus(); }
   }
   function paintBoardLines() {
     var a = document.getElementById('wbLines'), b = document.getElementById('stuLines');
-    if (a) { var ha = linesHtml('teacher'); if (a.innerHTML !== ha) a.innerHTML = ha; }
-    if (b) { var hb = linesHtml('student'); if (b.innerHTML !== hb) b.innerHTML = hb; }
+    if (a && !a.contains(document.activeElement)) { var ha = linesHtml('teacher'); if (a.innerHTML !== ha) a.innerHTML = ha; }
+    if (b && !b.contains(document.activeElement)) { var hb = linesHtml('student'); if (b.innerHTML !== hb) b.innerHTML = hb; }
   }
   function paintWhiteboard() {
     if (!wbRoot) return;
@@ -1316,20 +1439,32 @@ mountBar();
   function showPill() {
     if (stuRoot) { stuRoot.remove(); stuRoot = null; }
     if (stuPill) return;
-    stuPill = document.createElement('button'); stuPill.type = 'button'; stuPill.className = 'wb-pill'; stuPill.textContent = '▶ Class board';
-    stuPill.onclick = function () { stuHide = ''; paintStudentBoard(); };
+    stuPill = document.createElement('button'); stuPill.type = 'button'; stuPill.className = 'wb-pill';
+    var raw = rawWb();
+    stuPill.textContent = raw && raw.open === true ? '▶ Teacher\'s board' : '▶ My board';
+    stuPill.onclick = function () { stuHide = ''; stuHold = true; stuView = (rawWb() && rawWb().open === true) ? 'class' : 'mine'; paintStudentBoard(); };
     document.body.appendChild(stuPill);
   }
-  function boardToken(wb) { var b = activeBoard(wb); return [wb.open ? 1 : 0, wb.activeId, b && b.question, b && b.clearedAt, b && b.note].join('|'); }
+  function boardToken(wb) {
+    var b = activeBoard(wb);
+    var places = placesFor(wb, b).map(function (p) { return p.id + ':' + p.studentId; }).join(',');
+    return [wb && wb.open ? 1 : 0, wb && wb.activeId, b && b.question, b && b.clearedAt, b && b.note, places].join('|');
+  }
   function paintStudentBoard() {
     if (isOwner) { if (stuRoot) { stuRoot.remove(); stuRoot = null; } hidePill(); return; }
     if (!me || document.querySelector('.lv-scrim')) return;
-    var raw = rawWb();
-    if (!raw || raw.open !== true) { if (stuRoot) { stuRoot.remove(); stuRoot = null; } hidePill(); return; }
-    var wb = normalizeWb(raw), token = boardToken(wb);
+    var raw = rawWb() || { open: false, boards: [], places: [] };
+    var wb = normalizeWb(raw), token = boardToken(wb), classOpen = raw.open === true;
+    if (!classOpen && stuView === 'class') stuView = 'mine';
     if (stuHide && stuHide !== token) stuHide = '';
-    if (stuHide === token) { showPill(); return; }
-    var typing = stuRoot && stuRoot.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
+    if (!stuRoot) {
+      var comeBack = classOpen && stuHide !== token;
+      if (!comeBack && !stuHold) { showPill(); return; }
+      if (comeBack) stuView = 'class';
+    } else if (stuHide === token && !stuHold) {
+      stuRoot.remove(); stuRoot = null; showPill(); return;
+    }
+    var typing = stuRoot && stuRoot.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
     if (!stuRoot || !stuRoot.querySelector('.surface') || !typing) renderStudent(); else paintBoardLines();
   }
   function commitWb(wb, fromPublish) {
@@ -1435,7 +1570,11 @@ mountBar();
     var look = e.target.closest('[data-look]');
     if (look) { store('ling-wb-look', look.getAttribute('data-look')); renderTeacher(); return; }
     var btn = e.target.closest('button'); if (!btn || !wbRoot.contains(btn)) return;
-    var id = btn.id, wb, b;
+    var id = btn.id, act = btn.getAttribute('data-act'), wb, b;
+    if (act === 'add-place') return addPlace();
+    if (act === 'remove-place') return removePlace(btn.getAttribute('data-place'));
+    if (act === 'see-student') { wbStudent = btn.getAttribute('data-id') || ''; return renderTeacher(); }
+    if (act === 'class-board') { wbStudent = ''; return renderTeacher(); }
     if (id === 'wbExpand' || id === 'wbBig') { toggleBig(wbRoot, 'wbExpand'); var bigBtn = wbRoot.querySelector('#wbBig'); if (bigBtn && id === 'wbExpand') {} return; }
     if (id === 'wbPut') return putNote();
     if (id === 'wbSaveQ') return saveQuestion();
@@ -1458,6 +1597,7 @@ mountBar();
       wb = currentWb(); b = activeBoard(wb); if (!b) return;
       b.clearedAt = Date.now(); b.note = ''; b.checked = false;
       wb.lines = wb.lines.filter(function (l) { return l.boardId !== b.id; });
+      (wb.places || []).forEach(function (p) { if (p.boardId === b.id) { p.text = ''; p.at = 0; } });
       return commitWb(wb);
     }
     if (id === 'wbDel') {
@@ -1474,7 +1614,8 @@ mountBar();
   function onTeacherChange(e) {
     var id = e.target.id, v, wb;
     if (id === 'wbAll') { var on = e.target.checked; wbRoot.querySelectorAll('.wb-tick').forEach(function (c) { c.checked = on; }); return; }
-    if (id === 'wbPick') { wb = currentWb(); wb.activeId = e.target.value; wb.open = true; var b = activeBoard(wb); if (b) b.status = 'open'; wbMode = ''; return commitWb(wb); }
+    if (e.target.classList && e.target.classList.contains('wb-seat')) return assignPlace(e.target.getAttribute('data-place'), e.target.value);
+    if (id === 'wbPick') { wbStudent = ''; wb = currentWb(); wb.activeId = e.target.value; wb.open = true; var b = activeBoard(wb); if (b) b.status = 'open'; wbMode = ''; return commitWb(wb); }
     if (id === 'wbCls') {
       v = e.target.value;
       if (v === '__new') { v = (prompt('New class name (e.g. MORNING):') || '').trim().toUpperCase().replace(/\s+/g, '-').slice(0, 40); if (!v) return renderTeacher(); }
@@ -1489,14 +1630,87 @@ mountBar();
     else if (e.target.id === 'wbNewQ') { e.preventDefault(); addBoardFromInput(); }
     else if (e.target.id === 'wbQ') { e.preventDefault(); saveQuestion(); }
   }
+  function addPlace() {
+    var wb = currentWb(), b = activeBoard(wb); if (!b) return;
+    if (placesFor(wb, b).length >= 12) return;
+    wb.places.push({ id: 'p' + Date.now().toString(36), boardId: b.id, studentId: '', name: '', avatar: '', text: '', at: 0 });
+    wbStudent = ''; commitWb(wb);
+  }
+  function removePlace(id) {
+    var wb = currentWb(), place = null, i;
+    for (i = 0; i < wb.places.length; i++) if (wb.places[i].id === id) place = wb.places[i];
+    if (place && place.text && !confirm('Remove this place and the sentence on it?')) return;
+    wb.places = wb.places.filter(function (p) { return p.id !== id; });
+    commitWb(wb);
+  }
+  function assignPlace(id, studentId) {
+    var wb = currentWb(), person = null, people = roster(), i;
+    for (i = 0; i < people.length; i++) if (people[i].id === studentId) person = people[i];
+    wb.places.forEach(function (p) {
+      if (studentId && p.studentId === studentId && p.id !== id) { p.studentId = ''; p.name = ''; p.avatar = ''; p.text = ''; p.at = 0; }
+      if (p.id === id) {
+        if (p.studentId !== studentId) { p.text = ''; p.at = 0; }
+        p.studentId = studentId || '';
+        p.name = person ? person.name : '';
+        p.avatar = person ? person.avatar : '';
+      }
+    });
+    commitWb(wb);
+  }
+  function submitOwn() {
+    var el = document.getElementById('stuOwn');
+    var text = String(el ? el.value : (myDraft == null ? myText() : myDraft)).replace(/\s+/g, ' ').trim().slice(0, 500);
+    if (!text || !me) { if (el) el.focus(); return; }
+    mySaved = text; myDraft = null;
+    var doc = null, i;
+    for (i = 0; i < docs.length; i++) if (docs[i].id === uid) doc = docs[i];
+    if (!doc) { doc = { id: uid, data: { class_code: boardClass(), student: me.n, avatar: me.a || '', forms: {} }, feedback: {} }; docs.push(doc); }
+    doc.data.forms = doc.data.forms || {};
+    doc.data.forms[WB_MINE] = { form_id: WB_MINE, form_title: 'My board', answers: { text: text }, updated_at: Date.now(), answered: 1, questions: 1 };
+    if (!(localPreview() || !API)) { sent[WB_MINE] = doc.data.forms[WB_MINE]; pending[WB_MINE] = 1; try { flush(); } catch (e) {} }
+    wbFocus = false; if (stuRoot) renderStudent();
+  }
+  function submitPlace() {
+    var el = document.getElementById('stuPlace'); if (!el || !me) return;
+    var text = el.value.replace(/\s+/g, ' ').trim().slice(0, 500);
+    if (!text) { el.focus(); return; }
+    var wb = currentWb(), board = activeBoard(wb), places = placesFor(wb, board), place = null, i;
+    for (i = 0; i < places.length; i++) if (places[i].studentId === (uid || 'me')) place = places[i];
+    if (!place) return;
+    place.text = text; place.at = Date.now(); place.name = me.n; place.avatar = me.a || place.avatar;
+    stuPlaceDraft = null; placeMine = { id: place.id, text: text, at: place.at };
+    if (localPreview() || !API) {
+      states[boardClass()] = Object.assign({}, states[boardClass()] || {}, { whiteboard: wb });
+      placeMine = null; if (stuRoot) renderStudent(); return;
+    }
+    if (typeof sws !== 'undefined' && sws && sws.readyState === 1 && swsReady) {
+      try { sws.send(JSON.stringify({ type: 'board', text: text, placeId: place.id, boardId: board.id, name: me.n, avatar: me.a })); } catch (e) {}
+    } else call('POST', '/board', { id: uid, class: me.c, name: me.n, avatar: me.a, text: text, placeId: place.id, boardId: board.id }).catch(function () {});
+    if (stuRoot) renderStudent();
+  }
+  function onStudentInput(e) {
+    if (e.target.id === 'stuOwn') myDraft = e.target.value;
+    if (e.target.id === 'stuPlace') stuPlaceDraft = e.target.value;
+    if (e.target.id === 'stuMine') stuDraft = e.target.value;
+  }
   function onStudentClick(e) {
     var look = e.target.closest('[data-look]');
     if (look) { store('ling-wb-look', look.getAttribute('data-look')); renderStudent(); return; }
+    var view = e.target.closest('[data-view]');
+    if (view) { stuView = view.getAttribute('data-view') === 'mine' ? 'mine' : 'class'; wbFocus = false; renderStudent(); return; }
     var btn = e.target.closest('button'); if (!btn) return;
     if (btn.id === 'stuExpand') return toggleBig(stuRoot, 'stuExpand');
-    if (btn.id === 'stuLeave') { stuHide = boardToken(currentWb()); if (stuRoot) { stuRoot.remove(); stuRoot = null; } showPill(); return; }
+    if (btn.id === 'stuLeave') { stuHold = false; stuHide = boardToken(currentWb()); if (stuRoot) { stuRoot.remove(); stuRoot = null; } showPill(); return; }
     if (btn.id === 'stuHand') { var handBtn = document.querySelector('.lv-hand'); if (handBtn) handBtn.click(); return; }
     if (btn.id === 'stuSend') { var input = document.getElementById('stuMine'); return sendMyLine(input ? input.value : ''); }
+    if (btn.id === 'stuOwnSend') return submitOwn();
+    if (btn.id === 'stuOwnEdit') { myDraft = myText(); wbFocus = true; return renderStudent(); }
+    if (btn.id === 'stuPlaceSend') return submitPlace();
+    if (btn.id === 'stuPlaceEdit') {
+      var minePlace = null, pi, placesNow = placesFor(currentWb(), activeBoard(currentWb()));
+      for (pi = 0; pi < placesNow.length; pi++) if (placesNow[pi].studentId === uid) minePlace = placesNow[pi];
+      stuPlaceDraft = minePlace ? shownPlaceText(minePlace) : ''; wbFocus = true; return renderStudent();
+    }
     if (btn.id === 'stuEdit') {
       var wb = currentWb(), board = activeBoard(wb), lines = linesFor(wb, board), mine = null, i;
       for (i = 0; i < lines.length; i++) if (lines[i].id === uid) mine = lines[i];
@@ -1504,21 +1718,27 @@ mountBar();
     }
   }
   function onStudentKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey && e.target.id === 'stuMine') { e.preventDefault(); sendMyLine(e.target.value); }
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    if (e.target.id === 'stuMine') { e.preventDefault(); sendMyLine(e.target.value); }
+    else if (e.target.id === 'stuOwn') { e.preventDefault(); submitOwn(); }
+    else if (e.target.id === 'stuPlace') { e.preventDefault(); submitPlace(); }
   }
   function startPreview() {
     var params; try { params = new URLSearchParams(location.search); } catch (e) { params = new URLSearchParams(); }
     var look = params.get('look'); if (look === 'dry' || look === 'chalk') store('ling-wb-look', look);
     var empty = params.has('empty'), student = previewStudent();
     cls = 'PM'; isOwner = !student;
-    var wb = { activeId: 'default', open: true, boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: empty ? '' : "Use 'than' after the -er word.", clearedAt: 0, isDefault: true, createdAt: 0, status: 'open', checked: false }], lines: empty ? [] : [
-      { id: 's1', name: 'Aroha', avatar: '🐼', text: "Pak'nSave is cheaper than New World.", at: Date.now() - 80000, boardId: 'default' },
-      { id: 's2', name: 'Sam', avatar: '🦉', text: 'The library is nearer than the mall.', at: Date.now() - 40000, boardId: 'default' }
-    ] };
+    var places = empty ? [] : [
+      { id: 'p1', boardId: 'default', studentId: 's1', name: 'Aroha', avatar: '🐼', text: "Pak'nSave is cheaper than New World.", at: Date.now() - 80000 },
+      { id: 'p2', boardId: 'default', studentId: 's2', name: 'Sam', avatar: '🦉', text: 'The library is nearer than the mall.', at: Date.now() - 40000 }
+    ];
+    if (student && !empty) places.push({ id: 'p3', boardId: 'default', studentId: 'preview-mia', name: 'Mia', avatar: '🦊', text: '', at: 0 });
+    var wb = { activeId: 'default', open: true, boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: empty ? '' : "Use 'than' after the -er word.", clearedAt: 0, isDefault: true, createdAt: 0, status: 'open', checked: false }], lines: [], places: places };
     states.PM = { whiteboard: wb };
     docs = [
-      { id: 's1', data: { class_code: 'PM', student: 'Aroha', avatar: '🐼', updated_at: Date.now(), forms: {} }, feedback: {} },
-      { id: 's2', data: { class_code: 'PM', student: 'Sam', avatar: '🦉', updated_at: Date.now(), forms: {} }, feedback: {} }
+      { id: 's1', data: { class_code: 'PM', student: 'Aroha', avatar: '🐼', updated_at: Date.now(), forms: empty ? {} : { __myboard__: { answers: { text: 'Aroha wrote this on her own board.' }, updated_at: Date.now() } } }, feedback: {} },
+      { id: 's2', data: { class_code: 'PM', student: 'Sam', avatar: '🦉', updated_at: Date.now(), forms: {} }, feedback: {} },
+      { id: 's3', data: { class_code: 'PM', student: 'Luka', avatar: '🐨', updated_at: Date.now(), forms: {} }, feedback: {} }
     ];
     if (student) { me = { c: 'PM', n: 'Mia', a: '🦊' }; uid = 'preview-mia'; paintStudentBoard(); }
     else openWhiteboard();
