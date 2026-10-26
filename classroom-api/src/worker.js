@@ -15,7 +15,9 @@ import { DurableObject } from 'cloudflare:workers';
  *
  * Public (students):
  *   POST /submit          {id, data}                     store one student's whole doc
- *   GET  /state?class=&id=                               teacher's current activity, timer, my feedback
+ *   GET  /state?class=&id=                               teacher's current activity, timer, whiteboard, my feedback
+ *   POST /board           {id, class, name, avatar, text, boardId}
+ *                                                        one shared line on the open class whiteboard
  *   GET  /avatars?class=                                 avatars already used in this class today
  * Teacher (Authorization: Bearer TEACHER_KEY):
  *   GET  /verify                                         is this the teacher key?
@@ -120,6 +122,92 @@ async function submit(request, env) {
   return json({ ok: true }, request, env);
 }
 
+/* One line per student on the shared board. Only while that board is open. */
+const boardPosts = new Map();
+function boardLimited(request) {
+  const ip = ipOf(request), now = Date.now();
+  const recent = (boardPosts.get(ip) || []).filter((t) => now - t < 60000);
+  if (recent.length >= 30) { boardPosts.set(ip, recent); return true; }
+  recent.push(now); boardPosts.set(ip, recent); return false;
+}
+function defaultWhiteboard() {
+  return {
+    activeId: 'default',
+    open: false,
+    boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: '', clearedAt: 0, isDefault: true, createdAt: 0, status: 'open' }],
+    lines: [],
+  };
+}
+function cleanWhiteboard(wb) {
+  if (!wb || typeof wb !== 'object') return null;
+  const boardsIn = Array.isArray(wb.boards) ? wb.boards.slice(0, 40) : [];
+  const boards = [];
+  const seen = {};
+  boardsIn.forEach((b, i) => {
+    if (!b || typeof b !== 'object') return;
+    let id = str(b.id, 40) || ('b' + i);
+    if (seen[id]) return;
+    seen[id] = 1;
+    boards.push({
+      id,
+      title: str(b.title, 80) || 'Board',
+      question: str(b.question, 500),
+      note: str(b.note, 1200),
+      clearedAt: Number(b.clearedAt) || 0,
+      isDefault: id === 'default' || !!b.isDefault,
+      createdAt: Number(b.createdAt) || 0,
+      status: b.status === 'closed' ? 'closed' : 'open',
+      checked: b.checked === true,
+    });
+  });
+  if (!seen.default) boards.unshift(defaultWhiteboard().boards[0]);
+  let activeId = str(wb.activeId, 40) || 'default';
+  if (!boards.some((b) => b.id === activeId)) activeId = 'default';
+  const lines = (Array.isArray(wb.lines) ? wb.lines : []).slice(-100).map((l) => {
+    if (!l || typeof l !== 'object') return null;
+    const text = str(l.text, 500), id = str(l.id, 80);
+    if (!text || !id) return null;
+    return { id, name: str(l.name, 60) || 'Student', avatar: str(l.avatar, 8), text, at: Number(l.at) || Date.now(), boardId: str(l.boardId, 40) || 'default' };
+  }).filter(Boolean);
+  return { activeId, open: wb.open === true, boards, lines };
+}
+async function writeClassState(env, cls, clean) {
+  await env.DB.prepare(
+    `INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3)
+     ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`
+  ).bind(cls, JSON.stringify(clean), Date.now()).run();
+  await tellRoom(env, cls, { kind: 'state' });
+  return clean;
+}
+function upsertBoardLine(clean, line) {
+  const wb = clean.whiteboard || defaultWhiteboard();
+  const board = (wb.boards || []).find((b) => b.id === line.boardId) || wb.boards[0];
+  if (!wb.open || !board || board.status === 'closed' || board.id !== wb.activeId) return { clean, error: 'closed' };
+  if (line.at <= (board.clearedAt || 0)) return { clean, error: 'cleared' };
+  wb.lines = (wb.lines || []).filter((l) => !(l.id === line.id && l.boardId === line.boardId));
+  if (line.text) wb.lines.push(line);
+  wb.lines = wb.lines.slice(-100);
+  clean.whiteboard = wb;
+  return { clean };
+}
+async function postBoard(request, env) {
+  if (boardLimited(request)) return json({ error: 'too_many_attempts' }, request, env, 429);
+  const body = await readBody(request);
+  const cls = classOf(body && body.class);
+  const id = str(body && body.id, 80);
+  const name = str(body && body.name, 60);
+  const text = str(body && body.text, 500);
+  const boardId = str(body && body.boardId, 40) || 'default';
+  const avatar = str(body && body.avatar, 8);
+  if (!cls || !id || !name) return json({ error: 'bad_request' }, request, env, 400);
+  const row = await env.DB.prepare('SELECT data FROM class_state WHERE class_code = ?1').bind(cls).first();
+  const clean = cleanState(row ? parse(row.data, {}) : {});
+  const saved = upsertBoardLine(clean, { id, name, avatar, text, at: Date.now(), boardId });
+  if (saved.error) return json({ error: saved.error }, request, env, 403);
+  await writeClassState(env, cls, saved.clean);
+  return json({ ok: true, state: saved.clean }, request, env);
+}
+
 async function classState(request, env, url) {
   const cls = classOf(url.searchParams.get('class'));
   const id = str(url.searchParams.get('id'), 80);
@@ -160,11 +248,7 @@ async function setState(request, env) {
   const cls = classOf(body && body.class);
   if (!cls) return json({ error: 'bad_request' }, request, env, 400);
   const clean = cleanState(body.state && typeof body.state === 'object' ? body.state : {});
-  await env.DB.prepare(
-    `INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3)
-     ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`
-  ).bind(cls, JSON.stringify(clean), Date.now()).run();
-  await tellRoom(env, cls, { kind: 'state' });
+  await writeClassState(env, cls, clean);
   return json({ ok: true, state: clean }, request, env);
 }
 
@@ -212,6 +296,7 @@ async function exportCsv(request, env) {
     const d = parse(row.data, null); if (!d) continue;
     const forms = d.forms || {};
     for (const key of Object.keys(forms)) {
+      if (String(key).indexOf('__') === 0) continue;
       const f = forms[key] || {};
       lines.push([d.class_code, d.student, f.form_id || key, f.form_title, f.correct, f.total, f.answered, f.questions,
         f.checked_at ? new Date(f.checked_at).toISOString() : '', f.updated_at ? new Date(f.updated_at).toISOString() : ''].map(csvCell).join(','));
@@ -240,6 +325,7 @@ export default {
     try {
       await ensureSchema(env);
       if (path === '/submit' && request.method === 'POST') return await submit(request, env);
+      if (path === '/board' && request.method === 'POST') return await postBoard(request, env);
       if (path === '/state' && request.method === 'GET') return await classState(request, env, url);
       if (path === '/avatars' && request.method === 'GET') return await avatars(request, env, url);
 
@@ -337,6 +423,23 @@ export class ClassRoom extends DurableObject {
         this.send(ws, { type: 'state', now: Date.now(), state: await this.state(), feedback: await this.feedbackOf(id), taken: this.taken() });
         return;
       }
+      if (m.type === 'board' && a.ok) {
+        const text = str(m.text, 500);
+        const boardId = str(m.boardId, 40) || 'default';
+        const known = this.docs.get(a.id) || {};
+        const name = known.student || str(m.name, 60);
+        const avatar = known.avatar || str(m.avatar, 8);
+        if (!name) return;
+        const clean = cleanState(await this.state());
+        const saved = upsertBoardLine(clean, { id: a.id, name, avatar, text, at: Date.now(), boardId });
+        if (!saved.error) {
+          await ensureSchema(this.env);
+          await this.env.DB.prepare(`INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`).bind(this.cls, JSON.stringify(saved.clean), Date.now()).run();
+          this.st = saved.clean;
+          await this.broadcastState();
+        } else this.send(ws, { type: 'state', now: Date.now(), state: clean, feedback: await this.feedbackOf(a.id) });
+        return;
+      }
       if (m.type === 'progress' && a.ok && m.data && typeof m.data === 'object') {
         const d = m.data, student = str(d.student, 60);
         if (!student) return;
@@ -420,10 +523,12 @@ export class ClassRoom extends DurableObject {
 }
 
 function cleanState(st) {
+  st = st && typeof st === 'object' ? st : {};
   return {
     activity: st.activity && st.activity.id ? { id: str(st.activity.id, 120), title: str(st.activity.title, 200), at: Number(st.activity.at) || Date.now() } : null,
     timer: st.timer && Number(st.timer.end) ? { end: Number(st.timer.end), minutes: Number(st.timer.minutes) || 0, at: Number(st.timer.at) || Date.now() } : null,
     notice: st.notice ? { text: str(st.notice.text, 300), at: Number(st.notice.at) || Date.now() } : null,
+    whiteboard: cleanWhiteboard(st.whiteboard),
     updated_at: Date.now(),
   };
 }
