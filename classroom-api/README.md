@@ -7,6 +7,11 @@ Answers go to a D1 database that only you can read.
   (copy it from the Teacher Board → 🔗 Student link). The class comes from the link, so students never type it.
 - **Teacher** — open `https://bingling103-max.github.io/classroom/?teacher` and type your teacher password
   on the page. It is sent in a request header, never in the address, and remembered on that device.
+- **Class whiteboard** — the front of the room. One question, on a blackboard or a whiteboard.
+  Each student also has their own board: they write, then submit. That board appears in the public
+  area on the class board, so the whole class can open it. On your board, add a place and choose
+  the student who writes there. Switch the look from the tray. Class records still open the Teacher Board.
+  Students see the shared lines, places, and everyone's boards after this Worker is deployed.
 - **Teacher Board** — start an activity for the whole class (students' pages follow), class timer,
   raised hands, live answers per student and per question, 📺 show an answer big on the projector,
   written feedback to a student, CSV export.
