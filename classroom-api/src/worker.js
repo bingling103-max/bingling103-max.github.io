@@ -18,6 +18,8 @@ import { DurableObject } from 'cloudflare:workers';
  *   GET  /state?class=&id=                               teacher's current activity, timer, whiteboard, my feedback
  *   POST /board           {id, class, name, avatar, text, boardId}
  *                                                        one shared line on the open class whiteboard
+ *                         placeId writes that student's place; own:true publishes their board
+ *                         into the public gallery the whole class can see
  *   GET  /avatars?class=                                 avatars already used in this class today
  * Teacher (Authorization: Bearer TEACHER_KEY):
  *   GET  /verify                                         is this the teacher key?
@@ -137,6 +139,7 @@ function defaultWhiteboard() {
     boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: '', clearedAt: 0, isDefault: true, createdAt: 0, status: 'open' }],
     lines: [],
     places: [],
+    gallery: [],
   };
 }
 function cleanPlace(p) {
@@ -192,7 +195,19 @@ function cleanWhiteboard(wb) {
     seenPlace[place.id] = 1;
     places.push(place);
   });
-  return { activeId, open: wb.open === true, boards, lines, places };
+  const seenCard = {};
+  const gallery = [];
+  const cardsIn = Array.isArray(wb.gallery) ? wb.gallery.slice(-40) : [];
+  for (let i = cardsIn.length - 1; i >= 0; i--) {
+    const g = cardsIn[i];
+    if (!g || typeof g !== 'object') continue;
+    const id = str(g.id, 80), text = str(g.text, 500);
+    if (!id || !text || seenCard[id]) continue;
+    seenCard[id] = 1;
+    gallery.push({ id, name: str(g.name, 60) || 'Student', avatar: str(g.avatar, 8), text, at: Number(g.at) || 0 });
+  }
+  gallery.reverse();
+  return { activeId, open: wb.open === true, boards, lines, places, gallery };
 }
 async function writeClassState(env, cls, clean) {
   await env.DB.prepare(
@@ -225,6 +240,14 @@ function upsertPlaceText(clean, line) {
   clean.whiteboard = wb;
   return { clean };
 }
+function upsertGallery(clean, card) {
+  const wb = clean.whiteboard || defaultWhiteboard();
+  wb.gallery = (wb.gallery || []).filter((g) => g.id !== card.id);
+  if (card.text) wb.gallery.push(card);
+  wb.gallery = wb.gallery.slice(-40);
+  clean.whiteboard = wb;
+  return { clean };
+}
 async function postBoard(request, env) {
   if (boardLimited(request)) return json({ error: 'too_many_attempts' }, request, env, 429);
   const body = await readBody(request);
@@ -235,12 +258,15 @@ async function postBoard(request, env) {
   const boardId = str(body && body.boardId, 40) || 'default';
   const placeId = str(body && body.placeId, 40);
   const avatar = str(body && body.avatar, 8);
+  const own = !!(body && body.own === true);
   if (!cls || !id || !name) return json({ error: 'bad_request' }, request, env, 400);
   const row = await env.DB.prepare('SELECT data FROM class_state WHERE class_code = ?1').bind(cls).first();
   const clean = cleanState(row ? parse(row.data, {}) : {});
-  const saved = placeId
-    ? upsertPlaceText(clean, { id, name, avatar, text, at: Date.now(), placeId })
-    : upsertBoardLine(clean, { id, name, avatar, text, at: Date.now(), boardId });
+  const saved = own
+    ? upsertGallery(clean, { id, name, avatar, text, at: Date.now() })
+    : placeId
+      ? upsertPlaceText(clean, { id, name, avatar, text, at: Date.now(), placeId })
+      : upsertBoardLine(clean, { id, name, avatar, text, at: Date.now(), boardId });
   if (saved.error) return json({ error: saved.error }, request, env, 403);
   await writeClassState(env, cls, saved.clean);
   return json({ ok: true, state: saved.clean }, request, env);
@@ -470,9 +496,11 @@ export class ClassRoom extends DurableObject {
         const avatar = known.avatar || str(m.avatar, 8);
         if (!name) return;
         const clean = cleanState(await this.state());
-        const saved = placeId
-          ? upsertPlaceText(clean, { id: a.id, name, avatar, text, at: Date.now(), placeId })
-          : upsertBoardLine(clean, { id: a.id, name, avatar, text, at: Date.now(), boardId });
+        const saved = m.own === true
+          ? upsertGallery(clean, { id: a.id, name, avatar, text, at: Date.now() })
+          : placeId
+            ? upsertPlaceText(clean, { id: a.id, name, avatar, text, at: Date.now(), placeId })
+            : upsertBoardLine(clean, { id: a.id, name, avatar, text, at: Date.now(), boardId });
         if (!saved.error) {
           await ensureSchema(this.env);
           await this.env.DB.prepare(`INSERT INTO class_state (class_code, data, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(class_code) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`).bind(this.cls, JSON.stringify(saved.clean), Date.now()).run();

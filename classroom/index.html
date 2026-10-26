@@ -838,10 +838,11 @@ mountBar();
   function loadDocs() {
     return call('GET', '/docs', null, true).then(function (res) {
       online = true; docs = res.docs || []; var st = res.states || {};
-      if (st[cls] && st[cls].whiteboard) wbNeedServer = false;
-      else if (states[cls] && states[cls].whiteboard) wbNeedServer = true;
       if (twsReady && states[cls]) st[cls] = states[cls];
-      Object.keys(states).forEach(function (c) { if (states[c] && states[c].whiteboard && (!st[c] || !st[c].whiteboard)) st[c] = Object.assign({}, st[c] || {}, { whiteboard: states[c].whiteboard }); });
+      else Object.keys(st).forEach(function (c) { if (states[c]) st[c] = absorbWb(states[c], st[c], true); });
+      Object.keys(states).forEach(function (c) {
+        if (states[c] && states[c].whiteboard && (!st[c] || !st[c].whiteboard)) st[c] = absorbWb(states[c], st[c] || {}, true);
+      });
       states = st; rebuildRows();
     }, function (e) { online = false; if (e && e.status === 403) { store(TKEY, null); location.reload(); } });
   }
@@ -991,7 +992,7 @@ mountBar();
 
   /* ---------- class whiteboard: the board on the wall, not a card ---------- */
   var wbRoot = null, stuRoot = null, stuPill = null, wbNeedServer = false, wbShowOld = false, wbMode = '', wbFocus = false, stuHide = '', stuDraft = '', mineLine = null, pubSig = '', pubTimer = null, wbClock = null;
-  var stuView = 'class', stuHold = false, myDraft = null, mySaved = null, stuPlaceDraft = null, placeMine = null, wbStudent = '';
+  var stuView = 'class', stuHold = false, myDraft = null, mySaved = null, stuPlaceDraft = null, placeMine = null, wbStudent = '', stuReading = '';
   var WB_FORM = '__whiteboard__', WB_MINE = '__myboard__';
 
   function absorbWb(prev, incoming, fromServer) {
@@ -1003,6 +1004,10 @@ mountBar();
       wbNeedServer = false;
       if (!Array.isArray(next.whiteboard.places) && prev && prev.whiteboard && Array.isArray(prev.whiteboard.places)) {
         next.whiteboard.places = prev.whiteboard.places;
+        wbNeedServer = true;
+      }
+      if (!Array.isArray(next.whiteboard.gallery) && prev && prev.whiteboard && Array.isArray(prev.whiteboard.gallery)) {
+        next.whiteboard.gallery = prev.whiteboard.gallery;
         wbNeedServer = true;
       }
     }
@@ -1057,7 +1062,17 @@ mountBar();
     if (raw && Array.isArray(raw.lines)) for (i = Math.max(0, raw.lines.length - 100); i < raw.lines.length; i++) { l = copyLine(raw.lines[i]); if (l) lines.push(l); }
     var places = [], p, seenP = {};
     if (raw && Array.isArray(raw.places)) for (i = 0; i < raw.places.length && places.length < 16; i++) { p = copyPlace(raw.places[i]); if (p && !seenP[p.id]) { seenP[p.id] = 1; places.push(p); } }
-    return { activeId: raw && raw.activeId && boards.some(function (x) { return x.id === raw.activeId; }) ? raw.activeId : 'default', open: !!(raw && raw.open === true), boards: boards, lines: lines, places: places };
+    var gallery = [], g, seenG = {};
+    if (raw && Array.isArray(raw.gallery)) for (i = raw.gallery.length - 1; i >= 0 && gallery.length < 40; i--) { g = copyCard(raw.gallery[i]); if (g && !seenG[g.id]) { seenG[g.id] = 1; gallery.push(g); } }
+    gallery.reverse();
+    return { activeId: raw && raw.activeId && boards.some(function (x) { return x.id === raw.activeId; }) ? raw.activeId : 'default', open: !!(raw && raw.open === true), boards: boards, lines: lines, places: places, gallery: gallery };
+  }
+  function copyCard(g) {
+    if (!g || typeof g !== 'object') return null;
+    var id = String(g.id || '').slice(0, 80);
+    var text = String(g.text || '').replace(/\s+/g, ' ').trim().slice(0, 500);
+    if (!id || !text) return null;
+    return { id: id, name: String(g.name || 'Student').slice(0, 60), avatar: String(g.avatar || '').slice(0, 8), text: text, at: Number(g.at) || 0 };
   }
   function copyPlace(p) {
     if (!p || typeof p !== 'object') return null;
@@ -1085,6 +1100,42 @@ mountBar();
     return f && f.answers ? String(f.answers.text || '').replace(/\s+/g, ' ').trim() : '';
   }
   function myText() { return mySaved != null ? mySaved : myBoardOf(uid); }
+  function myBoardMeta(id) {
+    var doc = null, i, f;
+    for (i = 0; i < docs.length; i++) if (docs[i].id === id) doc = docs[i];
+    f = doc && doc.data && doc.data.forms && doc.data.forms[WB_MINE];
+    if (!f || !f.answers) return null;
+    var text = String(f.answers.text || '').replace(/\s+/g, ' ').trim();
+    if (!text) return null;
+    return { text: text, at: f.updated_at || 0, name: doc.data.student || 'Student', avatar: doc.data.avatar || '' };
+  }
+  function mergedGallery(wb) {
+    var map = {};
+    (wb.gallery || []).forEach(function (g) {
+      if (g && g.id && g.text) map[g.id] = { id: g.id, name: g.name || 'Student', avatar: g.avatar || '', text: g.text, at: g.at || 0 };
+    });
+    if (isOwner) roster().forEach(function (p) {
+      var meta = myBoardMeta(p.id), cur = map[p.id];
+      if (!meta) return;
+      if (!cur || (meta.at >= (cur.at || 0) && meta.text !== cur.text)) map[p.id] = { id: p.id, name: p.name || meta.name, avatar: p.avatar || meta.avatar, text: meta.text, at: meta.at || (cur && cur.at) || 0 };
+    });
+    if (uid && mySaved) {
+      var mine = map[uid];
+      if (!mine || mine.text !== mySaved) map[uid] = { id: uid, name: (me && me.n) || (mine && mine.name) || 'Student', avatar: (me && me.a) || (mine && mine.avatar) || '', text: mySaved, at: Date.now() };
+    }
+    return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+  }
+  function publicText(id) {
+    var list = mergedGallery(currentWb()), i;
+    for (i = 0; i < list.length; i++) if (list[i].id === id) return list[i].text;
+    return '';
+  }
+  function publicPerson(id) {
+    var list = mergedGallery(currentWb()), i, card = null, people = roster(), person = null;
+    for (i = 0; i < list.length; i++) if (list[i].id === id) card = list[i];
+    for (i = 0; i < people.length; i++) if (people[i].id === id) person = people[i];
+    return { id: id, name: (person && person.name) || (card && card.name) || (id === uid && me && me.n) || 'Student', avatar: (person && person.avatar) || (card && card.avatar) || (id === uid && me && me.a) || '' };
+  }
   function currentWb() { return normalizeWb(rawWb()); }
   function activeBoard(wb) {
     var i, id = (wb && wb.activeId) || 'default';
@@ -1233,6 +1284,14 @@ mountBar();
       '.frame.dry textarea,.frame.dry .place select{border-bottom-color:rgba(22,58,122,.35);color:#163a7a;background:transparent}',
       '.frame.chalk textarea{color:#f7f4ea}',
       '.place .put,.surface>.put{margin-top:8px}',
+      '.q-kicker.pub{margin-top:16px}',
+      '.public-empty{margin:8px 0 0;text-align:left;font-size:clamp(18px,2vw,24px)}',
+      '.wb button.place.public{display:block;width:100%;margin:0;text-align:left;white-space:normal;align-items:stretch;font:inherit;cursor:pointer;color:inherit}',
+      '.frame.chalk button.place.public{color:#f7f4ea;background:rgba(0,0,0,.14);border:2px dashed rgba(255,255,255,.38)}',
+      '.frame.chalk button.place.public:hover{background:rgba(0,0,0,.24)}',
+      '.frame.dry button.place.public{color:#163a7a;background:rgba(255,255,255,.62);border:2px dashed rgba(22,58,122,.28)}',
+      '.frame.dry button.place.public:hover{background:rgba(255,255,255,.9)}',
+      '.wb button.place.public .txt{white-space:normal}',
       '.switch{display:flex;gap:6px}.switch button{padding:6px 10px;border-radius:999px;font-size:14px}.switch button[aria-pressed=true]{background:#1b5b48;color:#fff;border-color:#1b5b48}',
       '.stu-board{display:flex;width:100%;justify-content:space-between;gap:8px;white-space:normal;text-align:left;margin:0 0 6px;padding:8px 10px}.stu-board small{color:#5c6b64;flex:none}.stu-board.on{background:#e3f0e9;border-color:#1b5b48}',
       '.composer-bar:empty{display:none;padding:0}',
@@ -1297,6 +1356,16 @@ mountBar();
     var add = who === 'teacher' ? '<button type="button" class="put" data-act="add-place">Add a place</button>' : '';
     return hint + (cards ? '<div class="places">' + cards + '</div>' : '') + add;
   }
+  function galleryBlock(who) {
+    var cards = mergedGallery(currentWb());
+    var kicker = '<p class="q-kicker pub">EVERYONE\'S BOARDS</p>';
+    if (!cards.length) return kicker + '<p class="empty-lines public-empty">Submitted boards show here for the whole class.</p>';
+    var html = cards.map(function (c) {
+      var on = (who === 'teacher' ? wbStudent : stuReading) === c.id;
+      return '<button type="button" class="place public' + (on ? ' mine' : '') + '" data-act="see-student" data-id="' + h(c.id) + '"><p class="who">' + h((c.avatar ? c.avatar + ' ' : '') + c.name) + '</p><p class="txt" style="color:' + inkFor(c.id, boardLook()) + '">' + h(c.text) + '</p></button>';
+    }).join('');
+    return kicker + '<div class="places public">' + html + '</div>';
+  }
   function frameShell(plateName, surfaceInner, composer, open) {
     var clock = clockText();
     var expand = isOwner ? 'wbExpand' : 'stuExpand';
@@ -1309,14 +1378,14 @@ mountBar();
   function myBoardSurface() {
     var saved = myText();
     var submitted = myDraft == null && !!saved;
-    if (submitted) return '<p class="q-kicker">MY BOARD</p><h2 class="q-text">' + h(saved) + '</h2><p class="live-quiet">Submitted. Your teacher can open this board.</p>';
+    if (submitted) return '<p class="q-kicker">MY BOARD</p><h2 class="q-text">' + h(saved) + '</h2><p class="live-quiet">Submitted. The class can see this board.</p>';
     return '<p class="q-kicker">MY BOARD</p><textarea id="stuOwn" maxlength="500" aria-label="Your own board" placeholder="Write on your own board. Submit when it is ready.">' + h(myDraft == null ? saved : myDraft) + '</textarea>';
   }
   function myBoardComposer() {
     var saved = myText();
     var submitted = myDraft == null && !!saved;
-    if (submitted) return '<div class="composer mine"><label>Your sentence is with the teacher.</label><div class="write"><button type="button" class="put" id="stuOwnEdit">Write again</button></div></div>';
-    return '<div class="composer mine"><label for="stuOwn">Submit sends this board to your teacher.</label><div class="write"><button type="button" class="put" id="stuOwnSend">Submit</button></div></div>';
+    if (submitted) return '<div class="composer mine"><label>Your sentence is on the class board.</label><div class="write"><button type="button" class="put" id="stuOwnEdit">Write again</button></div></div>';
+    return '<div class="composer mine"><label for="stuOwn">Submit puts this board where the whole class can see it.</label><div class="write"><button type="button" class="put" id="stuOwnSend">Submit</button></div></div>';
   }
   function trayHtml() {
     var dry = boardLook() === 'dry';
@@ -1326,10 +1395,8 @@ mountBar();
     return deco + '<span class="looks" role="group" aria-label="Board look"><button type="button" data-look="chalk" aria-pressed="' + (!dry) + '">Blackboard</button><button type="button" data-look="dry" aria-pressed="' + dry + '">Whiteboard</button></span>';
   }
   function personalSurface(id) {
-    var person = null, people = roster(), i, text = myBoardOf(id);
-    for (i = 0; i < people.length; i++) if (people[i].id === id) person = people[i];
-    var name = person ? person.name : 'Student';
-    return { name: name, html: '<p class="q-kicker">STUDENT BOARD</p><h2 class="q-text">' + h(text || 'Nothing submitted yet.') + '</h2><p class="live-quiet">' + h(name) + (person && person.avatar ? ' ' + h(person.avatar) : '') + ' writes on this board, then submits.</p><button type="button" class="texty" data-act="class-board">Back to the class board</button>' };
+    var person = publicPerson(id), text = publicText(id), name = person.name || 'Student';
+    return { name: name, html: '<p class="q-kicker">STUDENT BOARD</p><h2 class="q-text">' + h(text || 'Nothing submitted yet.') + '</h2><p class="live-quiet">' + h((person.avatar ? person.avatar + ' ' : '') + name) + ' wrote this for the class.</p><button type="button" class="texty" data-act="class-board">Back to the class board</button>' };
   }
   function slateHtml(who) {
     var wb = currentWb(), board = activeBoard(wb), open = !!(wb.open && board && board.status !== 'closed' && wb.activeId === board.id);
@@ -1337,12 +1404,16 @@ mountBar();
       var viewed = personalSurface(wbStudent);
       return frameShell(viewed.name + "'s board", viewed.html, '', true);
     }
+    if (who === 'student' && stuReading) {
+      var reading = personalSurface(stuReading);
+      return frameShell(reading.name + "'s board", reading.html, '', true);
+    }
     if (who === 'student' && stuView === 'mine') return frameShell('My board', myBoardSurface(), myBoardComposer(), true);
     var composer = who === 'teacher'
       ? '<div class="composer"><label for="wbNote">Write to everyone — shows on every student\'s board</label><div class="write"><input class="ink" id="wbNote" maxlength="1200" placeholder="Write a sentence for the whole class."><button type="button" class="put" id="wbPut">Put on the board</button></div></div>'
       : (open ? '<div class="composer mine"><p class="live-quiet">Write in the place with your name, then submit.</p></div>' : '');
     var inner = open
-      ? '<div class="qblock">' + questionBlock(board, who) + '</div>' + placesBlock(who, board) + '<div id="' + (who === 'teacher' ? 'wbLines' : 'stuLines') + '" aria-live="polite">' + lineItems(who, board) + '</div>'
+      ? '<div class="qblock">' + questionBlock(board, who) + '</div>' + placesBlock(who, board) + '<div id="' + (who === 'teacher' ? 'wbLines' : 'stuLines') + '" aria-live="polite">' + lineItems(who, board) + '</div>' + galleryBlock(who)
       : '<p class="empty-lines">The teacher has not opened this board yet.</p>';
     return frameShell('OUR CLASSROOM', inner, composer, open);
   }
@@ -1353,7 +1424,7 @@ mountBar();
     }).join('');
     var people = roster();
     var own = '<h2>Student boards</h2><p>Each student has their own board. They write, then submit. Open one to read it.</p>' + (people.length ? people.map(function (s) {
-      var text = myBoardOf(s.id);
+      var text = publicText(s.id);
       return '<button type="button" class="stu-board' + (wbStudent === s.id ? ' on' : '') + '" data-act="see-student" data-id="' + h(s.id) + '"><span>' + h((s.avatar ? s.avatar + ' ' : '') + s.name) + '</span><small>' + (text ? 'Submitted' : 'Not yet') + '</small></button>';
     }).join('') : '<p>No students on this class link yet.</p>');
     return '<aside class="side">' + own + '<h2>Today\'s boards · ' + today.length + '</h2><p>When class is over, tick the boards you no longer need and delete them — or tick Select all. The class whiteboard is never listed.</p>' +
@@ -1373,7 +1444,7 @@ mountBar();
     var msg = !open ? 'Not on the class link yet · open the board when everyone should see it'
       : wbNeedServer ? 'Open on this computer · the class server needs an update before students see it'
       : 'Class is open on this board · students on the class link see it now';
-    return '<div class="wb-status' + (open ? '' : ' off') + '"><i class="dot"></i><span>' + msg + (wbNeedServer && open ? '<span class="warn">Lines stay saved here until then.</span>' : '') + '</span><span class="sp"></span><button type="button" class="go" id="wbCopy">Copy class link</button></div>';
+    return '<div class="wb-status' + (open ? '' : ' off') + '"><i class="dot"></i><span>' + msg + (wbNeedServer && open ? '<span class="warn">This stays saved here until then.</span>' : '') + '</span><span class="sp"></span><button type="button" class="go" id="wbCopy">Copy class link</button></div>';
   }
   function dockHtml(wb, board) {
     var open = !!(wb.open && board && board.status !== 'closed' && wb.activeId === board.id);
@@ -1400,7 +1471,7 @@ mountBar();
     var top = sc ? sc.scrollTop : 0;
     var wb = currentWb(), board = activeBoard(wb);
     wbRoot.className = 'wb' + (big ? ' is-big' : '');
-    wbRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>One question. Each place has one student.</p></div><label class="cls">Class <select id="wbCls" aria-label="Class">' + classOptions() + '</select></label><button type="button" class="go" id="wbOpenDefault">▶ Open default board</button><button type="button" id="wbNew">New board / question</button><button type="button" id="wbRecords">Class records</button><button type="button" id="wbLibrary">Library</button>' + statusHtml(wb, board) + '</div><div class="wb-stage">' + slateHtml('teacher') + sideHtml(wb) + '</div>' + dockHtml(wb, board);
+    wbRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>One question, one place each, and everyone\'s boards on the wall.</p></div><label class="cls">Class <select id="wbCls" aria-label="Class">' + classOptions() + '</select></label><button type="button" class="go" id="wbOpenDefault">▶ Open default board</button><button type="button" id="wbNew">New board / question</button><button type="button" id="wbRecords">Class records</button><button type="button" id="wbLibrary">Library</button>' + statusHtml(wb, board) + '</div><div class="wb-stage">' + slateHtml('teacher') + sideHtml(wb) + '</div>' + dockHtml(wb, board);
     var sc2 = wbRoot.querySelector('.surface'); if (sc2) sc2.scrollTop = top;
     if (wbFocus) { wbFocus = false; var el = wbRoot.querySelector('#wbNewQ, #wbQ, #wbNote'); if (el) el.focus(); }
     var ex = wbRoot.querySelector('#wbExpand'); if (ex && big) ex.textContent = 'Close';
@@ -1418,7 +1489,7 @@ mountBar();
     var big = stuRoot.classList.contains('is-big');
     var sc = stuRoot.querySelector('.surface'), top = sc ? sc.scrollTop : 0;
     stuRoot.className = 'wb stu' + (big ? ' is-big' : '');
-    var sub = stuView === 'mine' ? 'Your own board. Write, then submit.' : 'The teacher\'s board. Write in your place, then submit.';
+    var sub = stuReading ? 'On the wall for the whole class.' : (stuView === 'mine' ? 'Your own board. Write, then submit.' : 'The teacher\'s board. Write in your place, then submit.');
     stuRoot.innerHTML = '<div class="wb-top"><div class="wb-title"><h1>Class whiteboard</h1><p>' + sub + '</p></div><div class="switch" role="group" aria-label="Which board"><button type="button" data-view="mine" aria-pressed="' + (stuView === 'mine') + '">My board</button><button type="button" data-view="class" aria-pressed="' + (stuView === 'class') + '">Teacher\'s board</button></div><button type="button" id="stuHand">✋ Hand</button><button type="button" id="stuLeave">Activities</button></div><div class="wb-stage">' + slateHtml('student') + '</div>';
     var sc2 = stuRoot.querySelector('.surface'); if (sc2) sc2.scrollTop = top;
     var ex = stuRoot.querySelector('#stuExpand'); if (ex && big) ex.textContent = 'Close';
@@ -1481,7 +1552,8 @@ mountBar();
     var wb = currentWb(); if (!wb.open) return;
     var board = activeBoard(wb); if (!board) return;
     var lines = linesFor(wb, board);
-    var sig = board.id + '\n' + lines.map(function (l) { return l.id + '\t' + l.text; }).join('\n');
+    var cards = mergedGallery(wb);
+    var sig = board.id + '\n' + lines.map(function (l) { return l.id + '\t' + l.text; }).join('\n') + '\n#\n' + cards.map(function (c) { return c.id + '\t' + c.text; }).join('\n');
     if (sig === pubSig) return;
     clearTimeout(pubTimer);
     pubTimer = setTimeout(function () {
@@ -1489,6 +1561,7 @@ mountBar();
       var next = currentWb(), b = activeBoard(next);
       if (!b || b.id !== board.id) return;
       next.lines = next.lines.filter(function (l) { return l.boardId !== b.id; }).concat(linesFor(next, b));
+      next.gallery = mergedGallery(next);
       commitWb(next, true);
     }, 700);
   }
@@ -1662,12 +1735,23 @@ mountBar();
     var text = String(el ? el.value : (myDraft == null ? myText() : myDraft)).replace(/\s+/g, ' ').trim().slice(0, 500);
     if (!text || !me) { if (el) el.focus(); return; }
     mySaved = text; myDraft = null;
-    var doc = null, i;
+    var at = Date.now(), doc = null, i;
     for (i = 0; i < docs.length; i++) if (docs[i].id === uid) doc = docs[i];
     if (!doc) { doc = { id: uid, data: { class_code: boardClass(), student: me.n, avatar: me.a || '', forms: {} }, feedback: {} }; docs.push(doc); }
     doc.data.forms = doc.data.forms || {};
-    doc.data.forms[WB_MINE] = { form_id: WB_MINE, form_title: 'My board', answers: { text: text }, updated_at: Date.now(), answered: 1, questions: 1 };
-    if (!(localPreview() || !API)) { sent[WB_MINE] = doc.data.forms[WB_MINE]; pending[WB_MINE] = 1; try { flush(); } catch (e) {} }
+    doc.data.forms[WB_MINE] = { form_id: WB_MINE, form_title: 'My board', answers: { text: text }, updated_at: at, answered: 1, questions: 1 };
+    var card = { id: uid, name: me.n, avatar: me.a || '', text: text, at: at };
+    if (localPreview() || !API) {
+      var wb = currentWb();
+      wb.gallery = (wb.gallery || []).filter(function (g) { return g.id !== uid; });
+      wb.gallery.push(card);
+      states[boardClass()] = Object.assign({}, states[boardClass()] || {}, { whiteboard: wb });
+    } else {
+      sent[WB_MINE] = doc.data.forms[WB_MINE]; pending[WB_MINE] = 1; try { flush(); } catch (e) {}
+      if (typeof sws !== 'undefined' && sws && sws.readyState === 1 && swsReady) {
+        try { sws.send(JSON.stringify({ type: 'board', own: true, text: text, name: me.n, avatar: me.a })); } catch (e2) {}
+      } else call('POST', '/board', { id: uid, class: me.c, name: me.n, avatar: me.a, text: text, own: true }).catch(function () {});
+    }
     wbFocus = false; if (stuRoot) renderStudent();
   }
   function submitPlace() {
@@ -1697,10 +1781,13 @@ mountBar();
     var look = e.target.closest('[data-look]');
     if (look) { store('ling-wb-look', look.getAttribute('data-look')); renderStudent(); return; }
     var view = e.target.closest('[data-view]');
-    if (view) { stuView = view.getAttribute('data-view') === 'mine' ? 'mine' : 'class'; wbFocus = false; renderStudent(); return; }
+    if (view) { stuView = view.getAttribute('data-view') === 'mine' ? 'mine' : 'class'; stuReading = ''; wbFocus = false; renderStudent(); return; }
     var btn = e.target.closest('button'); if (!btn) return;
+    var act = btn.getAttribute('data-act');
+    if (act === 'see-student') { stuReading = btn.getAttribute('data-id') || ''; stuView = 'class'; return renderStudent(); }
+    if (act === 'class-board') { stuReading = ''; return renderStudent(); }
     if (btn.id === 'stuExpand') return toggleBig(stuRoot, 'stuExpand');
-    if (btn.id === 'stuLeave') { stuHold = false; stuHide = boardToken(currentWb()); if (stuRoot) { stuRoot.remove(); stuRoot = null; } showPill(); return; }
+    if (btn.id === 'stuLeave') { stuHold = false; stuReading = ''; stuHide = boardToken(currentWb()); if (stuRoot) { stuRoot.remove(); stuRoot = null; } showPill(); return; }
     if (btn.id === 'stuHand') { var handBtn = document.querySelector('.lv-hand'); if (handBtn) handBtn.click(); return; }
     if (btn.id === 'stuSend') { var input = document.getElementById('stuMine'); return sendMyLine(input ? input.value : ''); }
     if (btn.id === 'stuOwnSend') return submitOwn();
@@ -1733,7 +1820,8 @@ mountBar();
       { id: 'p2', boardId: 'default', studentId: 's2', name: 'Sam', avatar: '🦉', text: 'The library is nearer than the mall.', at: Date.now() - 40000 }
     ];
     if (student && !empty) places.push({ id: 'p3', boardId: 'default', studentId: 'preview-mia', name: 'Mia', avatar: '🦊', text: '', at: 0 });
-    var wb = { activeId: 'default', open: true, boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: empty ? '' : "Use 'than' after the -er word.", clearedAt: 0, isDefault: true, createdAt: 0, status: 'open', checked: false }], lines: [], places: places };
+    var gallery = empty ? [] : [{ id: 's1', name: 'Aroha', avatar: '🐼', text: 'Aroha wrote this on her own board.', at: Date.now() - 60000 }];
+    var wb = { activeId: 'default', open: true, boards: [{ id: 'default', title: 'Class whiteboard', question: 'Write your answer here.', note: empty ? '' : "Use 'than' after the -er word.", clearedAt: 0, isDefault: true, createdAt: 0, status: 'open', checked: false }], lines: [], places: places, gallery: gallery };
     states.PM = { whiteboard: wb };
     docs = [
       { id: 's1', data: { class_code: 'PM', student: 'Aroha', avatar: '🐼', updated_at: Date.now(), forms: empty ? {} : { __myboard__: { answers: { text: 'Aroha wrote this on her own board.' }, updated_at: Date.now() } } }, feedback: {} },
