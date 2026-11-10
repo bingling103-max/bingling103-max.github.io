@@ -431,6 +431,18 @@ body.intro-on .hero .pop,body.intro-on .hero .u path{animation-play-state:paused
 .tile p,.wk p,.box .o,.now p{line-height:1.55}
 .sh p,.ssub{font-size:1.02rem}
 html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis.lenis-stopped{overflow:hidden}
+
+/* tap-to-start gate (lets sound play) */
+.intro-ov.wait,.intro-ov.wait *{animation-play-state:paused!important}
+.igo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;display:grid;gap:6px;justify-items:center;background:#fff;color:#1a1a1a;border:4px solid #1a1a1a;box-shadow:7px 7px 0 #1a1a1a;border-radius:46px 38px 50px 34px/34px 50px 38px 46px;padding:22px 34px;font-family:var(--f-display);transition:transform .25s cubic-bezier(.2,1.6,.35,1),opacity .3s}
+.igo-in{font-size:clamp(1.6rem,4.5vw,2.4rem);font-weight:800}
+.igo small{font-family:var(--f-body);font-weight:700;font-size:.85rem;color:#555}
+.igo:hover{transform:translate(-50%,-50%) rotate(-2deg) scale(1.05)}
+.intro-ov.wait .igo{animation:igobob 1.6s ease-in-out infinite!important;animation-play-state:running!important}
+@keyframes igobob{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-58%) rotate(-2deg)}}
+.intro-ov:not(.wait) .igo{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.6)}
+.intro-ov.wait .iwrap{opacity:.25}
+.intro-ov.wait .ibar{width:0!important}
 </style>
 
 <div class="intro-ov" id="intro" role="presentation">
@@ -448,6 +460,7 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
   <div class="iname" id="iname" aria-label="Bingling Liu"></div>
   <div class="isub">ESOL &amp; Mandarin Teacher</div>
  </div>
+ <button class="igo" id="igo" type="button"><span class="igo-in">👋 Say hello</span><small>tap to start · sound on</small></button>
  <button class="iskip isnd" id="isnd" type="button" aria-pressed="true">🔊 Sound on · tap to mute</button><button class="iskip" id="iskip" type="button">Skip</button>
  <div class="ibar"></div>
 </div>
@@ -728,15 +741,21 @@ document.querySelectorAll(".tiles .tile").forEach(t=>{
  function end(){if(done)return;done=true;document.body.classList.remove("intro-on");ov.remove();window.__lenis&&window.__lenis.start()}
  function skip(){ov.style.animation="ovOut .45s cubic-bezier(.7,0,.3,1) forwards";setTimeout(end,450)}
  document.getElementById("iskip").addEventListener("click",()=>{SFX.play("whoosh");skip()});
- const t0=performance.now();
+ let t0=performance.now(),started=false;
  const PLAN=[["thud",.69],["thud",.99],["thud",1.29],["boing",1.23],["boing",1.53],["boing",1.83],["pop",2.2],["pop",2.5],["pop",2.8],...[..."Bingling Liu"].map((c,i)=>["blip",2.85+i*.06+.3,i]),["chime",3.85],["whoosh",4.2]];
  let planned=false;const runPlan=()=>{if(planned||!SFX.on)return;planned=true;const now=(performance.now()-t0)/1000;PLAN.forEach(([n,t,x])=>{if(t>=now)SFX.play(n,t-now,x)})};
  const isnd=document.getElementById("isnd");
  const syncI=()=>{isnd.textContent=SFX.on?"🔊 Sound on · tap to mute":"🔇 Muted · tap for sound";isnd.setAttribute("aria-pressed",SFX.on)};syncI();
- ov.addEventListener("pointerdown",e=>{if(!e.target.closest("#isnd,#iskip"))runPlan()});
+
  isnd.addEventListener("click",()=>{setSound(!SFX.on);syncI();if(SFX.on)runPlan()});
  ov.addEventListener("animationend",e=>{if(e.target===ov&&e.animationName==="ovOut")end()});
- setTimeout(end,5200);
+ /* wait for one tap so the browser lets the sound play, then run the 5s show */
+ ov.classList.add("wait");
+ const go=document.getElementById("igo");
+ function start(){if(started)return;started=true;SFX.set(SFX.on);ov.classList.remove("wait");t0=performance.now();runPlan();setTimeout(end,5200)}
+ go.addEventListener("click",start);
+ ov.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();start()}});
+ setTimeout(()=>go.focus({preventScroll:true}),50);
 
 })();
 /* ===== illustrated story ===== */
