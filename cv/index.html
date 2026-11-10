@@ -563,7 +563,6 @@ body.intro-on .cw.pop3d{animation-play-state:paused}
    <div class="ctas">
     <button class="btn main" id="pdf" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>Download my CV</button>
     <a class="btn ghost" href="#contact">Say hello</a>
-    <button class="btn game" id="playBtn" type="button">🎮 Play a quick game</button>
    </div>
   </div>
   <div class="scene">
@@ -1054,7 +1053,7 @@ document.querySelectorAll(".hit").forEach(g=>{
   document.getElementById("gmMsg").innerHTML=`You caught <b>${score}</b> blocks.${nb?" 🎉 New best!":` Best: <b>${best}</b>.`}`;document.getElementById("gmGo").textContent="Play again";panel.hidden=false}
  function open(){const y=gm.getBoundingClientRect().top+scrollY-70;window.smoothTo?smoothTo(y):scrollTo({top:y,behavior:"smooth"});setTimeout(()=>document.getElementById("gmGo").focus({preventScroll:true}),900)}
  requestAnimationFrame(()=>{fit();draw()});
- document.getElementById("playBtn").addEventListener("click",()=>{SFX.play("boing");open()});
+ 
 
  document.getElementById("gmGo").addEventListener("click",start);
  const move=e=>{const r=cv.getBoundingClientRect();bx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))};
