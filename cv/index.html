@@ -683,6 +683,9 @@ tl.innerHTML=JOBS.map((j,i)=>`<li class="ti" data-tags="${j.tags.join(" ")}">
 
 /* ===== sound effects (off by default, on only after a tap) ===== */
 const SFX=(()=>{let ctx=null,on=false;
+ let unlocked=false;
+ function unlockIOS(){if(unlocked)return;unlocked=true;try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(_){}
+  try{const a=new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");a.playsInline=true;a.volume=0;a.play().catch(()=>{})}catch(_){}}
  function ac(){if(!ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ctx=new C()}if(ctx.state==="suspended")ctx.resume();return ctx}
  function tone({type="sine",f0=440,f1=f0,dur=.2,vol=.18,at=0,attack=.008}){const c=ac();if(!c)return;const t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(1,f1),t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.05)}
  function noise({dur=.5,f0=400,f1=3000,vol=.12,at=0}){const c=ac();if(!c)return;const t=c.currentTime+at,b=c.createBuffer(1,c.sampleRate*dur,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=c.createBufferSource();s.buffer=b;const fl=c.createBiquadFilter();fl.type="bandpass";fl.Q.value=1.2;fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(f1,t+dur);const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+dur*.35);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(fl).connect(g).connect(c.destination);s.start(t);s.stop(t+dur)}
@@ -697,7 +700,7 @@ const SFX=(()=>{let ctx=null,on=false;
   open:(at=0)=>{tone({type:"sine",f0:400,f1:700,dur:.14,vol:.12,at})},
   close:(at=0)=>{tone({type:"sine",f0:600,f1:350,dur:.14,vol:.1,at})}
  };
- return {get on(){return on},set(v){on=v;if(v)ac()},play(n,...a){if(on&&fx[n])fx[n](...a)},force(n,...a){fx[n]&&fx[n](...a)}};
+ return {get on(){return on},set(v){on=v;if(v)ac()},unlock(){unlockIOS();const c=ac();if(c&&c.resume)c.resume()},play(n,...a){if(on&&fx[n])fx[n](...a)},force(n,...a){fx[n]&&fx[n](...a)}};
 })();
 const sndBtn=document.getElementById("snd");
 function setSound(v){SFX.set(v);sndBtn.setAttribute("aria-pressed",v);sndBtn.textContent=v?"🔊":"🔇";sndBtn.setAttribute("aria-label",v?"Turn sound effects off":"Turn sound effects on");try{localStorage.setItem("bl-sound",v?"1":"0")}catch(_){}}
@@ -705,7 +708,7 @@ sndBtn.addEventListener("click",()=>{setSound(!SFX.on);if(SFX.on)SFX.play("chime
 /* sound is on by default (unless this visitor muted it before); browsers only let it start after the first tap or key press */
 (function(){let pref=true;try{if(localStorage.getItem("bl-sound")==="0")pref=false}catch(_){}
  SFX.set(pref);sndBtn.setAttribute("aria-pressed",pref);sndBtn.textContent=pref?"🔊":"🔇";sndBtn.setAttribute("aria-label",pref?"Turn sound effects off":"Turn sound effects on");
- const unlock=()=>{if(SFX.on)SFX.set(true)};addEventListener("pointerdown",unlock,{once:true,capture:true});addEventListener("keydown",unlock,{once:true,capture:true});})();
+ const unlock=()=>{SFX.unlock()};addEventListener("pointerdown",unlock,{once:true,capture:true});addEventListener("keydown",unlock,{once:true,capture:true});})();
 
 
 /* strength tiles: hover / tap wipe */
@@ -752,7 +755,7 @@ document.querySelectorAll(".tiles .tile").forEach(t=>{
  /* wait for one tap so the browser lets the sound play, then run the 5s show */
  ov.classList.add("wait");
  const go=document.getElementById("igo");
- function start(){if(started)return;started=true;SFX.set(SFX.on);ov.classList.remove("wait");t0=performance.now();runPlan();setTimeout(end,5200)}
+ function start(){if(started)return;started=true;SFX.unlock();setSound(true);syncI();ov.classList.remove("wait");t0=performance.now();runPlan();setTimeout(end,5200)}
  go.addEventListener("click",start);
  ov.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();start()}});
  setTimeout(()=>go.focus({preventScroll:true}),50);
