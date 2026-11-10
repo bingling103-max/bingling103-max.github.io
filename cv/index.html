@@ -490,7 +490,29 @@ body.intro-on .cw.pop3d{animation-play-state:paused}
 /* catch game */
 .btn.game{background:var(--sage);color:#1a1a1a;border:3px solid var(--stk);box-shadow:4px 4px 0 var(--stk)}
 .btn.game:hover{transform:translateY(-2px) rotate(-2deg)}
-.gm .gm-card{margin:0 auto;rotate:-.6deg}
+.gw{position:fixed;right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
+.gw>*{pointer-events:auto}
+.gw-chip{display:flex;align-items:center;gap:8px;background:var(--butter);color:#1a1a1a;border:3px solid #1a1a1a;box-shadow:4px 4px 0 #1a1a1a;border-radius:20px 14px 22px 12px/14px 22px 12px 20px;padding:7px 14px 7px 9px;font:inherit;text-align:left;cursor:pointer;rotate:-3deg;transition:transform .2s,box-shadow .2s;animation:gwIn .6s 5.2s both cubic-bezier(.3,1.6,.5,1)}
+.gw-chip:hover{transform:translate(-2px,-2px) rotate(2deg);box-shadow:6px 6px 0 #1a1a1a}
+.gw-chip b{display:block;font-family:var(--f-display);font-size:1rem;line-height:1.1}
+.gw-chip small{display:block;font-size:.72rem;font-weight:700;opacity:.7}
+.gw-ico{font-size:1.5rem;animation:gwWig 3s 7s infinite}
+.gw.open .gw-chip{display:none}
+@keyframes gwIn{from{opacity:0;transform:translateY(30px) scale(.6)}}
+@keyframes gwWig{0%,88%,100%{rotate:0}92%{rotate:-14deg}96%{rotate:12deg}}
+.gw-card{width:min(400px,calc(100vw - 32px));rotate:-.6deg;box-shadow:6px 6px 0 #1a1a1a;animation:gwPop .35s cubic-bezier(.3,1.5,.5,1);transform-origin:bottom right}
+.gw-card[hidden]{display:none!important}
+@media (max-width:520px){.gw-card{rotate:0deg}.gw-chip{padding:6px 12px 6px 8px}}
+@keyframes gwPop{from{opacity:0;transform:scale(.5)}}
+.gw-card .gm-top{padding:8px 10px;gap:6px}
+.gw-card .gm-task{font-size:.95rem;flex-basis:100%;order:3}
+.gw-card .gm-stats{gap:6px;font-size:.85rem;flex:1}
+.gw-card .gm-x{width:30px;height:30px;font-size:.85rem;margin-left:auto}
+.gw-card .gm-stage{aspect-ratio:4/3;max-height:52vh}
+.gw-card .gm-panel{gap:8px;padding:14px}
+.gw-card .gm-panel h3{font-size:1.7rem}
+.gw-card .gm-panel p{font-size:.85rem}
+@media (prefers-reduced-motion:reduce){.gw-chip,.gw-ico,.gw-card{animation:none}}
 .gm-card{width:min(860px,100%);background:var(--bg);border:4px solid #1a1a1a;box-shadow:8px 8px 0 #1a1a1a;border-radius:30px 18px 32px 16px/18px 32px 16px 30px;overflow:hidden;display:flex;flex-direction:column;max-height:100%}
 .gm-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:3px solid #1a1a1a;background:var(--butter);color:#1a1a1a;flex-wrap:wrap}
 .gm-task{font-family:var(--f-display);font-weight:800;font-size:clamp(1.05rem,3vw,1.4rem);flex:1;min-width:0}
@@ -592,25 +614,23 @@ body.intro-on .cw.pop3d{animation-play-state:paused}
 </header>
 
 <main>
-<section id="game" class="gm">
- <div class="in">
-  <div class="sh"><h2>Take a 45-second <em>brain break</em></h2><p>The same kind of quick game I use to wake a class up. Catch the right blocks!</p></div>
-  <div class="gm-card">
+<div id="game" class="gw">
+ <div class="gm-card gw-card" id="gwCard" hidden role="dialog" aria-label="Brain break game">
   <div class="gm-top">
    <div class="gm-task" id="gmTask">Catch the vowels!</div>
    <div class="gm-stats"><span id="gmScore">0</span><span id="gmHearts">❤❤❤</span><span id="gmTime">45</span></div>
-   
+   <button class="gm-x" id="gwX" type="button" aria-label="Close game">✕</button>
   </div>
   <div class="gm-stage"><canvas id="gmCv"></canvas>
    <div class="gm-panel" id="gmPanel">
     <h3 id="gmTitle">Catch It!</h3>
-    <p id="gmMsg">Move the basket with your mouse, finger or ← → keys. Catch the right blocks, dodge the wrong ones. The rule changes every few seconds!</p>
+    <p id="gmMsg">Move the basket with your mouse, finger or ← → keys. Catch the right blocks — the rule changes every few seconds!</p>
     <button class="btn main" id="gmGo" type="button">Start</button>
    </div>
   </div>
  </div>
- </div>
-</section>
+ <button class="gw-chip" id="gwChip" type="button" aria-expanded="false"><span class="gw-ico">🎮</span><span><b>Brain break</b><small>45-sec game</small></span></button>
+</div>
 
 <section id="strengths">
  <div class="in">
@@ -1007,7 +1027,7 @@ document.querySelectorAll(".hit").forEach(g=>{
 
 /* ===== catch game ===== */
 (function(){
- const gm=document.getElementById("game"),cv=document.getElementById("gmCv"),ctx=cv.getContext("2d"),panel=document.getElementById("gmPanel");
+ const gm=document.getElementById("game"),card=document.getElementById("gwCard"),chip=document.getElementById("gwChip"),cv=document.getElementById("gmCv"),ctx=cv.getContext("2d"),panel=document.getElementById("gmPanel");
  const $s=document.getElementById("gmScore"),$h=document.getElementById("gmHearts"),$t=document.getElementById("gmTime"),$task=document.getElementById("gmTask");
  const ROUNDS=[
   {task:"Catch the vowels! a e i o u",good:["a","e","i","o","u"],bad:["b","c","d","f","g","k","m","p","s","t"]},
@@ -1051,17 +1071,20 @@ document.querySelectorAll(".hit").forEach(g=>{
  function end(){run=false;const nb=score>best;if(nb){best=score;try{localStorage.setItem("bl-catch-best",best)}catch(_){}}
   SFX.play(nb?"chime":"boing");document.getElementById("gmTitle").textContent=hearts<=0?"Oops!":"Time's up!";
   document.getElementById("gmMsg").innerHTML=`You caught <b>${score}</b> blocks.${nb?" 🎉 New best!":` Best: <b>${best}</b>.`}`;document.getElementById("gmGo").textContent="Play again";panel.hidden=false}
- function open(){const y=gm.getBoundingClientRect().top+scrollY-70;window.smoothTo?smoothTo(y):scrollTo({top:y,behavior:"smooth"});setTimeout(()=>document.getElementById("gmGo").focus({preventScroll:true}),900)}
- requestAnimationFrame(()=>{fit();draw()});
- 
+ function pause(){if(!run)return;run=false;panel.hidden=false;document.getElementById("gmTitle").textContent="Paused";document.getElementById("gmMsg").textContent="Press Start to play again.";document.getElementById("gmGo").textContent="Start"}
+ function openG(){card.hidden=false;gm.classList.add("open");chip.setAttribute("aria-expanded","true");SFX.play("boing");requestAnimationFrame(()=>{fit();draw();document.getElementById("gmGo").focus({preventScroll:true})})}
+ function closeG(){pause();card.hidden=true;gm.classList.remove("open");chip.setAttribute("aria-expanded","false");chip.focus({preventScroll:true})}
+ chip.addEventListener("click",openG);document.getElementById("gwX").addEventListener("click",closeG);
+ addEventListener("keydown",e=>{if(e.key==="Escape"&&!card.hidden)closeG()});
+ document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
+  
 
  document.getElementById("gmGo").addEventListener("click",start);
  const move=e=>{const r=cv.getBoundingClientRect();bx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))};
  cv.addEventListener("pointermove",move);cv.addEventListener("pointerdown",move);
  addEventListener("keydown",e=>{if(!run)return;if(e.key==="ArrowLeft"){e.preventDefault();bx=Math.max(0,bx-.06)}if(e.key==="ArrowRight"){e.preventDefault();bx=Math.min(1,bx+.06)}});
- addEventListener("resize",()=>{fit();draw()});
- /* pause when scrolled away */
- new IntersectionObserver(es=>{es.forEach(en=>{if(!en.isIntersecting&&run){run=false;panel.hidden=false;document.getElementById("gmTitle").textContent="Paused";document.getElementById("gmMsg").textContent="Scroll back and press Start to play again.";document.getElementById("gmGo").textContent="Start"}})},{threshold:.2}).observe(cv);
+ addEventListener("resize",()=>{if(!card.hidden){fit();draw()}});
+
 })();
 
 /* ===== 3D draggable cubes ===== */
