@@ -1,0 +1,672 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>你好！Nǐ hǎo! · Mandarin Lesson 1</title>
+<style>
+/* ===== ESOL Engine v2 · core.css — FORMAT ONLY (stage, type scale, tokens, tools). Lessons own their page logic. ===== */
+:root{
+ /* tokens: a lesson's theme.css overrides these */
+ --bg:#f7f3ea;--paper:#fffdf8;--ink:#1d2433;--mute:#5d6170;--line:#ddd3c0;
+ --brand:#1f3a68;--brand2:#2f5fa8;--accent:#c8402f;--gold:#d39b22;--ok:#2f7d3b;--bad:#c8402f;
+ --tint:#eef2f8;--tint2:#fbf0dc;--shadow:0 2px 0 rgba(29,36,51,.10);
+ --f-disp:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+ --r:12px;--k:1;
+ color-scheme:light;
+}
+html,body{height:100%}
+body{background:#20242c;color:var(--ink);font-family:var(--f-body);overflow:hidden}
+#wrap{position:fixed;inset:0 0 52px 0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1280px;height:720px;flex:none;background:var(--bg);overflow:hidden;transform-origin:center center;border-radius:6px}
+.slide{position:absolute;inset:0;padding:22px 34px 18px;display:none;flex-direction:column;gap:12px;font-size:calc(22px*var(--k));line-height:1.35}
+.slide.on{display:flex}
+.slide *{box-sizing:border-box}
+/* ---- type scale (em of the slide font) ---- */
+.t-xs{font-size:.72em}.t-s{font-size:.86em}.t-m{font-size:1em}.t-l{font-size:1.25em}.t-xl{font-size:1.6em}.t-xxl{font-size:2.3em}
+.b{font-weight:800}.c{text-align:center}.mute{color:var(--mute)}.acc{color:var(--accent)}.brand{color:var(--brand)}
+.zh{font-size:.72em;color:var(--mute);font-weight:500}
+body.nozh .zh{display:none!important}
+/* ---- header ---- */
+.hdr{display:flex;align-items:center;gap:14px;min-height:56px;flex:none}
+.hdr .tg{font:800 .8em/1 var(--f-body);color:#fff;background:var(--brand);padding:7px 12px;border-radius:6px;white-space:nowrap}
+.hdr .tg.pr{background:var(--accent)}.hdr .tg.gd{background:var(--gold);color:var(--ink)}
+.hdr h2{margin:0;font:900 1.7em/1.05 var(--f-disp);letter-spacing:-.3px;text-wrap:balance;flex:1;min-width:0}
+.hdr h2 .zh{font-family:var(--f-body);font-size:.42em;display:block;margin-top:4px;letter-spacing:0}
+.hdr .rt{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+/* ---- layout helpers ---- */
+.body{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:12px;align-items:center}.col{display:flex;flex-direction:column;gap:10px}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.grow{flex:1;min-height:0}
+/* ---- blocks ---- */
+.card{position:relative;background:var(--paper);border:2px solid var(--line);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow)}
+.card.flat{box-shadow:none}
+.frame{background:var(--brand);color:#fff;border-radius:var(--r);padding:10px 16px;font-size:1.05em}
+.frame b{color:#ffd76a}
+.frame.soft{background:var(--tint);color:var(--ink)}.frame.soft b{color:var(--accent)}
+.lab{font:800 .7em/1.2 var(--f-body);letter-spacing:.8px;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
+.pic{position:relative;width:100%;height:160px;border-radius:10px;overflow:hidden;background:#fff}
+.pic>img,.pic>svg{width:100%;height:100%;object-fit:contain;display:block}
+.pic .hint{position:absolute;right:6px;bottom:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.9);cursor:pointer;font-size:16px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.pic .htx{position:absolute;left:8px;bottom:8px;right:44px;background:rgba(29,36,51,.85);color:#fff;font-size:15px;padding:4px 8px;border-radius:8px;display:none}
+.pic.hshow .htx{display:block}
+body.picnum .pic::after{content:attr(data-n);position:absolute;left:6px;bottom:6px;background:var(--accent);color:#fff;font:800 15px/1 var(--f-body);padding:4px 7px;border-radius:6px;z-index:2}
+.btn{font:700 .8em/1.1 var(--f-body);border:2px solid var(--brand);background:#fff;color:var(--brand);border-radius:10px;padding:7px 13px;cursor:pointer;white-space:nowrap}
+.btn.co{background:var(--accent);border-color:var(--accent);color:#fff}.btn.go{background:var(--ok);border-color:var(--ok);color:#fff}.btn.on{background:var(--brand);color:#fff}
+.btn:focus-visible,.say:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.say{border:0;background:var(--tint);border-radius:50%;width:1.5em;height:1.5em;font-size:.82em;cursor:pointer;vertical-align:middle;margin-left:4px;flex:none}
+.say.f{background:#fbe1ea}.say.m{background:#dfeafb}
+/* ---- reveal ---- */
+.rv{cursor:pointer;border-radius:8px}
+.rv:not(.open){color:transparent!important;background:repeating-linear-gradient(135deg,#ece6d8 0 10px,#f4efe4 10px 20px);user-select:none}
+.rv:not(.open) *{visibility:hidden}
+.rv:not(.open)::before{content:"👆";color:#8a8170;position:absolute;margin-left:6px}
+.rv{position:relative;display:inline-block;padding:0 4px;min-width:3em}
+.rv.blk{display:block}
+/* ---- right-click hide ---- */
+.xh{visibility:hidden!important}
+body.showhid .xh{visibility:visible!important;outline:3px dashed var(--accent);opacity:.45}
+/* ---- magnifier ---- */
+.zb{position:absolute;bottom:6px;right:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.9);cursor:pointer;font-size:15px;z-index:3;box-shadow:0 1px 3px rgba(0,0,0,.18);opacity:0;transition:opacity .15s}
+.card:hover>.zb,.pic:hover>.zb,.zoomed>.zb,.zb:focus-visible{opacity:.9}.pic>.zb{bottom:auto;top:6px;right:6px}
+.zoomed{position:relative;z-index:60!important;transition:transform .35s ease}
+#zdim{position:absolute;inset:0;background:rgba(20,24,32,.55);z-index:50;display:none}
+#zdim.on{display:block}
+/* ---- bottom bar ---- */
+#bar{position:fixed;left:0;right:0;bottom:0;height:52px;background:#151a22;color:#fff;display:flex;align-items:center;gap:6px;padding:0 10px;font:600 14px/1 system-ui,sans-serif;z-index:100}
+#bar button,#bar select{font:600 14px/1 system-ui,sans-serif;background:#2a313d;color:#fff;border:0;border-radius:8px;padding:8px 10px;cursor:pointer;white-space:nowrap}
+#bar button.on{background:var(--accent)}
+#bar .pg{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cfd6e2;padding:0 6px}
+/* ---- panels ---- */
+.panel{position:fixed;left:50%;top:20px;transform:translateX(-50%);width:min(920px,96vw);max-height:calc(100vh - 92px);overflow:auto;background:#fff;color:#1d2433;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.4);z-index:200;padding:16px 20px;font:15px/1.45 system-ui,sans-serif;display:none}
+.panel.on{display:block}
+.panel h3{margin:0 0 8px;font-size:20px}.panel .x{float:right}
+.panel table{width:100%;border-collapse:collapse}.panel td{padding:4px 6px;border-bottom:1px solid #eee;vertical-align:middle}
+.panel input[type=number]{width:52px}
+.panel .pre{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.panel button{font:600 14px system-ui,sans-serif;border:1px solid #c9cfda;background:#f4f6fa;border-radius:8px;padding:6px 10px;cursor:pointer}
+.panel button.pri{background:#1f3a68;color:#fff;border-color:#1f3a68}
+.panel .stg{font-weight:800;color:#1f3a68;padding-top:10px}
+.panel .ex td{color:#666}
+/* ---- games overlay ---- */
+#gm{position:absolute;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column;padding:22px 34px;gap:12px;font-size:22px}
+#gm.on{display:flex}
+/* ---- fx ---- */
+@keyframes popIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+body:not(.fx) #stage *{animation-duration:0s!important;transition-duration:0s!important;animation-delay:0s!important;transition-delay:0s!important}
+@media (prefers-reduced-motion:reduce){#stage *{animation-duration:0s!important;transition-duration:0s!important}}
+.ok{border-color:var(--ok)!important;background:#e8f5ea!important}.no{border-color:var(--bad)!important;background:#fdeceb!important;animation:shake .4s}
+.timer{font:800 1.6em/1 var(--f-body);color:var(--accent);min-width:3.2em;display:inline-block;text-align:center;font-variant-numeric:tabular-nums}
+
+.only-en{display:none}html.lang-en .only-en{display:inline}html.lang-en .only-cn{display:none!important}
+
+.zoomed>.zb{transform:scale(var(--zi,1));transform-origin:top right}
+
+/* ===== theme: 🎲 Board game — bright four-colour blocks (one colour per tone) ===== */
+:root{--bg:#fff8ec;--paper:#ffffff;--ink:#1f2633;--mute:#5b6272;--line:#f0dcb8;--brand:#2f6fb3;--brand2:#3f86d6;--accent:#e0484d;--gold:#f5b82e;--ok:#2f9a5b;--tint:#eaf3ff;--tint2:#fff1d6;--r:16px;
+ --t1:#e0484d;--t2:#2f9a5b;--t3:#2f6fb3;--t4:#7b4fc4;--f-cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",sans-serif}
+#stage{background:var(--bg) repeating-linear-gradient(90deg,transparent 0 79px,rgba(240,220,184,.35) 79px 80px)}
+.hdr .tg{border-radius:10px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.hdr .tg.gd{background:var(--gold)}
+.card{border-width:3px;box-shadow:0 4px 0 var(--line)}
+.frame{border-radius:14px;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+/* Chinese + pinyin */
+.hz{font-family:var(--f-cjk);font-weight:700;font-size:1.6em;line-height:1.1}
+.hz.s{font-size:1em}.hz.big{font-size:3.4em;line-height:1}
+.hzpy{display:block;font-size:.9em}
+.py{font-weight:800}.py.big{font-size:1.5em}
+.t1.py,.py.t1{color:var(--t1)}.py.t2{color:var(--t2)}.py.t3{color:var(--t3)}.py.t4{color:var(--t4)}
+.rd{display:inline-block;padding:4px 12px;border-radius:999px;color:#fff;font-weight:800;font-size:.85em;white-space:nowrap}
+.rd.t1{background:var(--t1)}.rd.t2{background:var(--t2)}.rd.t3{background:var(--t3)}.rd.t4{background:var(--t4)}
+.tcard.t1{border-color:var(--t1)}.tcard.t2{border-color:var(--t2)}.tcard.t3{border-color:var(--t3)}.tcard.t4{border-color:var(--t4)}
+.say.zs{background:#ffe7c2;font-size:.9em}
+.t-xxl .say.zs{font-size:.5em}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--tint2);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-family:var(--f-cjk)}
+/* listening cards */
+.lc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.lc>.say{width:2.6em;height:2.6em;font-size:1.3em}
+.lcn{position:absolute;left:10px;top:6px;font-weight:900;color:var(--mute)}
+.op4{display:flex;gap:6px}.op4 button{width:46px;height:46px;border-radius:12px;border:0;color:#fff;font:900 24px/1 var(--f-body);cursor:pointer}
+.op4 .t1{background:var(--t1)}.op4 .t2{background:var(--t2)}.op4 .t3{background:var(--t3)}.op4 .t4{background:var(--t4)}
+.op4 button.ok{outline:4px solid var(--gold);background:var(--ok)!important}.op4 button.no{opacity:.35}
+.hl{outline:5px solid var(--gold);outline-offset:2px}
+/* drill: hidden sentence until card is opened */
+[data-drill] .ds{visibility:hidden;font-size:1em}
+[data-drill].open .ds{visibility:visible}
+/* quick check */
+.qk .op{display:flex;gap:10px;margin:8px 0}.qk .op button{flex:1;font:800 1.3em/1.2 var(--f-cjk);padding:8px;border-radius:12px;border:3px solid var(--line);background:#fff;cursor:pointer}
+.qk .why{display:none;font-size:.85em}.qk.done .why{display:block}
+/* chat */
+.phone{background:#fff;border:3px solid var(--line);border-radius:24px;padding:14px;gap:12px;justify-content:center}
+.msg{display:flex;gap:10px;align-items:flex-end}.msg.r{justify-content:flex-end}
+.av{width:60px;height:60px;border-radius:50%;border:3px solid;overflow:hidden;flex:none;background:#fff}
+.av .pic{border-radius:50%;height:56px!important}
+.bub{background:var(--tint);border-radius:18px;padding:8px 14px;max-width:360px}
+.msg.r .bub{background:#e7f7ec}
+.who{display:block;font-size:.75em}
+/* step 3 vowels */
+.fin .rv.blk{min-height:120px}
+.hat{background:var(--tint2)}
+/* tap what you hear */
+.tpc{cursor:pointer}.tpc.ok{outline:5px solid var(--ok)}
+/* sort */
+.swc{font:inherit;cursor:pointer;padding:8px}.swc.used{opacity:.25;pointer-events:none}
+.bin{display:flex;flex-direction:column;gap:6px}.bin .got{display:flex;flex-wrap:wrap;gap:6px}
+.bin.t1{border-color:var(--t1)}.bin.t2{border-color:var(--t2)}.bin.t3{border-color:var(--t3)}.bin.t4{border-color:var(--t4)}
+.simon{border-color:var(--gold)}
+.frame .py{color:#fff!important}.frame.soft .py{color:inherit}
+.mem{background:repeating-linear-gradient(45deg,#ffe7c2 0 12px,#fff3dd 12px 24px)!important}.mem.ok,.mem:has(.pic),.mem:has(.t-l){background:#fff!important}
+
+</style>
+<script>
+/* ===== ESOL Engine v2 · core.js — FORMAT + CLASSROOM TOOLS + PLAN. No lesson logic lives here. =====
+ Lesson API
+   E.lesson({id,title,prefix,roster})           prefix = localStorage prefix, e.g. 'xd-psp2-'
+   E.page({id,t,zh,st,main,min,html,init,css})  html()=>string · init(el) runs on every visit · main:true = in the default plan
+   E.preset(id,name,zh,ids)                     Plan presets
+   E.pics(IMG,SVG)                              IMG[id]=[中文说明,prompt,emoji,hint,主题·准确版本] · SVG[id]=svg string
+   E.items([{k,w,pic,say}])                     words for game plugins
+ Helpers (global): HDR SAY REV PIC NAMES CLASS clsBar PICK TIMER esc shuffle
+*/
+const E=(()=>{
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const L={id:'lesson',title:'Lesson',prefix:'xd-v2-',roster:{GEN:['Student A','Student B','Student C']}};
+const P=[];const PRE=[];let IMG={},SVG={},ITEMS=[];
+const ls={get(k,d){try{const v=localStorage.getItem(L.prefix+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(L.prefix+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(L.prefix+k)}catch(e){}}};
+let cur=0,hist=[],plan=null,hidden={},inited={};
+const api={};
+api.lesson=o=>{Object.assign(L,o)};
+api.page=o=>{P.push(Object.assign({st:'',zh:'',main:false,min:3},o));return o};
+api.preset=(id,name,zh,ids)=>PRE.push({id,name,zh,ids});
+api.pics=(i,s)=>{IMG=i;SVG=s||{}};
+api.items=a=>{ITEMS=a};
+api.ls=ls;
+// ---------- helpers ----------
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const shuffle=(a,seed)=>{a=a.slice();let s=seed==null?Math.random()*1e9|0:[...String(seed)].reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619),2166136261)>>>0;const r=()=>(s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5>>>0,((s^s>>>14)>>>0)/4294967296);for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const HDR=(tag,title,zh,rt,cls)=>`<div class="hdr"><span class="tg ${cls||''}">${tag}</span><h2>${title}${zh?`<span class="zh">${zh}</span>`:''}</h2>${rt?`<div class="rt">${rt}</div>`:''}</div>`;
+const SAY=(t,v)=>`<button class="say${v?' '+v:''}" data-say="${esc(String(t).replace(/<[^>]+>/g,''))}"${v?` data-v="${v}"`:''} title="Listen">🔊</button>`;
+const REV=(t,blk)=>`<span class="rv${blk?' blk':''}">${t}</span>`;
+let PICN=0;
+const PIC=(id,o)=>{o=o||{};const s=IMG[id]||[];let src='';const up=ls.get('img-'+id,null);
+ const inner=up?`<img src="${up}" alt="${esc(s[0]||id)}" data-img-subject="${esc(s[4]||'')}">`:SVG[id]?SVG[id].replace('<svg',`<svg role="img" aria-label="${esc(s[0]||id)}" data-img-subject="${esc(s[4]||'')}"`):`<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px">${s[2]||'🖼️'}<span style="font-size:14px;color:#888;margin-left:6px">${id}</span></div>`;
+ return `<div class="pic" data-pic="${id}" style="${o.h?`height:${o.h}px;`:''}${o.w?`width:${o.w}px;`:''}${o.style||''}">${inner}${s[3]&&!o.nohint?`<button class="hint" data-hint title="Hint">💡</button><span class="htx">${esc(s[3])}</span>`:''}</div>`};
+const TIMER=secs=>`<span class="row" style="gap:6px">${secs.map(s=>`<button class="btn go" data-timer="${s}">⏱ ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}</button>`).join('')}<span class="timer">—</span></span>`;
+let CLASS=ls.get('class','GEN');
+const NAMES=()=>L.roster[CLASS]||L.roster.GEN||[];
+const clsBar=()=>`<span class="row" style="gap:4px">${Object.keys(L.roster).map(k=>`<button class="btn${CLASS===k?' on':''}" data-cls="${k}">👥 ${k==='GEN'?'General':k}</button>`).join('')}</span>`;
+const PICK=lab=>`<span class="row" style="gap:6px"><button class="btn co" data-pick>🎯 ${lab||'Pick a student'}</button><b class="pickout acc t-l"></b></span>`;
+Object.assign(window,{HDR,SAY,REV,PIC,TIMER,clsBar,PICK,esc,shuffle,NAMES});
+Object.defineProperty(window,'CLASS',{get:()=>CLASS});
+// ---------- sound ----------
+let SFXON=ls.get('sfx',true),AC=null;
+const ac=()=>{if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC};
+function tone(c,type,f0,f1,dur,pk,t0){const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f0,t0);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t0+dur);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(pk,t0+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);o.connect(g).connect(c.destination);o.start(t0);o.stop(t0+dur+.05)}
+function noise(c,dur,f0,f1,pk,t0){const b=c.createBuffer(1,c.sampleRate*dur,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=c.createBufferSource();s.buffer=b;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(f0,t0);f.frequency.exponentialRampToValueAtTime(f1,t0+dur);const g=c.createGain();g.gain.setValueAtTime(pk,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);s.connect(f).connect(g).connect(c.destination);s.start(t0)}
+api.sfx=n=>{if(!SFXON)return;const c=ac();if(!c)return;const t=c.currentTime;
+ ({ding:()=>{tone(c,'sine',1318,0,.35,.16,t);tone(c,'sine',1976,0,.3,.08,t+.06)},nope:()=>tone(c,'triangle',300,220,.18,.22,t),thump:()=>{tone(c,'sine',130,55,.2,.6,t);noise(c,.08,600,200,.25,t)},
+  swish:()=>noise(c,.4,3000,700,.3,t),whoosh:()=>noise(c,.6,300,1600,.3,t),click:()=>tone(c,'square',2000,1600,.03,.12,t),sparkle:()=>[1568,2093,2637,3136].forEach((f,i)=>tone(c,'sine',f,0,.25,.12,t+i*.07)),
+  tada:()=>[523,659,784,1047].forEach((f,i)=>tone(c,'triangle',f,0,.3,.16,t+i*.09)),flip:()=>noise(c,.15,2500,900,.2,t)}[n]||(()=>{}))()};
+let VOICES=[];const loadV=()=>{try{VOICES=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang))}catch(e){}};try{loadV();speechSynthesis.onvoiceschanged=loadV}catch(e){}
+const pickV=g=>{const pref=v=>/en-NZ|en-AU|en-GB/.test(v.lang)?0:1;const fem=/female|samantha|karen|serena|zira|susan|moira|tessa|fiona|victoria|catherine|hazel|libby|sonia|natasha/i,mal=/male|daniel|alex|fred|david|mark|george|oliver|ryan|william|lee|james|thomas/i;
+ const L2=VOICES.slice().sort((a,b)=>pref(a)-pref(b));if(g==='f')return L2.find(v=>fem.test(v.name))||L2[0];if(g==='m')return L2.find(v=>mal.test(v.name)&&!fem.test(v.name))||L2[1]||L2[0];return L2[0]};
+api.say=(t,g,onend)=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);const v=pickV(g);if(v)u.voice=v;u.rate=.92;if(g==='m')u.pitch=.85;if(onend)u.onend=onend;speechSynthesis.speak(u)}catch(e){}};
+api.sayLines=(lines)=>{let i=0;const nx=()=>{if(i>=lines.length)return;const [g,t]=lines[i++];api.say(t,g,nx)};nx()};
+api.fx=()=>document.body.classList.contains('fx');
+// ---------- build stage ----------
+function scale(){const st=$('#stage');const w=innerWidth,h=innerHeight-52;const s=Math.min(w/1280,h/720);st.style.transform=`scale(${s})`}
+function seq(){return plan.filter(id=>P.find(p=>p.id===id))}
+function defaultPlan(){return P.filter(p=>p.main).map(p=>p.id)}
+function render(i){const p=P[i];const el=$(`.slide[data-i="${i}"]`);PICN=0;el.innerHTML=p.html();
+ // numbers on pictures, 🔍 on cards and pictures
+ $$('.pic',el).forEach((x,n)=>x.dataset.n=n+1);
+ $$('.card:not([data-nozoom]),.pic:not([data-nozoom])',el).forEach(x=>{if(!x.querySelector(':scope>.zb'))x.insertAdjacentHTML('beforeend','<button class="zb" data-zoom title="Zoom">🔍</button>')});
+ applyHidden(p.id,el);inited[p.id]=0}
+function build(){document.body.insertAdjacentHTML('afterbegin',`<div id="wrap"><div id="stage">${P.map((p,i)=>`<section class="slide" data-i="${i}" data-id="${p.id}"></section>`).join('')}<div id="zdim"></div><div id="gm"></div></div></div>
+<div id="bar"><button data-nav="prev" title="Previous">◀</button><button data-nav="next" title="Next">▶</button><button data-nav="back" title="Back to the page you came from">↩ Back</button><span class="pg"></span>
+<button data-tool="pages">🗺️ Pages</button><button data-tool="plan">🧭 Plan</button><button data-tool="all" title="Open every answer on this page">👀 All</button><button data-tool="num" title="Picture numbers">🔢</button><button data-tool="zh" title="Chinese on/off">中</button><button data-tool="fx" title="Animations">✨</button><button data-tool="sfx" title="Sound effects">🔔</button><button data-tool="k-" title="Smaller text">A−</button><button data-tool="k+" title="Bigger text">A+</button><button data-tool="hid" title="Show hidden things (right-click hides)">🙈</button><button data-tool="pics" title="Pictures: prompts + upload">🖼️</button><button data-tool="games">🎮</button><button data-tool="full" title="Full screen">⛶</button></div>
+<div class="panel" id="pPages"></div><div class="panel" id="pPlan"></div><div class="panel" id="pPics"></div>`);
+ P.forEach((p,i)=>{if(p.css){const s=document.createElement('style');s.textContent=p.css;document.head.appendChild(s)}});
+ P.forEach((p,i)=>render(i));
+ addEventListener('resize',scale);scale()}
+function go(i,noHist){if(i<0||i>=P.length)return;const prev=cur;if(!noHist&&prev!==i)hist.push(prev);speechSynthesis&&speechSynthesis.cancel&&speechSynthesis.cancel();unzoom();
+ $$('.slide').forEach(s=>s.classList.toggle('on',+s.dataset.i===i));cur=i;const p=P[i];const el=$(`.slide[data-i="${i}"]`);
+ if(p.init&&!inited[p.id]){inited[p.id]=1;try{p.init(el)}catch(e){console.error(e)}}
+ const q=seq();const k=q.indexOf(p.id);$('#bar .pg').textContent=`${k>=0?(k+1)+' / '+q.length:'＋'} · ${p.t}`;ls.set('cur',p.id)}
+const idx=id=>P.findIndex(p=>p.id===id);
+function step(d){const q=seq();const k=q.indexOf(P[cur].id);let nk;if(k<0){/* extra page: go to nearest planned after */const after=P.slice(cur+1).find(p=>q.includes(p.id));nk=d>0?(after?q.indexOf(after.id):q.length-1):Math.max(0,(after?q.indexOf(after.id):q.length)-1)}else nk=Math.min(q.length-1,Math.max(0,k+d));go(idx(q[nk]))}
+api.go=id=>go(typeof id==='number'?id:idx(id));api.rerender=id=>{const i=id==null?cur:idx(id);render(i);if(i===cur){inited[P[i].id]=0;go(i,true)}};
+api.cur=()=>P[cur];
+// ---------- hidden (right-click) ----------
+function pathOf(x,root){const a=[];while(x&&x!==root){const p=x.parentElement;a.unshift([...p.children].indexOf(x));x=p}return a.join('.')}
+function byPath(root,p){let x=root;for(const n of p.split('.')){x=x&&x.children[+n]}return x}
+function applyHidden(id,el){(hidden[id]||[]).forEach(p=>{const x=byPath(el,p);if(x)x.classList.add('xh')})}
+// ---------- zoom ----------
+let ZEL=null;
+let ZSAVE=[];
+function unzoom(){if(!ZEL)return;ZEL.style.transform='';ZEL.classList.remove('zoomed');ZSAVE.forEach(([x,o,z,p])=>{x.style.overflow=o;x.style.zIndex=z;x.style.position=p});ZSAVE=[];ZEL=null;$('#zdim').classList.remove('on')}
+function zoom(x){if(ZEL===x){unzoom();return}unzoom();const st=$('#stage').getBoundingClientRect(),s0=st.width/1280;const r=x.getBoundingClientRect();const w=r.width/s0,h=r.height/s0;const cx=(r.left-st.left)/s0+w/2,cy=(r.top-st.top)/s0+h/2;
+ const s=Math.min(1180/w,650/h,4);/* lift every ancestor up to the slide: no clipping, above its neighbours */for(let a=x.parentElement;a&&!a.classList.contains('slide');a=a.parentElement){ZSAVE.push([a,a.style.overflow,a.style.zIndex,a.style.position]);a.style.overflow='visible';a.style.zIndex='61';if(getComputedStyle(a).position==='static')a.style.position='relative'}x.style.setProperty('--zi',1/Math.min(1180/w,650/h,4));x.classList.add('zoomed');x.style.transform=`translate(${640-cx}px,${360-cy}px) scale(${s})`;ZEL=x;$('#zdim').classList.add('on');api.sfx('swish')}
+// ---------- panels ----------
+function panel(id,on){$$('.panel').forEach(p=>p.classList.toggle('on',p.id===id&&on))}
+function pagesPanel(){const q=seq();const g={};P.forEach((p,i)=>{(g[p.st||'—']=g[p.st||'—']||[]).push([p,i])});
+ $('#pPages').innerHTML=`<button class="x" data-close>✕</button><h3>🗺️ Pages</h3>${Object.keys(g).map(s=>`<div class="stg">${esc(s)}</div><div class="pre">${g[s].map(([p,i])=>`<button data-goto="${i}" class="${q.includes(p.id)?'pri':''}">${q.includes(p.id)?(q.indexOf(p.id)+1)+'. ':'＋ '}${esc(p.t)}</button>`).join('')}</div>`).join('')}`}
+function planPanel(){const q=seq();const mins=q.reduce((a,id)=>a+(ls.get('min-'+id,null)??P[idx(id)].min),0);const vers=ls.get('vers',{});
+ $('#pPlan').innerHTML=`<button class="x" data-close>✕</button><h3>🧭 Plan · ${q.length} pages · ${mins} min</h3>
+ <div class="pre">${PRE.map(r=>`<button data-preset="${r.id}" title="${esc(r.zh||'')}">${esc(r.name)}</button>`).join('')}<button data-preset="__main">⭐ Main line</button><button data-preset="__all">Everything</button></div>
+ <div class="pre"><b style="align-self:center">💾 Class versions</b> <input id="vname" placeholder="e.g. AM 早班" style="padding:6px;border:1px solid #ccc;border-radius:8px"> <button class="pri" data-vsave>Save this plan + hidden items</button>
+ ${Object.keys(vers).map(n=>`<span style="display:inline-flex;gap:2px"><button data-vload="${esc(n)}">📂 ${esc(n)}</button><button data-vdel="${esc(n)}" title="Delete">🗑</button></span>`).join('')}</div>
+ <table>${P.map((p,i)=>`<tr class="${p.main?'':'ex'}"><td style="width:28px"><input type="checkbox" data-pin="${p.id}" ${q.includes(p.id)?'checked':''}></td><td style="width:70px">${esc(p.st)}</td><td><a href="#" data-goto="${i}">${esc(p.t)}</a> ${p.main?'':'<small>(extra)</small>'}</td><td style="width:80px"><input type="number" min="0" max="60" data-min="${p.id}" value="${ls.get('min-'+p.id,null)??p.min}"> min</td></tr>`).join('')}</table>`}
+function picsPanel(){$('#pPics').innerHTML=`<button class="x" data-close>✕</button><h3>🖼️ Pictures · built-in SVG · upload a photo to replace</h3><p>${esc(window.IMGSTYLE||'')}</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${Object.keys(IMG).map(id=>{const s=IMG[id];return `<div style="border:1px solid #ddd;border-radius:10px;padding:8px"><b>${id}</b> · ${esc(L.lang==='en'?s[3]||'':s[0])}<div style="height:110px;margin:6px 0">${PIC(id,{h:110,nohint:1})}</div><div style="font-size:12px;color:#555">🎯 ${esc(s[4]||'')}</div><div style="font-size:12px">${esc(s[1])}</div><div class="pre"><button data-copy="${esc(s[1]+' '+(window.IMGSTYLE||''))}">📋 Copy</button><label style="border:1px solid #c9cfda;border-radius:8px;padding:6px 10px;cursor:pointer">⬆️ Upload<input type="file" accept="image/*" data-up="${id}" hidden></label><button data-unup="${id}">↺</button></div></div>`}).join('')}</div>`}
+// ---------- events ----------
+document.addEventListener('click',e=>{const t=e.target;let a;
+ if(a=t.closest('[data-say]')){e.stopPropagation();api.say(a.dataset.say,a.dataset.v);return}
+ if(a=t.closest('[data-zoom]')){e.stopPropagation();zoom(a.parentElement);return}
+ if(t.id==='zdim'){unzoom();return}
+ if(a=t.closest('[data-hint]')){e.stopPropagation();a.parentElement.classList.toggle('hshow');return}
+ if(a=t.closest('.rv')){a.classList.toggle('open');if(a.classList.contains('open'))api.sfx('click');return}
+ if(a=t.closest('[data-timer]')){const out=a.parentElement.querySelector('.timer');let s=+a.dataset.timer;clearInterval(out._t);const sh=()=>out.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');sh();out._t=setInterval(()=>{s--;sh();if(s<=0){clearInterval(out._t);out.textContent='⏰';api.sfx('tada')}},1000);return}
+ if(a=t.closest('[data-pick]')){const n=NAMES();const o=a.parentElement.querySelector('.pickout');if(o)o.textContent='🎯 '+n[Math.floor(Math.random()*n.length)];api.sfx('ding');return}
+ if(a=t.closest('[data-cls]')){CLASS=a.dataset.cls;ls.set('class',CLASS);P.forEach((p,i)=>render(i));go(cur,true);return}
+ if(a=t.closest('[data-nav]')){const n=a.dataset.nav;if(n==='next')step(1);if(n==='prev')step(-1);if(n==='back'&&hist.length)go(hist.pop(),true);return}
+ if(a=t.closest('[data-goto]')){e.preventDefault();go(+a.dataset.goto);panel('',0);return}
+ if(a=t.closest('[data-close]')){panel('',0);return}
+ if(a=t.closest('[data-preset]')){const v=a.dataset.preset;plan=v==='__main'?defaultPlan():v==='__all'?P.map(p=>p.id):PRE.find(r=>r.id===v).ids.filter(id=>idx(id)>=0);ls.set('plan',plan);planPanel();go(cur,true);return}
+ if(a=t.closest('[data-vsave]')){const n=($('#vname').value||'').trim()||('Version '+new Date().toLocaleDateString());const v=ls.get('vers',{});v[n]={plan,hidden,cls:CLASS};ls.set('vers',v);planPanel();return}
+ if(a=t.closest('[data-vload]')){const v=ls.get('vers',{})[a.dataset.vload];if(v){plan=v.plan;hidden=v.hidden||{};CLASS=v.cls||CLASS;ls.set('plan',plan);ls.set('hid',hidden);ls.set('class',CLASS);P.forEach((p,i)=>render(i));planPanel();go(cur,true)}return}
+ if(a=t.closest('[data-vdel]')){const v=ls.get('vers',{});delete v[a.dataset.vdel];ls.set('vers',v);planPanel();return}
+ if(a=t.closest('[data-copy]')){try{navigator.clipboard.writeText(a.dataset.copy).then(()=>a.textContent='✓ Copied',()=>{})}catch(x){}return}
+ if(a=t.closest('[data-unup]')){ls.del('img-'+a.dataset.unup);P.forEach((p,i)=>render(i));picsPanel();go(cur,true);return}
+ if(a=t.closest('[data-tool]')){const n=a.dataset.tool,b=document.body;
+  if(n==='pages'){pagesPanel();panel('pPages',!$('#pPages').classList.contains('on'))}
+  if(n==='plan'){planPanel();panel('pPlan',!$('#pPlan').classList.contains('on'))}
+  if(n==='pics'){picsPanel();panel('pPics',!$('#pPics').classList.contains('on'))}
+  if(n==='all'){const el=$('.slide.on');const rs=$$('.rv',el);const open=rs.some(r=>!r.classList.contains('open'));rs.forEach(r=>r.classList.toggle('open',open));el.dispatchEvent(new CustomEvent('showall',{detail:open}))}
+  if(n==='num'){b.classList.toggle('picnum');a.classList.toggle('on')}
+  if(n==='zh'){b.classList.toggle('nozh');a.classList.toggle('on',!b.classList.contains('nozh'));ls.set('zh',!b.classList.contains('nozh'))}
+  if(n==='fx'){b.classList.toggle('fx');a.classList.toggle('on',b.classList.contains('fx'));ls.set('fx',b.classList.contains('fx'))}
+  if(n==='sfx'){SFXON=!SFXON;ls.set('sfx',SFXON);a.classList.toggle('on',SFXON);a.textContent=SFXON?'🔔':'🔕'}
+  if(n==='k+'||n==='k-'){const k=Math.max(.8,Math.min(1.3,(ls.get('k',1))+(n==='k+'?.05:-.05)));ls.set('k',k);$('#stage').style.setProperty('--k',k)}
+  if(n==='hid'){b.classList.toggle('showhid');a.classList.toggle('on')}
+  if(n==='games'){api.openGames()}
+  if(n==='full'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(x){}}
+  return}});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.pin){const id=t.dataset.pin;if(t.checked&&!plan.includes(id)){const order=P.map(p=>p.id);plan.push(id);plan.sort((a,b)=>order.indexOf(a)-order.indexOf(b))}if(!t.checked)plan=plan.filter(x=>x!==id);ls.set('plan',plan);planPanel()}
+ if(t.dataset.min){ls.set('min-'+t.dataset.min,+t.value);planPanel()}
+ if(t.dataset.up){const f=t.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');const s=Math.min(1,900/Math.max(img.width,img.height));c.width=img.width*s;c.height=img.height*s;c.getContext('2d').drawImage(img,0,0,c.width,c.height);ls.set('img-'+t.dataset.up,c.toDataURL('image/jpeg',.82));P.forEach((p,i)=>render(i));picsPanel();go(cur,true)};img.src=r.result};r.readAsDataURL(f)}});
+document.addEventListener('contextmenu',e=>{const sl=e.target.closest('.slide');if(!sl)return;e.preventDefault();const id=sl.dataset.id;
+ if(e.target===sl||e.target.classList.contains('body')){$$('.xh',sl).forEach(x=>x.classList.remove('xh'));hidden[id]=[];ls.set('hid',hidden);return}
+ const x=e.target.closest('.card,.pic,.frame,.btn,.say,.rv,p,li,h2,img,svg,[data-h]')||e.target;if(x===sl)return;
+ const p=pathOf(x,sl);x.classList.toggle('xh');const L2=new Set(hidden[id]||[]);x.classList.contains('xh')?L2.add(p):L2.delete(p);hidden[id]=[...L2];ls.set('hid',hidden)});
+document.addEventListener('keydown',e=>{if(/input|textarea|select/i.test(e.target.tagName))return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();step(1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();step(-1)}if(e.key==='Escape'){unzoom();panel('',0);api.closeGames&&api.closeGames()}});
+// ---------- start ----------
+api.start=()=>{if(L.lang==='en'){document.documentElement.lang='en';document.documentElement.classList.add('lang-en');const st=document.createElement('style');st.textContent='.zh,[data-tool="zh"]{display:none!important}';document.head.appendChild(st)}plan=ls.get('plan',null)||defaultPlan();hidden=ls.get('hid',{});
+ if(ls.get('pv',0)!==(L.planVersion||1)){plan=defaultPlan();ls.set('plan',plan);ls.set('pv',L.planVersion||1)}
+ document.title=L.title;build();
+ const b=document.body;if(!ls.get('zh',false))b.classList.add('nozh');if(ls.get('fx',true))b.classList.add('fx');
+ $('[data-tool="zh"]').classList.toggle('on',!b.classList.contains('nozh'));$('[data-tool="fx"]').classList.toggle('on',b.classList.contains('fx'));$('[data-tool="sfx"]').classList.toggle('on',SFXON);$('[data-tool="sfx"]').textContent=SFXON?'🔔':'🔕';
+ $('#stage').style.setProperty('--k',ls.get('k',1));
+ const last=idx(ls.get('cur',''));go(last>=0?last:idx(seq()[0]||P[0].id),true)};
+// ---------- games (plugins register into E.games) ----------
+api.games=[];api.game=g=>api.games.push(g);
+api.openGames=()=>{const gm=$('#gm');gm.classList.add('on');gm.innerHTML=HDR('🎮 Games','Game centre','选一个游戏和难度',`<button class="btn" data-gclose>✕ Close</button>`,'pr')+`<div class="g3">${api.games.map((g,i)=>`<div class="card"><div class="t-l b">${g.ico} ${g.name}</div><div class="zh" style="display:block">${g.zh}</div><div class="row" style="margin-top:8px;flex-wrap:wrap">${g.lv.map((l,j)=>`<button class="btn${j?'':' co'}" data-gopen="${i}" data-glv="${j+1}" title="${esc(l)}">${'①②③'[j]} ${esc(l)}</button>`).join('')}</div></div>`).join('')}</div>`};
+api.closeGames=()=>{$('#gm').classList.remove('on')};
+document.addEventListener('click',e=>{let a;if(a=e.target.closest('[data-gclose]')){api.closeGames();return}
+ if(a=e.target.closest('[data-gopen]')){const g=api.games[+a.dataset.gopen];const gm=$('#gm');gm.innerHTML=HDR(g.ico+' '+g.name,g.name+' · '+'①②③'[a.dataset.glv-1],g.zh,`<button class="btn" data-gback>← Games</button><button class="btn" data-gclose>✕</button>`,'pr')+'<div class="body gbody"></div>';g.run($('.gbody',gm),+a.dataset.glv,ITEMS);return}
+ if(a=e.target.closest('[data-gback]')){api.openGames()}});
+api.gamePage=()=>({id:'games',t:'🎮 Game centre',st:'Games',min:10,html:()=>HDR('🎮 Games','Game centre','选一个游戏',`<button class="btn co" data-tool="games">Open the Game centre</button>`,'pr')+`<div class="g3">${api.games.map(g=>`<div class="card"><div class="t-l b">${g.ico} ${g.name}</div><div class="zh" style="display:block">${g.zh}</div><div class="t-s mute">${g.lv.join(' · ')}</div></div>`).join('')}</div>`});
+return api})();
+
+</script>
+<script>
+/* ===== ESOL Engine v2 · games.js — optional plugins. Each game uses E.items([{k,w,pic,say}]) of the lesson. ===== */
+(()=>{
+const Q=(s,r)=>r.querySelector(s);
+const nameOf=it=>it.w;
+// 🔍 Zoom in
+E.game({ico:'🔍',name:'Zoom in',zh:'放大局部猜词',lv:['Zoom out 3 times','Zoom out 2 times','First picture only'],run(b,lv,IT){let o=shuffle(IT),i=0,z=0;const Z=lv===1?[4,2.6,1.7,1]:lv===2?[5,2.4,1]:[6,1];
+ const draw=()=>{const it=o[i%o.length];b.innerHTML=`<div class="row" style="align-items:stretch;gap:16px;flex:1;min-height:0"><div class="card flat" data-nozoom style="width:760px;height:520px;overflow:hidden;padding:0"><div style="width:100%;height:100%;transition:transform .7s ease;transform:scale(${Z[z]});transform-origin:${it.fo||'50% 55%'}">${PIC(it.pic,{h:520,nohint:1,style:'border-radius:0'})}</div></div>
+ <div class="col" style="flex:1"><button class="btn co t-l" data-zo>🔍 Zoom out</button><button class="btn t-l" data-za>👀 Answer</button><button class="btn t-l" data-zn>🎲 Next</button><div class="card t-xl b acc ans" style="min-height:120px">${z===Z.length-1&&b._a?esc(nameOf(it))+' '+SAY(it.say||it.w):'🤔'}</div></div></div>`};
+ b.onclick=e=>{if(e.target.closest('[data-zo]')){z=Math.min(Z.length-1,z+1);const p=Q('[style*="transform-origin"]',b);p.style.transform=`scale(${Z[z]})`;E.sfx('swish')}if(e.target.closest('[data-za]')){z=Z.length-1;b._a=1;draw();E.sfx('ding')}if(e.target.closest('[data-zn]')){i++;z=0;b._a=0;draw()}};draw()}});
+// ⚡ Flash
+E.game({ico:'⚡',name:'Flash!',zh:'闪图快说',lv:['1.5 seconds','0.8 second','0.4 second'],run(b,lv,IT){const ms=[1500,800,400][lv-1];let o=shuffle(IT),i=0;
+ const draw=(show)=>{const it=o[i%o.length];b.innerHTML=`<div class="col" style="align-items:center;flex:1"><div class="card flat" data-nozoom style="width:720px;height:460px;padding:0">${show?PIC(it.pic,{h:460,nohint:1}):`<div class="t-xxl c" style="line-height:460px">⚡</div>`}</div><div class="row"><button class="btn co t-l" data-fl>⚡ Flash</button><button class="btn t-l" data-fa>👀 Answer</button><b class="t-xl acc fa"></b></div></div>`};
+ b.onclick=e=>{if(e.target.closest('[data-fl]')){i++;draw(1);E.sfx('whoosh');setTimeout(()=>draw(0),ms)}if(e.target.closest('[data-fa]')){const it=o[i%o.length];Q('.fa',b).innerHTML=esc(it.w)+' '+SAY(it.say||it.w)}};draw(0)}});
+// 🙈 What's missing
+E.game({ico:'🙈',name:"What's missing?",zh:'少了哪一个',lv:['4 pictures','6 pictures','8 pictures · 2 missing'],run(b,lv,IT){const n=[4,6,8][lv-1],m=lv===3?2:1;let set,gone;
+ const deal=()=>{set=shuffle(IT).slice(0,n);gone=[];draw(1)};
+ const draw=(names)=>{b.innerHTML=`<div class="g${n>4?4:4}" style="flex:1">${set.map(it=>`<div class="card" data-nozoom style="padding:6px">${gone.includes(it)?`<div class="t-xxl c" style="height:150px;line-height:150px">❓</div>`:PIC(it.pic,{h:150,nohint:1})}${names?`<div class="c b">${esc(it.w)}</div>`:''}</div>`).join('')}</div><div class="row"><button class="btn co" data-wm>🙈 Close your eyes!</button><button class="btn" data-wa>👀 Answer</button><button class="btn" data-wn>🎲 New set</button><b class="t-l acc wa"></b></div>`};
+ b.onclick=e=>{if(e.target.closest('[data-wm]')){gone=shuffle(set).slice(0,m);set=shuffle(set);draw(0);E.sfx('swish')}if(e.target.closest('[data-wa]'))Q('.wa',b).textContent=gone.map(nameOf).join(' · ');if(e.target.closest('[data-wn]'))deal()};deal()}});
+// 🃏 Memory pairs
+E.game({ico:'🃏',name:'Memory pairs',zh:'翻牌配对（图 + 词）',lv:['4 pairs','6 pairs','8 pairs'],run(b,lv,IT){const n=[4,6,8][lv-1];const its=shuffle(IT).slice(0,n);const cards=shuffle([...its.map(x=>({x,t:'p'})),...its.map(x=>({x,t:'w'}))]);let open=[],done=0;
+ b.innerHTML=`<div class="g${n>4?4:4}" style="flex:1;align-content:start">${cards.map((c,i)=>`<div class="card mem" data-nozoom data-mi="${i}" style="height:${n>6?118:150}px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:4px"><span class="t-xl">❔</span></div>`).join('')}</div>`;
+ b.onclick=e=>{const el=e.target.closest('[data-mi]');if(!el||el.classList.contains('ok')||open.includes(el)||open.length===2)return;const c=cards[+el.dataset.mi];el.innerHTML=c.t==='p'?PIC(c.x.pic,{h:n>6?106:138,nohint:1}):`<span class="t-l b">${esc(c.x.w)}</span>`;E.sfx('flip');open.push(el);
+  if(open.length===2){const [a,d]=open.map(o=>cards[+o.dataset.mi]);if(a.x===d.x&&a.t!==d.t){open.forEach(o=>o.classList.add('ok'));open=[];done++;E.sfx('ding');if(done===n)E.sfx('tada')}else setTimeout(()=>{open.forEach(o=>o.innerHTML='<span class="t-xl">❔</span>');open=[]},1100)}}}});
+// 🔦 Torch
+E.game({ico:'🔦',name:'Torch',zh:'手电筒照一照',lv:['Big light','Small light','Tiny light'],run(b,lv,IT){const r=[150,95,60][lv-1];let o=shuffle(IT),i=0;
+ const draw=()=>{const it=o[i%o.length];b.innerHTML=`<div class="row" style="gap:16px;align-items:stretch;flex:1"><div class="card flat tor" data-nozoom style="width:760px;height:520px;padding:0;overflow:hidden;position:relative;cursor:none">${PIC(it.pic,{h:520,nohint:1})}<div class="dark" style="position:absolute;inset:0;background:radial-gradient(circle ${r}px at 50% 50%,transparent 0,transparent ${r-4}px,#0d1117 ${r}px)"></div></div><div class="col" style="flex:1"><button class="btn t-l" data-ta>👀 Answer</button><button class="btn co t-l" data-tn>🎲 Next</button><div class="card t-xl b acc ta" style="min-height:110px">🤔</div><div class="zh" style="display:block">Move the mouse on the picture.</div></div></div>`;
+  const t=Q('.tor',b),d=Q('.dark',b);t.onmousemove=e=>{const R=t.getBoundingClientRect();const s=R.width/760;d.style.background=`radial-gradient(circle ${r}px at ${(e.clientX-R.left)/s}px ${(e.clientY-R.top)/s}px,transparent 0,transparent ${r-4}px,#0d1117 ${r}px)`}};
+ b.onclick=e=>{if(e.target.closest('[data-ta]')){const it=o[i%o.length];Q('.ta',b).innerHTML=esc(it.w)+' '+SAY(it.say||it.w);Q('.dark',b).style.background='none'}if(e.target.closest('[data-tn]')){i++;draw()}};draw()}});
+// 🎡 Wheel: student + item
+E.game({ico:'🎡',name:'Spin: who + what',zh:'随机抽学生 + 抽一张图问答',lv:['Student says the word','Student says a sentence','Student asks a classmate'],run(b,lv,IT){const task=['Say the word.','Say a sentence.','Ask a classmate a question.'][lv-1];
+ b.innerHTML=`<div class="row" style="gap:16px;align-items:stretch;flex:1"><div class="card flat" data-nozoom style="width:620px;height:460px;padding:0" id="wpic"><div class="t-xxl c" style="line-height:460px">🎡</div></div><div class="col" style="flex:1"><button class="btn co t-xl" data-sp>🎡 Spin</button><div class="card t-xl b acc wn" style="min-height:90px"></div><div class="frame">${task}</div><button class="btn" data-sa>👀 Word</button><b class="t-l acc sw"></b></div></div>`;let it=null;
+ b.onclick=e=>{if(e.target.closest('[data-sp]')){let k=0;const N=NAMES();const iv=setInterval(()=>{it=IT[Math.floor(Math.random()*IT.length)];Q('#wpic',b).innerHTML=PIC(it.pic,{h:460,nohint:1});Q('.wn',b).textContent='🎯 '+N[Math.floor(Math.random()*N.length)];E.sfx('click');if(++k>12){clearInterval(iv);E.sfx('ding')}},90);Q('.sw',b).textContent=''}if(e.target.closest('[data-sa]')&&it)Q('.sw',b).textContent=it.w}}});
+})();
+
+</script>
+<script>
+// ===== 你好 Lesson 1 · built-in SVG pictures (kid-friendly flat vector, no words, no logos) =====
+const ZG=(()=>{
+ const INK="#1f2633",RED="#e0484d",ORG="#f28c28",BLU="#2f6fb3",YEL="#f5c430",GRN="#2f9a5b",PUR="#7b4fc4",PINK="#ef7aa8",SKIN="#f2c9a0",SKIN2="#d9a27a",SEA="#2b8fd6",SKY="#dff0ff",GRASS="#8fd16a",BRN="#8a5a35";
+ const T1="#e0484d",T2="#2f9a5b",T3="#2f6fb3",T4="#7b4fc4";
+ const R=(x,y,w,h,f,r,s)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r||0}" fill="${f}"${s?` stroke="${INK}" stroke-width="${s}"`:''}/>`;
+ const C=(x,y,r,f,s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"${s?` stroke="${INK}" stroke-width="${s}"`:''}/>`;
+ const El=(x,y,rx,ry,f,s)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${f}"${s?` stroke="${INK}" stroke-width="${s}"`:''}/>`;
+ const L=(d,c,w)=>`<path d="${d}" stroke="${c}" stroke-width="${w||4}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ const PT=(d,f,s)=>`<path d="${d}" fill="${f}"${s?` stroke="${INK}" stroke-width="${s}" stroke-linejoin="round"`:''}/>`;
+ const sv=(bg,body)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">${R(0,0,400,300,bg)}${body}</svg>`;
+ // face
+ const FACE=(x,y,r,o)=>{o=o||{};const sk=o.skin||SKIN,m=o.mood||'happy';
+  const eyes=m==='angry'?L(`M${x-r*.55} ${y-r*.35} l${r*.3} ${r*.15} M${x+r*.55} ${y-r*.35} l-${r*.3} ${r*.15}`,INK,3)+C(x-r*.35,y-r*.05,r*.1,INK)+C(x+r*.35,y-r*.05,r*.1,INK)
+   :m==='laugh'?L(`M${x-r*.5} ${y-r*.1} q${r*.15} -${r*.25} ${r*.3} 0 M${x+r*.2} ${y-r*.1} q${r*.15} -${r*.25} ${r*.3} 0`,INK,3)
+   :C(x-r*.35,y-r*.1,r*(m==='wow'?.14:.11),INK)+C(x+r*.35,y-r*.1,r*(m==='wow'?.14:.11),INK);
+  const mouth=m==='angry'?L(`M${x-r*.3} ${y+r*.5} Q${x} ${y+r*.3} ${x+r*.3} ${y+r*.5}`,INK,3)
+   :m==='wow'?El(x,y+r*.42,r*.14,r*.2,"#8a2b2b")
+   :m==='laugh'?PT(`M${x-r*.42} ${y+r*.22} Q${x} ${y+r*.85} ${x+r*.42} ${y+r*.22}Z`,"#8a2b2b",2)
+   :L(`M${x-r*.35} ${y+r*.3} Q${x} ${y+r*.62} ${x+r*.35} ${y+r*.3}`,INK,3);
+  const hair=o.hair?(o.long?PT(`M${x-r*1.02} ${y+r*.6} Q${x-r*1.15} ${y-r*1.25} ${x} ${y-r*1.08} Q${x+r*1.15} ${y-r*1.25} ${x+r*1.02} ${y+r*.6} L${x+r*.8} ${y-r*.2} Q${x} ${y-r*.75} ${x-r*.8} ${y-r*.2}Z`,o.hair)
+   :PT(`M${x-r*.98} ${y-r*.05} Q${x-r} ${y-r*1.15} ${x} ${y-r*1.08} Q${x+r} ${y-r*1.15} ${x+r*.98} ${y-r*.05} Q${x+r*.5} ${y-r*.65} ${x-r*.1} ${y-r*.5} Q${x-r*.6} ${y-r*.5} ${x-r*.98} ${y-r*.05}Z`,o.hair)):'';
+  const pony=o.pony?El(x+r*1.05,y-r*.35,r*.28,r*.5,o.hair):'';
+  return pony+C(x,y,r,sk,2)+hair+eyes+(m==='angry'?'':C(x-r*.6,y+r*.25,r*.13,"#f4a3a3")+C(x+r*.6,y+r*.25,r*.13,"#f4a3a3"))+mouth};
+ // kid / adult body
+ const PERSON=(x,y,s,o)=>{o=o||{};const r=26*s;const top=o.top||BLU;const arm=o.arm||'down';
+  let a='';const sh=y+r*1.25;
+  const armL=arm==='wave'?L(`M${x-r*.7} ${sh+r*.3} L${x-r*1.5} ${sh-r*.6} L${x-r*1.6} ${sh-r*1.5}`,top,r*.36)+C(x-r*1.6,sh-r*1.6,r*.25,o.skin||SKIN,2)
+   :arm==='point'?L(`M${x-r*.7} ${sh+r*.3} L${x-r*1.9} ${sh+r*.2}`,top,r*.36)+C(x-r*2,sh+r*.2,r*.22,o.skin||SKIN,2)
+   :L(`M${x-r*.7} ${sh+r*.3} L${x-r*.95} ${sh+r*1.4}`,top,r*.36);
+  const armR=arm==='self'?L(`M${x+r*.7} ${sh+r*.3} L${x+r*.2} ${sh+r*.8}`,top,r*.36)+C(x+r*.1,sh+r*.8,r*.22,o.skin||SKIN,2)
+   :arm==='finger'?L(`M${x+r*.7} ${sh+r*.3} L${x+r*1.4} ${sh-r*.4} L${x+r*1.45} ${sh-r*1.1}`,top,r*.36)+C(x+r*1.45,sh-r*1.15,r*.2,o.skin||SKIN,2)+L(`M${x+r*1.45} ${sh-r*1.3} v-${r*.4}`,o.skin||SKIN2,r*.12)
+   :L(`M${x+r*.7} ${sh+r*.3} L${x+r*.95} ${sh+r*1.4}`,top,r*.36);
+  a+=L(`M${x-r*.35} ${sh+r*2} v${r*1.1} M${x+r*.35} ${sh+r*2} v${r*1.1}`,o.legs||"#3a4458",r*.36);
+  a+=armL+armR+PT(`M${x-r*.75} ${sh+r*.1} Q${x} ${sh-r*.25} ${x+r*.75} ${sh+r*.1} L${x+r*.8} ${sh+r*2.1} L${x-r*.8} ${sh+r*2.1}Z`,top,2);
+  return a+FACE(x,y,r,o)};
+ const BUBBLE=(x,y,w,h,tail,inner)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="#fff" stroke="${INK}" stroke-width="3"/>`+PT(`M${x+18} ${y+h-2} L${x+6} ${y+h+(tail||18)} L${x+40} ${y+h-2}Z`,"#fff")+L(`M${x+18} ${y+h} L${x+6} ${y+h+(tail||18)} L${x+40} ${y+h}`,INK,3)+(inner||'');
+ const DOTS=(x,y)=>C(x,y,6,INK)+C(x+20,y,6,INK)+C(x+40,y,6,INK);
+ const LELE=(x,y,s,o)=>PERSON(x,y,s,Object.assign({hair:"#222",top:"#f5b82e",legs:"#2f4a7a",skin:"#f0c49a"},o));
+ const MIA=(x,y,s,o)=>PERSON(x,y,s,Object.assign({hair:"#a0522d",pony:1,top:"#2f9a5b",legs:"#2b3a55",skin:"#f6d2b5"},o));
+ // ---- bikes on roads (tones) ----
+ const BIKE=(x,y,rot,c)=>`<g transform="translate(${x} ${y}) rotate(${rot})">${C(-22,0,15,"none")}<circle cx="-22" cy="0" r="15" fill="none" stroke="${INK}" stroke-width="4"/><circle cx="22" cy="0" r="15" fill="none" stroke="${INK}" stroke-width="4"/>${L('M-22 0 L-4 -22 L18 -22 L22 0 M-4 -22 L4 0 L-22 0 M18 -22 l-4 -10 h10',c,4)}${C(-4,-38,9,SKIN,2)}${L('M-4 -29 L4 -14',c,6)}</g>`;
+ const ROAD=(d,c,bx,by,rot)=>sv("#f6fbff",PT("M0 300 L0 240 L400 240 L400 300Z",GRASS)+`<path d="${d}" stroke="#555" stroke-width="22" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" stroke="${c}" stroke-width="8" fill="none" stroke-dasharray="18 12" stroke-linecap="round"/>`+BIKE(bx,by,rot,c));
+ // ---- mouths ----
+ const MOUTH=(kind)=>{const lip="#d9575d",ins="#7a1f2a",tooth="#fff";let m='';
+  if(kind==='a')m=El(200,175,70,62,lip,3)+El(200,178,56,48,ins)+R(160,132,80,14,tooth,4);
+  if(kind==='o')m=El(200,175,44,50,lip,3)+El(200,177,28,34,ins);
+  if(kind==='e')m=El(200,175,70,30,lip,3)+El(200,177,56,17,ins);
+  if(kind==='i')m=El(200,175,90,24,lip,3)+R(122,165,156,20,tooth,6)+L('M126 175 h148',"#ccc",2);
+  if(kind==='u')m=El(200,175,26,28,lip,3)+El(200,176,12,14,ins)+L('M232 160 q20 -10 40 0 M234 176 h44 M232 192 q20 10 40 0',"#9ccbe8",4);
+  if(kind==='v')m=El(200,175,30,22,lip,3)+El(200,176,14,9,ins)+L('M240 150 q14 -14 30 -6 M244 140 l10 -24 M262 132 l18 -14',"#9ccbe8",4);
+  return sv("#fff3e6",C(200,150,130,SKIN,3)+C(150,95,12,INK)+C(250,95,12,INK)+C(120,150,16,"#f4a3a3")+C(280,150,16,"#f4a3a3")+m)};
+ const HANDN=(n)=>{let f='';const xs=[168,194,220,246];for(let i=0;i<4;i++){const up=n===5||i<n;f+=up?R(xs[i]-12,80,24,120,SKIN,12,2):R(xs[i]-12,150,24,46,SKIN,12,2)}
+  const th=n===5?`<rect x="128" y="160" width="26" height="80" rx="13" fill="${SKIN}" stroke="${INK}" stroke-width="2" transform="rotate(-35 150 235)"/>`:R(150,175,60,24,SKIN,12,2);
+  return sv("#fff8e7",R(150,160,110,100,SKIN,28,2)+f+th+R(158,252,94,40,BLU,8))};
+ const STICKS=(n)=>{let s='';for(let i=0;i<n;i++)s+=R(90,150-((n-1)*34)/2+i*34-10,220,20,"#c98a4a",10,2);return sv("#fffaf0",s)};
+ const S={
+  C1:sv(SKY,R(0,210,400,90,GRASS)+R(40,60,120,150,"#f9e0b0",6,3)+R(75,130,50,80,BRN,4,3)+PT("M30 64 L100 20 L170 64Z",RED,3)+LELE(250,120,1.1,{arm:'wave'})+MIA(340,135,.9,{arm:'wave'})+BUBBLE(190,20,120,40,20,PT('M226 52 q14 -20 28 0',"none")+L('M218 44 q8 -16 16 0 q8 -16 16 0 q8 -16 16 0 q8 -16 16 0',RED,4))),
+  SCH:sv("#fdf4e3",R(0,230,400,70,"#d9b98a")+R(30,40,110,190,"#a9763f",6,3)+C(122,140,6,YEL)+PERSON(85,95,1.15,{hair:"#5a3a22",top:PUR,legs:"#333",long:1})+LELE(220,120,1.05,{arm:'wave'})+BUBBLE(250,30,110,46,18,DOTS(285,65))+R(300,200,90,30,"#c98a4a",4,2)+MIA(345,170,.6)),
+  MUM:sv("#fff0f3",PERSON(170,90,1.3,{hair:"#3a2a1a",long:1,top:PINK,legs:"#4a3a5a"})+PERSON(255,150,.8,{hair:"#3a2a1a",top:YEL,arm:'wave'})+PT("M215 40 c-10 -18 -34 -6 -24 12 l24 22 l24 -22 c10 -18 -14 -30 -24 -12z",RED)),
+  ROPE:sv("#f7f2e4",El(200,190,120,60,"#d8b46a",3)+El(200,180,95,45,"#c49a52",3)+El(200,172,70,32,"#d8b46a",3)+El(200,166,45,20,"#c49a52",3)+L('M120 190 q-40 -20 -50 -80 q-6 -30 20 -40',"#c49a52",14)+L('M120 190 q-40 -20 -50 -80 q-6 -30 20 -40',"#e8c784",5)),
+  HORSE:sv("#eef8e8",R(0,230,400,70,GRASS)+El(200,160,95,45,"#a0612f",3)+PT("M270 140 L320 70 L350 85 L345 110 L300 160Z","#a0612f",3)+C(330,92,5,INK)+PT("M300 72 L318 40 L326 72Z","#a0612f",3)+PT("M296 76 Q270 90 262 130 L280 132 Q288 100 310 84Z","#5a3315")+R(125,185,18,70,"#a0612f",6,3)+R(160,190,18,65,"#a0612f",6,3)+R(225,190,18,65,"#a0612f",6,3)+R(260,185,18,70,"#a0612f",6,3)+L('M108 150 q-30 10 -34 50',"#5a3315",12)),
+  SCOLD:sv("#fdeeee",PERSON(150,90,1.25,{hair:"#4a3020",top:BLU,legs:"#333",mood:'angry',arm:'point'})+PERSON(300,150,.75,{hair:"#222",top:ORG,mood:'wow'})+L('M220 50 l14 -24 l-6 20 l16 -4 l-16 26',YEL,6)+L('M200 40 l-10 -20 M250 45 l12 -18',RED,4)),
+  ROAD1:ROAD('M20 140 L380 140',T1,200,118,0),
+  ROAD2:ROAD('M20 230 L380 60',T2,200,122,-25),
+  ROAD3:ROAD('M20 120 Q110 250 200 240 Q290 230 380 70',T3,200,218,0),
+  ROAD4:ROAD('M20 60 L380 230',T4,200,124,25),
+  MA:MOUTH('a'),MO:MOUTH('o'),ME:MOUTH('e'),MI:MOUTH('i'),MU:MOUTH('u'),MV:MOUTH('v'),
+  WAVE:sv("#e9f6ff",R(0,190,400,110,SEA)+PT("M0 200 Q60 120 120 170 Q140 120 110 100 Q170 100 180 180 Q240 140 300 190 Q340 150 400 180 L400 300 L0 300Z","#1c74b8",3)+L('M20 230 q30 -16 60 0 q30 16 60 0 q30 -16 60 0 q30 16 60 0 q30 -16 60 0 q30 16 60 0',"#fff",5)+C(330,60,30,YEL)),
+  GOOSE:sv("#eef8e8",R(0,220,400,80,"#7fc4e8")+El(220,190,95,50,"#fff",3)+PT("M140 175 Q110 120 125 70 Q130 45 155 50 Q175 55 170 80 Q160 110 175 165Z","#fff",3)+PT("M150 55 L110 64 L150 72Z",ORG,2)+C(156,62,5,INK)+PT("M235 175 Q275 160 300 185 Q270 205 235 195Z","#e8eef2",2)+L('M200 238 v30 M240 238 v30',ORG,6)),
+  CLOTH:sv("#fef3f8",PT("M140 70 L180 55 Q200 80 220 55 L260 70 L310 120 L280 150 L255 128 L255 250 L145 250 L145 128 L120 150 L90 120Z",RED,3)+C(200,150,18,YEL)+R(330,200,4,60,BRN)+L('M300 200 h64',"#888",4)),
+  FIVE:HANDN(5),
+  FISH:sv("#e6f5ff",El(190,150,110,60,ORG,3)+PT("M290 150 L360 95 L350 150 L360 205Z",ORG,3)+C(130,135,12,"#fff",2)+C(130,135,6,INK)+L('M170 110 q20 40 0 80 M210 105 q20 45 0 90',"#d96a10",4)+C(70,90,8,"#bfe3fb",2)+C(55,60,5,"#bfe3fb",2)),
+  NI:sv("#eef4ff",MIA(130,100,1.1,{arm:'finger'})+LELE(300,110,1.05)+L('M190 150 L250 150',RED,6)+PT("M250 138 L272 150 L250 162Z",RED)),
+  HAO:sv("#fff6e8",PERSON(140,90,1.2,{hair:"#3a2a1a",long:1,top:PINK,legs:"#4a3a5a"})+PERSON(240,140,.85,{hair:"#3a2a1a",top:GRN})+R(300,110,60,60,"#fff",14,3)+PT("M318 160 v-24 h8 l10 -22 q8 0 6 12 l-3 10 h14 q8 0 6 8 l-4 16 q-2 6 -8 6z",YEL,2)),
+  WO:sv("#f3eefe",LELE(200,90,1.3,{arm:'self'})+PT("M290 60 L320 40 L322 75Z",YEL)+L('M268 110 q16 -6 26 -20',ORG,5)),
+  ONE:STICKS(1),TWO:STICKS(2),THREE:STICKS(3),
+  H1:HANDN(1),H2:HANDN(2),H3:HANDN(3),
+  LELEF:sv("#fff7e0",FACE(200,160,90,{hair:"#222",skin:"#f0c49a"})),
+  MIAF:sv("#eaf7ee",FACE(200,160,90,{hair:"#a0522d",pony:1,skin:"#f6d2b5"})),
+  APPLE2:sv("#fff",PT("M110 130 q-40 0 -40 50 q0 60 50 60 q10 -6 20 0 q50 0 50 -60 q0 -50 -40 -50 q-10 6 -40 0z",RED,3)+L("M130 130 q0 -20 10 -30",BRN,5)+PT("M250 130 q-40 0 -40 50 q0 60 50 60 q10 -6 20 0 q50 0 50 -60 q0 -50 -40 -50 q-10 6 -40 0z",RED,3)+L("M270 130 q0 -20 10 -30",BRN,5)),
+  APPLE3:sv("#fff",PT("M60 130 q-40 0 -40 50 q0 60 50 60 q10 -6 20 0 q50 0 50 -60 q0 -50 -40 -50 q-10 6 -40 0z",RED,3)+L("M80 130 q0 -20 10 -30",BRN,5)+PT("M180 130 q-40 0 -40 50 q0 60 50 60 q10 -6 20 0 q50 0 50 -60 q0 -50 -40 -50 q-10 6 -40 0z",RED,3)+L("M200 130 q0 -20 10 -30",BRN,5)+PT("M300 130 q-40 0 -40 50 q0 60 50 60 q10 -6 20 0 q50 0 50 -60 q0 -50 -40 -50 q-10 6 -40 0z",RED,3)+L("M320 130 q0 -20 10 -30",BRN,5)),
+ };
+ // avatars for the hello chain (6 colours)
+ const AVC=[[RED,"#222"],[GRN,"#a0522d"],[BLU,"#3a2a1a"],[ORG,"#e3b04b"],[PUR,"#222"],[PINK,"#6b3e26"]];
+ AVC.forEach((c,i)=>{S['AV'+(i+1)]=sv("#f6f6f6",PERSON(200,95,1.6,{top:c[0],hair:c[1],pony:i%2,mood:'happy',arm:'wave'}))});
+ return S})();
+
+</script>
+<script>
+// ===== 你好 Lesson 1 · meta (pictures, people, Chinese voice) =====
+E.lesson({id:'nihao-1',title:'你好！Nǐ hǎo! · Mandarin Lesson 1',prefix:'xd-nh1-',planVersion:2,
+ roster:{GEN:["Student A","Student B","Student C","Student D","Student E","Student F","Student G","Student H"]}});
+window.IMGSTYLE="Style: flat vector kids' illustration, bright four-colour board-game palette, ONE clear idea, big simple shapes, plain background, children with big readable facial expressions, no words or letters anywhere, no logos, no brand names.";
+// [中文说明, prompt, emoji, 💡 hint, 主题·准确版本]
+const IMG={
+ C1:["封面：学校门口，新同学乐乐挥手打招呼，Mia 也挥手","A school building with a red roof; a boy with black hair and a yellow T-shirt waves; a girl with a brown ponytail and a green top waves back; an empty speech bubble with a wavy line.","👋","Hello!","generic NZ primary school entrance, two children waving"],
+ SCH:["导入：老师带新同学乐乐到教室门口，乐乐挥手说话","A classroom door; a woman teacher in purple stands beside a boy with black hair and a yellow T-shirt; the boy waves; an empty speech bubble with three dots; a girl at a desk looks up.","🚪","a new boy at the door","generic classroom door, teacher + new boy waving"],
+ MUM:["mā 妈：妈妈和孩子，头上一颗心","A mum in a pink top stands beside her small child in yellow who waves; a red heart above them.","👩‍👧","mum","generic mother and child with a heart"],
+ ROPE:["má 麻：一卷麻绳","A coil of light-brown rope made of hemp fibre, one end hanging out.","🪢","rope","generic coil of hemp rope"],
+ HORSE:["mǎ 马：草地上一匹棕色的马","A brown horse standing side-on on green grass, dark mane and tail.","🐴","horse","generic brown horse side view"],
+ SCOLD:["mà 骂：大人生气地指着小孩（骂）","An angry adult in blue points a finger at a surprised child in orange; a small yellow lightning sign above.","😠","to tell someone off","generic adult telling off a child — angry face, pointing"],
+ ROAD1:["一声：平平的路，自行车在平路上","A bike on a flat straight road with a red dashed centre line; green grass below.","➡️","flat road","tone 1 road — flat, red"],
+ ROAD2:["二声：上坡路，自行车往上骑","A bike riding up a straight uphill road with a green dashed line, going from bottom-left to top-right.","↗️","uphill","tone 2 road — rising, green"],
+ ROAD3:["三声：山谷路，先下去再上来","A road that dips down into a valley and comes back up, blue dashed line; the bike at the bottom of the dip.","↘️↗️","down, then up","tone 3 road — dip (valley), blue"],
+ ROAD4:["四声：下坡路，自行车往下冲","A bike riding down a steep straight road from top-left to bottom-right with a purple dashed line.","↘️","downhill","tone 4 road — falling, purple"],
+ MA:["a：嘴巴张大","A big round cartoon face with the mouth wide open, top teeth showing.","😮","open wide","mouth shape for a — wide open"],
+ MO:["o：嘴巴圆圆","A cartoon face with round lips in an O shape.","⭕","round lips","mouth shape for o — round"],
+ ME:["e：嘴巴扁扁、半开","A cartoon face with the mouth half open and flat, relaxed.","😐","flat, half open","mouth shape for e — flat, half open"],
+ MI:["i：嘴角往两边拉，露牙齿","A cartoon face smiling wide with teeth together.","😁","big smile, teeth","mouth shape for i — wide smile, teeth together"],
+ MU:["u：嘴巴小小圆，像吹蜡烛","A cartoon face with small tight round lips, blowing air lines.","🕯️","blow a candle","mouth shape for u — small round, blowing"],
+ MV:["ü：先说 i，再把嘴唇撅圆，像吹口哨","A cartoon face with small pushed-forward lips, like whistling, music lines coming out.","😗","whistle","mouth shape for ü — rounded like whistling"],
+ WAVE:["bō 波：大海的浪花","A big blue ocean wave curling over, white foam, a yellow sun.","🌊","a wave","generic ocean wave"],
+ GOOSE:["é 鹅：白色的大鹅","A white goose with an orange beak and orange feet standing by blue water.","🪿","goose","generic white goose"],
+ CLOTH:["yī 衣：一件红色 T 恤（衣服）","A red T-shirt with a yellow circle on the front, beside a small clothes rail.","👕","clothes","generic red T-shirt"],
+ FIVE:["wǔ 五：张开五个手指","A hand with all five fingers spread, palm facing us, blue sleeve.","🖐️","five","generic open hand showing five"],
+ FISH:["yú 鱼：一条橙色的鱼","An orange fish swimming left with bubbles.","🐟","fish","generic orange fish"],
+ NI:["你：Mia 用手指着乐乐（你）","A girl with a brown ponytail points at a boy with black hair; a red arrow from her to him.","👉","you","generic girl pointing at a boy — 'you'"],
+ HAO:["好：妈妈和孩子在一起 + 大拇指（女 + 子 = 好）","A mum in pink and a child in green stand together; a thumbs-up sign beside them.","👍","good","generic mum + child together with thumbs-up (女+子=好)"],
+ WO:["我：乐乐用手指着自己（我）","A boy with black hair and a yellow T-shirt points at his own chest, smiling.","🙋","me","generic boy pointing at himself — 'me'"],
+ ONE:["一：一根小木棍","One wooden stick lying flat.","1️⃣","one","one horizontal stick"],
+ TWO:["二：两根小木棍","Two wooden sticks lying flat, one above the other.","2️⃣","two","two horizontal sticks"],
+ THREE:["三：三根小木棍","Three wooden sticks lying flat, one above the other.","3️⃣","three","three horizontal sticks"],
+ H1:["手指 1","A hand showing one finger (index finger up).","☝️","one finger","hand showing 1"],
+ H2:["手指 2","A hand showing two fingers (index and middle up).","✌️","two fingers","hand showing 2"],
+ H3:["手指 3","A hand showing three fingers (index, middle, ring up).","🤟","three fingers","hand showing 3"],
+ LELEF:["乐乐头像","Head of a smiling boy with short black hair.","👦","Lèle","generic boy, lesson character Lèle"],
+ MIAF:["Mia 头像","Head of a smiling girl with a brown ponytail.","👧","Mia","generic girl, lesson character Mia"],
+ APPLE2:["两个苹果","Two red apples side by side.","🍎🍎","two apples","two red apples"],
+ APPLE3:["三个苹果","Three red apples in a row.","🍎🍎🍎","three apples","three red apples"],
+ AV1:["同学头像 1","A smiling child in a red top waving.","🙂","","generic child avatar, red"],
+ AV2:["同学头像 2","A smiling child in a green top waving.","🙂","","generic child avatar, green"],
+ AV3:["同学头像 3","A smiling child in a blue top waving.","🙂","","generic child avatar, blue"],
+ AV4:["同学头像 4","A smiling child in an orange top waving.","🙂","","generic child avatar, orange"],
+ AV5:["同学头像 5","A smiling child in a purple top waving.","🙂","","generic child avatar, purple"],
+ AV6:["同学头像 6","A smiling child in a pink top waving.","🙂","","generic child avatar, pink"],
+};
+E.pics(IMG,ZG);
+// words for the Game centre (Flash, What's missing, Memory, Torch …)
+E.items([
+ {k:'mum',w:'妈 mā',pic:'MUM',say:'妈'},{k:'rope',w:'麻 má',pic:'ROPE',say:'麻'},{k:'horse',w:'马 mǎ',pic:'HORSE',say:'马'},{k:'scold',w:'骂 mà',pic:'SCOLD',say:'骂'},
+ {k:'wave',w:'波 bō',pic:'WAVE',say:'波'},{k:'goose',w:'鹅 é',pic:'GOOSE',say:'鹅'},{k:'cloth',w:'衣 yī',pic:'CLOTH',say:'衣'},{k:'five',w:'五 wǔ',pic:'FIVE',say:'五'},{k:'fish',w:'鱼 yú',pic:'FISH',say:'鱼'},
+ {k:'ni',w:'你 nǐ',pic:'NI',say:'你'},{k:'hao',w:'好 hǎo',pic:'HAO',say:'好'},{k:'wo',w:'我 wǒ',pic:'WO',say:'我'}]);
+
+// ---- No Mandarin TTS (browser voices are not accurate): the teacher models every Chinese sound.
+window.ZSAY=()=>{};
+const ZS=()=>'';
+// any 🔊 that would read Chinese (e.g. inside Game centre answers) is removed
+(()=>{const kill=()=>document.querySelectorAll('[data-say]').forEach(b=>{if(/[\u4e00-\u9fff]/.test(b.dataset.say))b.remove()});
+ document.addEventListener('click',e=>{const a=e.target.closest('[data-say]');if(a&&/[\u4e00-\u9fff]/.test(a.dataset.say)){e.stopPropagation();e.preventDefault()}},true);
+ new MutationObserver(kill).observe(document.documentElement,{childList:true,subtree:true})})();
+// tone colour for a pinyin syllable
+const TONE=py=>/[āōēīūǖ]/.test(py)?1:/[áóéíúǘ]/.test(py)?2:/[ǎǒěǐǔǚ]/.test(py)?3:/[àòèìùǜ]/.test(py)?4:0;
+const PY=(py,cls)=>`<span class="py t${TONE(py)} ${cls||''}">${py}</span>`;
+
+</script>
+<script>
+// ===== 你好 Lesson 1 · pages (lesson logic lives here; the engine only gives format + tools) =====
+const PYS=s=>s.split(' ').map(w=>PY(w)).join(' ');
+const HZ=(h,py,o)=>{o=o||{};return `<span class="hz${o.cls?' '+o.cls:''}">${h}</span>${py?`<span class="hzpy">${PYS(py)}</span>`:''}`};
+// tone road chip: 1–4
+const TN=['','1 · flat','2 · uphill','3 · valley','4 · downhill'];
+const TICON=['','➡️','↗️','↘️↗️','↘️'];
+const RD=n=>`<span class="rd t${n}">${TICON[n]} ${TN[n]}</span>`;
+// listening card: hidden answer, click 🔊 to hear
+const LC=(id,hz,py,o)=>{o=o||{};return `<div class="card lc c" data-lc data-ans="${TONE(py)}"><div class="lcn">${o.n||''}</div><div class="hz big" style="font-size:2.6em">${hz}</div><div class="t-xs mute">👩‍🏫 Teacher reads</div>${o.opts?`<div class="op4">${[1,2,3,4].map(k=>`<button data-t4="${k}" class="t${k}">${k}</button>`).join('')}</div>`:''}<div>${REV(`${PY(py,'big')} ${hz}${o.road?'<br>'+RD(TONE(py)):''}`)}</div></div>`};
+document.addEventListener('click',e=>{const a=e.target.closest('[data-t4]');if(!a)return;const c=a.closest('[data-lc]');if(c.classList.contains('done'))return;
+ if(a.dataset.t4===c.dataset.ans){a.classList.add('ok');c.classList.add('done');c.querySelector('.rv')&&c.querySelector('.rv').classList.add('open');E.sfx('ding')}else{a.classList.add('no');E.sfx('nope')}});
+// random highlight + "show words"
+const DRBAR=()=>`<button class="btn co" data-drr>🎲 Random</button>${PICK()}`;
+document.addEventListener('click',e=>{let a;if(e.target.closest('.say,.zb,.hint,[data-t4]'))return;
+ if(a=e.target.closest('[data-drr]')){const cs=[...a.closest('.slide').querySelectorAll('[data-lc],[data-drill]')];cs.forEach(c=>c.classList.remove('hl'));const c=cs[Math.floor(Math.random()*cs.length)];c.classList.add('hl');E.sfx('ding');const b=c.querySelector('.say');if(b&&c.hasAttribute('data-lc'))b.click()}
+ if(a=e.target.closest('[data-drill]')){a.classList.toggle('open')}});
+// quick check
+const QK=(q,right,wrong,why,seed)=>`<div class="card qk"><div class="b">${q}</div><div class="op">${shuffle([[right,1],[wrong,0]],seed).map(([x,ok])=>`<button data-qk="${ok}">${x}</button>`).join('')}</div><div class="why">💡 ${why}</div></div>`;
+document.addEventListener('click',e=>{const a=e.target.closest('[data-qk]');if(!a)return;const q=a.closest('.qk');if(q.classList.contains('done'))return;if(a.dataset.qk==='1'){a.classList.add('ok');q.classList.add('done');E.sfx('ding')}else{a.classList.add('no');E.sfx('nope')}});
+// chat bubbles
+const WHO={Lele:['LELEF','#f5b82e','乐乐 Lèle'],Mia:['MIAF','#2f9a5b','Mia']};
+const BUB=(n,hz,py,en,side)=>`<div class="msg ${side||'l'}" data-nozoom>${side==='r'?'':`<span class="av" style="border-color:${WHO[n][1]}">${PIC(WHO[n][0],{h:56,w:56,nohint:1})}</span>`}<div class="bub"><b class="who" style="color:${WHO[n][1]}">${WHO[n][2]}</b><div class="t-l">${hz} ${ZS(hz)}</div><div>${PYS(py)}</div>${en?`<div class="t-s mute">${REV(en)}</div>`:''}</div>${side==='r'?`<span class="av" style="border-color:${WHO[n][1]}">${PIC(WHO[n][0],{h:56,w:56,nohint:1})}</span>`:''}</div>`;
+
+// =================== PAGES ===================
+E.page({id:'cover',t:'Cover',st:'Start',main:true,min:1,html:()=>`<div class="row" style="flex:1;gap:28px">
+ <div class="col" style="flex:1"><div class="b brand">After-school Mandarin · Years 5–6 · Lesson 1</div>
+ <div class="t-xxl b" style="line-height:1.05"><span class="hz" style="font-size:1.25em">你好！</span><br>${PYS('Nǐ hǎo!')} ${ZS('你好')}</div>
+ <div class="t-l mute">Meet Lèle · 4 tones · first characters</div>
+ <div class="card"><div class="lab">★ Today we can …</div>
+  <div>🚲 hear and show the <b>4 tones</b></div>
+  <div>👄 say <b>a o e i u ü</b></div>
+  <div>✍️ read <span class="hz s">你 好 我</span> and <span class="hz s">一 二 三</span></div>
+  <div>👋 say <span class="hz s">你好！我是 ___。</span></div></div>
+ <div class="mute t-s"><span class="only-cn">小刀老师</span><span class="only-en">Teacher Xiaodao</span> · Auckland</div></div>
+ <div class="card" style="width:540px">${PIC('C1',{h:440})}</div></div>`});
+
+const WX=[["☀️","sunny"],["⛅","cloudy"],["🌧️","rainy"],["💨","windy"],["🥶","cold"],["🌤️","warm"]];
+const HELLO=[["🇳🇿","Kia ora","Kia ora"],["🇬🇧","Hello","Hello"],["🇫🇷","Bonjour","Bonjour"],["🇪🇸","Hola","Hola"],["🇼🇸","Tālofa","Talofa"],["❓","…in Chinese?",""]];
+E.page({id:'warm',t:'☀️ Catch-up, weather & hello',st:'Start',main:true,min:5,html:()=>HDR('Warm-up','Catch-up · weather · hello!','课前闲聊 · 天气 · 你会几种语言说 hello？',clsBar())+`<div class="body"><div class="g2 grow">
+ <div class="card col"><div class="lab">☀️ Today it's …</div><div class="g3">${WX.map(w=>`<button class="btn t-m" data-say="Today it's ${w[1]}." style="padding:10px"><span class="t-xl">${w[0]}</span><br>${w[1]}</button>`).join('')}</div>
+  ${[["How was your day at school?","Good! We played tag at lunch."],["What's the weather like today?","It's sunny, but it's windy."]].map(q=>`<div><b>${q[0]}</b> ${SAY(q[0])}<br>${REV('→ '+q[1])}</div>`).join('')}${PICK()}</div>
+ <div class="card col"><div class="lab">👋 How do you say "hello"?</div><div class="g3">${HELLO.map(h=>`<div class="card flat c" data-nozoom><div class="t-xl">${h[0]}</div><div class="b">${h[1]}</div>${h[2]?SAY(h[2]):REV('<span class="hz s">你好</span>')}</div>`).join('')}</div>
+  <div class="frame soft">What languages can <b>you</b> say hello in? 🌏</div></div></div></div>`});
+
+E.page({id:'leadin',t:'📸 Lead-in: a new kid at school',st:'① Meet Lèle',main:true,min:4,html:()=>HDR('Lead-in','Who is the new kid?','新同学来了 · 他说了什么？学生先猜')+`<div class="row" style="flex:1;gap:18px;align-items:stretch">
+ <div class="card" style="flex:1.3">${PIC('SCH',{h:500})}</div>
+ <div class="col" style="flex:1">
+  <div class="card"><div class="t-l">This is <b>Lèle</b>. ${SAY('This is Lele.')}</div><div>Lèle is from China. 🇨🇳 Today is his first day!</div></div>
+  <div class="card c"><div class="lab">👂 Listen to your teacher: what does Lèle say?</div><div class="t-xxl">👩‍🏫💬</div>
+   <div>${REV(`<span class="hz">你好</span> ${PYS('Nǐ hǎo')}`)}</div><div class="t-l">= ${REV('<b class="acc">Hello!</b>')}</div></div>
+  <div class="frame">Say it back: <b>Nǐ hǎo, Lèle!</b> 👋 ${ZS('你好，乐乐')}</div></div></div>`});
+
+const MAS=[['MUM','妈','mā','mum'],['ROPE','麻','má','rope'],['HORSE','马','mǎ','horse'],['SCOLD','骂','mà','tell off']];
+E.page({id:'discover',t:'🔎 Same sound, 4 meanings?',st:'② 4 tones',main:true,min:5,html:()=>HDR('Discover','ma, ma, ma, ma?','同样是 ma，四个意思！听一听，猜一猜哪个是马？',DRBAR())+`<div class="body">
+ <div class="g4">${MAS.map(m=>`<div class="card c" data-drill>${PIC(m[0],{h:200})}<div class="t-l b">${m[3]}</div><div>${REV(`${PY(m[2],'big')} <span class="hz s">${m[1]}</span>`)}</div></div>`).join('')}</div>
+ <div class="card row" style="justify-content:center;gap:18px"><b class="t-l">👂 Teacher says:</b>${shuffle(MAS,'disc1').map((m,i)=>`<span class="chip">${'ABCD'[i]} 👩‍🏫</span>`).join('')}<span class="zh">老师按 A B C D 顺序读（顺序见 💡）</span>${REV(shuffle(MAS,'disc1').map((m,i)=>'ABCD'[i]+' '+m[2]).join(' · '))}</div>
+ <div class="g2"><div class="frame soft">🐴 Which one is the <b>horse</b>? → ${REV('<b>mǎ</b> 马')}</div><div class="frame soft">🤔 What is different? → ${REV('the <b>tone</b> (the music of the word)')}</div></div></div>`});
+
+E.page({id:'key',t:'★ 4 tones = 4 bike roads',st:'② 4 tones',main:true,min:4,html:()=>HDR('★ Key pattern','4 tones = 4 bike roads','四个声调 = 骑车的四种路 · 一边读一边做手势','','gd')+`<div class="body">
+ <div class="g4">${[1,2,3,4].map(n=>`<div class="card c tcard t${n}">${PIC('ROAD'+n,{h:150})}<div class="t-xl b">${PY(['','mā','má','mǎ','mà'][n],'big')} ${ZS(['','妈','麻','马','骂'][n])}</div><div class="b">${RD(n)}</div><div class="t-s">${REV(['','✋ hand flat → high & long','✋ hand goes up ↗ like "What?"','✋ hand dips down, then up','✋ hand chops down ↘ like "No!"'][n],1)}</div></div>`).join('')}</div>
+ <div class="g2"><div class="card"><div class="lab">✓ The tone mark sits on the vowel</div><div class="t-l">${REV(`m<b>ǎ</b> &nbsp; not &nbsp; <s>m̌a</s>`)}</div></div>
+ <div class="card"><div class="lab">✗ Common mistake</div><div class="t-l">${REV('✗ ma ma ma ma (all flat) &nbsp;→&nbsp; ✓ mā má mǎ mà')}</div></div></div></div>`});
+
+E.page({id:'step1',t:'Step 1 · Tone 1 & Tone 4',st:'② 4 tones',main:true,min:4,html:()=>HDR('Step 1','Flat road & downhill','先学最好分的两个：一声（平）和四声（下坡）')+`<div class="body"><div class="g2 grow">
+ ${[[1,'MUM','妈','mā','mum','🎵 Sing one high note: "mā——"','yī 衣 · wū 乌 · yū 迂'],[4,'SCOLD','骂','mà','tell off','🙅 Say it strong, like "No!"','yì 亿 · wù 雾 · yù 玉']].map(x=>`<div class="card col tcard t${x[0]}"><div class="row" style="gap:14px">${PIC('ROAD'+x[0],{h:170,w:240})}${PIC(x[1],{h:170,w:220})}</div>
+  <div class="t-xxl b">${PY(x[3],'big')} <span class="hz">${x[2]}</span> ${ZS(x[2])}</div><div class="t-l">${RD(x[0])} · ${x[4]}</div>
+  <div>${REV(x[5],1)}</div><div class="t-s mute">${REV('More: '+x[6],1)}</div></div>`).join('')}</div>
+ <div class="frame">🖐️ Everybody: <b>mā</b> (hand flat) · <b>mà</b> (hand chops down)</div></div>`});
+
+const D1=[['妈','mā'],['骂','mà'],['衣','yī'],['亿','yì'],['乌','wū'],['雾','wù'],['迂','yū'],['玉','yù']];
+E.page({id:'drill1',t:'Drill 1 · Flat or down?',st:'② 4 tones',main:true,min:4,html:()=>HDR('Drill 1','Flat ➡️ or down ↘️?','老师读卡上的字 → 学生做手势（平 / 往下）→ 点灰条看答案',DRBAR())+`<div class="body"><div class="g4 grow">${shuffle(D1,'d1').map((d,i)=>LC('d1'+i,d[0],d[1],{n:i+1,road:1})).join('')}</div>
+ <div class="frame soft">✋ Show me with your hand! &nbsp; ➡️ = tone 1 &nbsp; ↘️ = tone 4</div></div>`});
+
+E.page({id:'step2',t:'Step 2 · Tone 2 & Tone 3',st:'② 4 tones',main:true,min:4,html:()=>HDR('Step 2','Uphill & valley','再学二声（上坡）和三声（山谷：先下再上）')+`<div class="body"><div class="g2 grow">
+ ${[[2,'ROPE','麻','má','rope','🤨 Like asking "What?" — your voice goes up','yí 姨 · wú 无 · yú 鱼'],[3,'HORSE','马','mǎ','horse','😌 Go down low… then come up a little','yǐ 椅 · wǔ 五 · yǔ 雨']].map(x=>`<div class="card col tcard t${x[0]}"><div class="row" style="gap:14px">${PIC('ROAD'+x[0],{h:170,w:240})}${PIC(x[1],{h:170,w:220})}</div>
+  <div class="t-xxl b">${PY(x[3],'big')} <span class="hz">${x[2]}</span> ${ZS(x[2])}</div><div class="t-l">${RD(x[0])} · ${x[4]}</div>
+  <div>${REV(x[5],1)}</div><div class="t-s mute">${REV('More: '+x[6],1)}</div></div>`).join('')}</div>
+ <div class="frame">🖐️ Everybody: <b>má</b> (hand goes up) · <b>mǎ</b> (hand dips down and up)</div></div>`});
+
+const D2=[['妈','mā'],['麻','má'],['马','mǎ'],['骂','mà'],['鱼','yú'],['五','wǔ'],['衣','yī'],['雨','yǔ']];
+E.page({id:'drill2',t:'Drill 2 · Which road? 1-2-3-4',st:'② 4 tones',main:true,min:5,html:()=>HDR('Drill 2','Which road? 1 · 2 · 3 · 4','老师读卡上的字 → 学生伸手指说几声 → 点数字按钮核对',DRBAR())+`<div class="body"><div class="g4 grow">${shuffle(D2,'d2').map((d,i)=>LC('d2'+i,d[0],d[1],{n:i+1,opts:1})).join('')}</div>
+ <div class="row" style="justify-content:center;gap:10px">${[1,2,3,4].map(RD).join('')}</div></div>`});
+
+const FIN=[['a','MA','open wide','妈','mā','MUM','mum'],['o','MO','round lips','波','bō','WAVE','wave'],['e','ME','flat, half open','鹅','é','GOOSE','goose'],['i','MI','big smile','衣','yī','CLOTH','clothes'],['u','MU','blow a candle','五','wǔ','FIVE','five'],['ü','MV','say i + round lips','鱼','yú','FISH','fish']];
+E.page({id:'step3',t:'Step 3 · a o e i u ü',st:'③ 6 vowels',main:true,min:6,html:()=>HDR('Step 3','6 vowels: a o e i u ü','六个单韵母 · 看嘴型 → 跟读 → 点灰条看例词')+`<div class="body"><div class="g6 grow">${FIN.map(f=>`<div class="card c col fin" style="gap:6px">${PIC(f[1],{h:120})}<div class="t-xxl b brand" style="line-height:1">${f[0]}</div><div class="t-s">${f[2]}</div>
+  ${REV(`${PIC(f[5],{h:80,nohint:1})}<div class="b">${PY(f[4])} <span class="hz s">${f[3]}</span></div><div class="t-s mute">${f[6]}</div>`,1)}${ZS(f[3])}</div>`).join('')}</div>
+ <div class="card row hat" style="gap:14px"><span class="t-xl">🧢</span><div><b>Hat rule:</b> when <b>i u ü</b> stand alone, they wear a hat: ${REV('<b>i → yi · u → wu · ü → yu</b> (ü takes off its dots!)')}</div></div></div>`});
+
+const D3=[['MUM','妈','mā'],['WAVE','波','bō'],['GOOSE','鹅','é'],['CLOTH','衣','yī'],['FIVE','五','wǔ'],['FISH','鱼','yú']];
+E.page({id:'drill3',t:'Drill 3 · Tap what you hear',st:'③ 6 vowels',main:true,min:5,html:()=>HDR('Drill 3','Tap what you hear 👂','老师说一个词 → 学生指图 → 点图看拼音核对',DRBAR())+`<div class="body"><div class="g3 grow tp">${shuffle(D3,'d3').map(d=>`<div class="card c tpc" data-tpc="${d[1]}" data-nozoom>${PIC(d[0],{h:150,nohint:1})}<div class="b t-l">${REV(`${PY(d[2])} <span class="hz s">${d[1]}</span>`)}</div></div>`).join('')}</div>
+ <div class="frame soft">🗣️ Then: students take turns — one says a word, the class points!</div></div>`,
+ init(el){el.onclick=e=>{const c=e.target.closest('[data-tpc]');if(c&&!e.target.closest('.rv,.zb')){const r=c.querySelector('.rv');r.classList.toggle('open');c.classList.toggle('ok',r.classList.contains('open'));E.sfx('ding')}}}});
+
+E.page({id:'chars',t:'✍️ 你 好 我',st:'④ Say hello',main:true,min:6,html:()=>HDR('Use it','你 · 好 · 我','三个汉字 → 一句话：你好！我是 ___。')+`<div class="body"><div class="row" style="gap:16px;align-items:stretch;flex:1">
+ <div class="g3" style="flex:1.4">${[['NI','你','nǐ','you'],['HAO','好','hǎo','good'],['WO','我','wǒ','me / I']].map(c=>`<div class="card c col" style="gap:4px">${PIC(c[0],{h:150})}<div class="hz big">${c[1]}</div><div>${PY(c[2],'big')} ${ZS(c[1])}</div><div class="t-l b">${REV(c[3])}</div></div>`).join('')}
+  <div class="card c" style="grid-column:span 3"><b>💡 好 = 女 (woman) + 子 (child)</b> — ${REV('a mum with her child = good! 👍')}</div></div>
+ <div class="col phone" style="flex:1">${BUB('Lele','你好！我是乐乐。','Nǐ hǎo! Wǒ shì Lèle.',"Hello! I'm Lèle.")}${BUB('Mia','你好！我是 Mia。','Nǐ hǎo! Wǒ shì Mia.',"Hello! I'm Mia.",'r')}
+  <div class="frame c t-l">${HZ('你好！我是 ___。')}<br>${PYS('Nǐ hǎo! Wǒ shì ___.')}</div></div></div></div>`});
+
+E.page({id:'chain',t:'Drill 4 · Hello chain',st:'④ Say hello',main:true,min:6,html:()=>HDR('Drill 4','Hello chain 👋','接龙：对下一个同学说「你好！我是 ___。」· 点卡片看句子',clsBar()+DRBAR())+`<div class="body"><div class="g4 grow">${NAMES().slice(0,8).map((n,i)=>`<div class="card c" data-drill>${PIC('AV'+(i%6+1),{h:130,nohint:1})}<div class="t-l b">${esc(n)}</div><div class="ds">${HZ('你好！我是')} ${esc(n)}。</div></div>`).join('')}</div>
+ <div class="frame soft">A: <b>你好！我是 ___。</b> → B: <b>你好！我是 ___。</b> → C … 🔁</div></div>`});
+
+E.page({id:'nums',t:'✍️ 一 二 三',st:'⑤ 1 2 3',main:true,min:5,html:()=>HDR('Characters','一 · 二 · 三','数一数横线 · 跟读 · 用手指比数字')+`<div class="body"><div class="g3">${[['ONE','H1','一','yī','one'],['TWO','H2','二','èr','two'],['THREE','H3','三','sān','three']].map(c=>`<div class="card c col" style="gap:6px"><div class="row" style="gap:8px">${PIC(c[0],{h:150})}${PIC(c[1],{h:150})}</div><div class="hz big">${c[2]}</div><div>${PY(c[3],'big')} ${ZS(c[2])} · ${c[4]}</div></div>`).join('')}</div>
+ <div class="g3">${QK('🍎🍎 = ?','二','三','two apples = 二 èr','q1')}${QK('三 = ?','🍎🍎🍎','🍎','三 = three lines = 3','q2')}<div class="card"><b>👂 Listen:</b> 一 <b>yī</b> sounds like 衣 <b>yī</b> (clothes)! ${REV('same sound, different character')}</div></div></div>`});
+
+E.page({id:'summary',t:'📌 One-page summary',st:'⑥ Wrap up',main:true,min:3,html:()=>HDR('📌 Summary','Today in one picture','一图总结 · 学生看着说一遍','','gd')+`<div class="body"><div class="g2 grow">
+ <div class="card col"><div class="lab">🚲 4 tones</div><div class="g4">${[1,2,3,4].map(n=>`<div class="c">${PIC('ROAD'+n,{h:90,nohint:1})}${PY(['','mā','má','mǎ','mà'][n],'big')}</div>`).join('')}</div>
+  <div class="lab">👄 6 vowels</div><div class="g6">${FIN.map(f=>`<div class="c">${PIC(f[1],{h:70,nohint:1})}<b class="t-l">${f[0]}</b></div>`).join('')}</div></div>
+ <div class="card col"><div class="lab">✍️ Characters</div><div class="g3">${[['你','nǐ'],['好','hǎo'],['我','wǒ'],['一','yī'],['二','èr'],['三','sān']].map(c=>`<div class="c"><div class="hz big">${c[0]}</div>${PY(c[1])} ${ZS(c[0])}</div>`).join('')}</div>
+  <div class="frame c t-l">${HZ('你好！我是 ___。')}</div></div></div></div>`});
+
+
+// ---- engine game plugins as lesson pages (Memory pairs = 翻翻卡 · What's missing)
+const GPAGE=(id,gname,t,title,zh,lvlab,min)=>E.page({id,t,st:'⑥ Wrap up',main:true,min,html:()=>HDR('🎮 Game',title,zh,lvlab.map((l,i)=>`<button class="btn${i?'':' on'}" data-glv2="${i+1}">${'①②③'[i]} ${l}</button>`).join(''))+'<div class="body gbody2"></div>',
+ init(el){const g=E.games.find(x=>x.name===gname);const run=lv=>{g.run(el.querySelector('.gbody2'),lv,ITEMS12)};
+  el.querySelectorAll('[data-glv2]').forEach(b=>b.onclick=()=>{el.querySelectorAll('[data-glv2]').forEach(x=>x.classList.toggle('on',x===b));run(+b.dataset.glv2)});run(1)}});
+const ITEMS12=[['MUM','妈','mā'],['ROPE','麻','má'],['HORSE','马','mǎ'],['SCOLD','骂','mà'],['WAVE','波','bō'],['GOOSE','鹅','é'],['CLOTH','衣','yī'],['FIVE','五','wǔ'],['FISH','鱼','yú'],['NI','你','nǐ'],['HAO','好','hǎo'],['WO','我','wǒ']].map(x=>({k:x[0],w:x[1]+' '+x[2],pic:x[0],say:x[1]}));
+GPAGE('flip',"Memory pairs",'🃏 翻翻卡 Flip & match','Flip & match 🃏','翻翻卡：翻两张，图和字配上就留下 · 学生翻到就用中文读出来',['4 pairs','6 pairs','8 pairs'],6);
+GPAGE('missing',"What's missing?",'🙈 What\'s missing?',"What's missing? 🙈",'先一起读一遍 → 点「Close your eyes」藏一张 → 学生用中文说少了哪个',['4 pictures','6 pictures','8 · 2 missing'],6);
+const SIMON={1:[['妈','mā'],['骂','mà'],['衣','yī'],['亿','yì'],['乌','wū'],['雾','wù']],2:[['妈','mā'],['麻','má'],['马','mǎ'],['骂','mà']],3:[['妈','mā'],['麻','má'],['马','mǎ'],['骂','mà'],['鱼','yú'],['五','wǔ'],['衣','yī'],['雨','yǔ'],['鹅','é'],['波','bō'],['雾','wù'],['姨','yí']]};
+E.page({id:'game',t:'🎮 Tone Simon Says',st:'⑥ Wrap up',main:true,min:5,html:()=>HDR('🎮 Game','Tone Simon Says','老师读屏幕上的字 → 学生做手势 → 做错的坐下 · 最后站着的赢！',`<button class="btn on" data-slv="1">① 1 & 4</button><button class="btn" data-slv="2">② ma ×4</button><button class="btn" data-slv="3">③ all</button>`)+`<div class="body" style="align-items:center;justify-content:center">
+ <div class="card c col simon" style="width:760px;gap:14px;padding:26px"><div class="t-xxl">🚲</div><div class="row" style="justify-content:center;gap:12px"><button class="btn co t-xl" data-sgo>▶ Next word</button><button class="btn t-l" data-sans>👀 Answer</button></div>
+  <div class="sout t-xxl b" style="min-height:130px">🤔</div><div class="row" style="justify-content:center;gap:10px">${[1,2,3,4].map(RD).join('')}</div></div>
+ <div class="frame soft">Standing up = still in! ✋ Show the road with your hand. Wrong road → sit down.</div></div>`,
+ init(el){let lv=1,cur=null;el.onclick=e=>{let a;
+  if(a=e.target.closest('[data-slv]')){lv=+a.dataset.slv;el.querySelectorAll('[data-slv]').forEach(b=>b.classList.toggle('on',b===a));return}
+  if(e.target.closest('[data-sgo]')){const pool=SIMON[lv];let n;do{n=pool[Math.floor(Math.random()*pool.length)]}while(cur&&pool.length>1&&n===cur);cur=n;el.querySelector('.sout').innerHTML=`<span class="hz" style="font-size:1.6em">${cur[0]}</span><div class="t-s mute">👩‍🏫 Teacher reads it</div>`;E.sfx('click');return}
+  if(e.target.closest('[data-sre]')&&cur){ZSAY(cur[0]);return}
+  if(e.target.closest('[data-sans]')&&cur){el.querySelector('.sout').innerHTML=`<span class="hz">${cur[0]}</span> ${PY(cur[1],'big')}<br>${RD(TONE(cur[1]))}`;E.sfx('ding')}}}});
+
+E.page({id:'exit',t:'🎟️ Exit ticket',st:'⑥ Wrap up',main:true,min:4,html:()=>HDR('🎟️ Exit ticket','Three things before you go!','每人做完三件事才能走 · 老师点灰条看答案',PICK())+`<div class="body"><div class="g3 grow">
+ <div class="card col c"><div class="t-xxl">🗣️</div><div class="lab">1 · Say</div><div class="t-l">Say hello and your name.</div><div class="t-l">${REV(HZ('你好！我是 ___。'),1)}</div></div>
+ <div class="card col c"><div class="t-xxl">✋</div><div class="lab">2 · Show</div><div class="t-l">Show the road for <b>mǎ</b> ${ZS('马')}</div>${REV(PIC('ROAD3',{h:130,nohint:1})+RD(3),1)}</div>
+ <div class="card col c"><div class="t-xxl">✍️</div><div class="lab">3 · Write</div><div class="t-l">Write <b>three</b> in Chinese.</div>${REV('<span class="hz big">三</span>',1)}</div></div>
+ <div class="frame c t-l">再见！Zàijiàn! ${ZS('再见')} — See you next time! 👋</div></div>`});
+
+// ---------- extras (not in the main line; add in 🧭 Plan) ----------
+const SORT=[['妈','mā'],['麻','má'],['马','mǎ'],['骂','mà'],['衣','yī'],['鱼','yú'],['五','wǔ'],['雾','wù'],['鹅','é'],['波','bō'],['雨','yǔ'],['姨','yí']];
+E.page({id:'sort',t:'➕ after Drill 2 · 🗂️ Tone sort',st:'② 4 tones',min:6,html:()=>HDR('🗂️ Sort','Tone sort','老师读一个词卡 → 学生说几声 → 点卡再点筐 · 小组比赛','<button class="btn" data-srs>↺</button>')+`<div class="body"><div class="g6 sw">${shuffle(SORT,'srt').map(s=>`<button data-nozoom class="card c swc" data-sw="${TONE(s[1])}" data-hz="${s[0]}" data-py="${s[1]}"><span class="hz s">${s[0]}</span></button>`).join('')}</div>
+ <div class="g4 grow">${[1,2,3,4].map(n=>`<div class="card bin t${n}" data-bin="${n}">${PIC('ROAD'+n,{h:80,nohint:1})}<div class="b c">${RD(n)}</div><div class="got"></div></div>`).join('')}</div></div>`,
+ init(el){let sel=null;el.onclick=e=>{let a;if(e.target.closest('[data-srs]')){E.rerender('sort');return}
+  if(a=e.target.closest('[data-sw]')){if(a.classList.contains('used'))return;el.querySelectorAll('.swc').forEach(b=>b.classList.remove('hl'));a.classList.add('hl');sel=a;return}
+  if((a=e.target.closest('[data-bin]'))&&sel){if(a.dataset.bin===sel.dataset.sw){a.querySelector('.got').insertAdjacentHTML('beforeend',`<span class="chip">${sel.dataset.hz} ${PY(sel.dataset.py)}</span>`);sel.classList.add('used');sel.classList.remove('hl');sel=null;E.sfx('ding')}else{a.classList.add('no');E.sfx('nope');setTimeout(()=>a.classList.remove('no'),500)}}}}});
+E.page(E.gamePage());
+E.page({id:'tn',t:'📝 Teacher notes',st:'Teacher',min:0,html:()=>HDR('Teacher notes','Teacher notes · 教师备注','只给老师看，不进默认计划')+`<div class="body"><div class="g2 grow t-s">
+ <div class="card col"><div class="lab">⏱ 60 min</div><div>热身 5 · 导入 4 · 发现 5 · 规则 4 · Step1+Drill 8 · Step2+Drill 9 · 韵母+Drill 11 · 你好我+接龙 12 · 一二三 5 · 总结 3 · 🃏翻翻卡 6 · 🙈What's missing 6 · Simon 5 · 出门票 4 ≈ 72 分钟——时间紧就在 🧭 Plan 里选「One game」</div>
+  <div class="lab">🗣️ 发音</div><div>课件里中文不带电脑发音（浏览器语音不准），所有中文都由老师示范。英文句子仍可点 🔊。</div>
+  <div class="lab">🎵 你好 的变调</div><div>nǐ + hǎo 两个三声连读，第一个读成二声：<b>ní hǎo</b>。课件写 Nǐ hǎo（标原调），口头示范读 ní hǎo，今天不讲规则。</div></div>
+ <div class="card col"><div class="lab">✋ 手势</div><div>一声 手平着往右划 · 二声 手往右上抬 · 三声 手往下再往上（勾） · 四声 手往下劈。全课都用同一套手势。</div>
+  <div class="lab">🧢 戴帽子规则</div><div>i u ü 自成音节写 yi wu yu（ü 去两点）。今天只让学生看到，下节课学声母时再系统讲。</div>
+  <div class="lab">➕ 附加</div><div>🗂️ Tone sort（Drill 2 之后，小组比赛）· 🎮 Game centre（Flash / What's missing / Memory 用本课 12 张词图）。在 🧭 Plan 里勾选。</div></div></div></div>`});
+E.preset('nogame','No game (45 min)','去掉游戏页',['cover','warm','leadin','discover','key','step1','drill1','step2','drill2','step3','drill3','chars','chain','nums','summary','exit']);
+E.preset('onegame','One game (60 min)','只留一个游戏：翻翻卡',['cover','warm','leadin','discover','key','step1','drill1','step2','drill2','step3','drill3','chars','chain','nums','summary','flip','exit']);
+E.preset('plus','+ Tone sort','主线 + 分类游戏',['cover','warm','leadin','discover','key','step1','drill1','step2','drill2','sort','step3','drill3','chars','chain','nums','summary','flip','missing','game','exit']);
+
+</script>
+<script>
+document.readyState==='loading'?addEventListener('DOMContentLoaded',E.start):E.start();
+</script>
