@@ -296,7 +296,6 @@ footer{text-align:center;color:var(--muted);font-weight:600;font-size:.85rem;pad
   .wview{padding-left:0}
   section{padding-block:56px 10px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ===== sticker doodle style ===== */
 :root{--orange:#ff7a2e;--orange-ink:#d9480f;--butter:#ffd23f;--sage:#41c47a;--sky:#4fb3ff;--lilac:#a98bff;--red:#ff4b4b;--pink:#ff8fc8;--stk:#1a1a1a;
@@ -373,7 +372,6 @@ h1,h2,h3{font-family:var(--f-display);font-variation-settings:normal;letter-spac
 @keyframes bar{from{width:0}to{width:100%}}
 body.intro-on{overflow:hidden}
 body.intro-on .hero .pop,body.intro-on .hero .u path{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.intro-ov{display:none}}
 
 /* strength tiles: circle-wipe reveal on hover */
 .tile{position:relative;overflow:hidden;isolation:isolate}
@@ -392,7 +390,6 @@ body.intro-on .hero .pop,body.intro-on .hero .u path{animation-play-state:paused
 @keyframes doobob{50%{transform:scale(1.08) rotate(-6deg) translateY(-4px)}}
 .tile .ico{transition:transform .5s cubic-bezier(.2,1.7,.35,1)}
 .tile.flip .ico{transform:scale(.4) rotate(-30deg)}
-@media (prefers-reduced-motion:reduce){.tile .back{transition:none}}
 
 /* role picker discoverability */
 .segwrap{position:relative;display:flex;align-items:center;gap:10px;min-width:0}
@@ -409,7 +406,6 @@ body.intro-on .hero .pop,body.intro-on .hero .u path{animation-play-state:paused
 @keyframes wig{0%,100%{rotate:-2deg}50%{rotate:1.5deg}}
 @media (max-width:820px){.vlabel{display:none}}
 @media (max-width:560px){.seg{padding:16px 6px 8px 2px;margin:-16px 0 -8px}.callout{width:auto;left:0;right:0;top:calc(100% + 10px)}.callout svg{right:auto;left:40%}}
-@media (prefers-reduced-motion:reduce){.callout{animation:none}}
 
 /* ===== texture & finish ===== */
 :root{--r:24px}
@@ -453,7 +449,6 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .tapring .r2{animation-delay:.9s}
 @keyframes ring{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.5);opacity:0}}
 .hint.gone,.tapring.gone{display:none}
-@media (prefers-reduced-motion:reduce){.hint{animation:none}.tapring{display:none}}
 
 /* sample lessons */
 .samples{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -512,7 +507,6 @@ body.intro-on .cw.pop3d{animation-play-state:paused}
 .gw-card .gm-panel{gap:8px;padding:14px}
 .gw-card .gm-panel h3{font-size:1.7rem}
 .gw-card .gm-panel p{font-size:.85rem}
-@media (prefers-reduced-motion:reduce){.gw-chip,.gw-ico,.gw-card{animation:none}}
 .gm-card{width:min(860px,100%);background:var(--bg);border:4px solid #1a1a1a;box-shadow:8px 8px 0 #1a1a1a;border-radius:30px 18px 32px 16px/18px 32px 16px 30px;overflow:hidden;display:flex;flex-direction:column;max-height:100%}
 .gm-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:3px solid #1a1a1a;background:var(--butter);color:#1a1a1a;flex-wrap:wrap}
 .gm-task{font-family:var(--f-display);font-weight:800;font-size:clamp(1.05rem,3vw,1.4rem);flex:1;min-width:0}
@@ -537,7 +531,6 @@ body.intro-on .cw.pop3d{animation-play-state:paused}
 .seg button:not([aria-pressed="true"]):not([data-l="all"]){background:repeating-linear-gradient(-45deg,#fff 0 8px,#fff6d6 8px 16px)}
 .seg button:not([aria-pressed="true"]):not([data-l="all"]):hover{background:var(--f-butter)}
 @media (max-width:820px){.vlabel{display:inline-flex;font-size:0;padding:4px 8px}.vlabel .varr{font-size:1rem}}
-@media (prefers-reduced-motion:reduce){.varr{animation:none}}
 </style>
 
 <div class="intro-ov" id="intro" role="presentation">
@@ -764,7 +757,7 @@ body.intro-on .cw.pop3d{animation-play-state:paused}
 <script>
 /* smooth inertial scrolling */
 window.__lenis=null;
-(function(){if(!window.Lenis||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+(function(){if(!window.Lenis||false)return;
  try{const l=new Lenis({lerp:.085,smoothWheel:true,anchors:true});window.__lenis=l;(function raf(t){l.raf(t);requestAnimationFrame(raf)})(0)}catch(_){}})();
 window.smoothTo=y=>{if(window.__lenis)window.__lenis.scrollTo(y,{duration:1.1});else scrollTo({top:y,behavior:"smooth"})};
 const JOBS=[
@@ -854,7 +847,7 @@ document.querySelectorAll(".tiles .tile").forEach(t=>{
  const seg=document.querySelector(".seg"),co=document.getElementById("callout");
  let used=false;try{used=sessionStorage.getItem("bl-lens-used")==="1"}catch(_){}
  if(used||location.hash){co.classList.add("gone");return}
- const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const reduce=false;
  let n=0;const nudge=()=>{if(used||reduce||n>12)return;n++;seg.classList.remove("nudge");void seg.offsetWidth;seg.classList.add("nudge");if(n===1)SFX.play("boing")};
  setTimeout(nudge,5800);const iv=setInterval(()=>{if(used){clearInterval(iv);return}nudge()},8000);
  seg.addEventListener("click",()=>{used=true;co.classList.add("gone");seg.classList.remove("nudge");try{sessionStorage.setItem("bl-lens-used","1")}catch(_){}});
@@ -864,7 +857,7 @@ document.querySelectorAll(".tiles .tile").forEach(t=>{
 /* ===== opening intro ===== */
 (function(){
  const ov=document.getElementById("intro");
- if(matchMedia("(prefers-reduced-motion: reduce)").matches){ov.remove();return}
+ if(false){ov.remove();return}
  const nm=document.getElementById("iname");
  nm.innerHTML=[..."Bingling Liu"].map((c,i)=>`<span aria-hidden="true" style="animation-delay:${2.85+i*.06}s">${c===" "?"&nbsp;":c}</span>`).join("");
  document.body.classList.add("intro-on");window.__lenis&&window.__lenis.stop();
@@ -892,7 +885,7 @@ document.querySelectorAll(".tiles .tile").forEach(t=>{
 /* ===== illustrated story ===== */
 (function(){
  const sec=document.getElementById("story");
- if(matchMedia("(prefers-reduced-motion: reduce)").matches){sec.style.display="none";return}
+ if(false){sec.style.display="none";return}
  const B=1000; // band height per chapter (viewBox units, at speed 1)
  const band=(i,sp)=>i*B*sp;
  const far=[[],[],[],[],[]],mid=[[],[],[],[],[]],near=[[],[],[],[],[]];
@@ -961,7 +954,7 @@ document.querySelectorAll(".tiles .tile").forEach(t=>{
 /* 3D roller */
 (function(){
  const wrap=document.getElementById("rollwrap"),wheel=document.getElementById("wheel"),n=WORK.length,STEP=32;
- const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const reduce=false;
  if(reduce){document.getElementById("work").classList.add("static");return}
  wrap.style.setProperty("--n",n);
  document.getElementById("wTot").textContent=String(n).padStart(2,"0");
@@ -1014,7 +1007,7 @@ document.querySelectorAll(".hit").forEach(g=>{
  const k=g.dataset.cycle,t=g.querySelector(".lbl");let n=0;
  const go=()=>{n=(n+1)%CYC[k].length;t.textContent=CYC[k][n];if(SIZE[k])t.setAttribute("font-size",n?SIZE[k][1]:SIZE[k][0]);
   SFX.play(k==="l"||k==="r"?"pop":"boing");
-  g.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&g.animate([
+  g.animate&&!false&&g.animate([
    {transform:"translateY(0) scale(1)",easing:"cubic-bezier(.2,.9,.35,1)"},
    {transform:"translateY(-46px) scale(1.06) rotate(-4deg)",offset:.38,easing:"linear"},
    {transform:"translateY(-50px) scale(1.05) rotate(-3deg)",offset:.6,easing:"cubic-bezier(.6,0,1,.6)"},
@@ -1100,7 +1093,7 @@ document.querySelectorAll(".hit").forEach(g=>{
  const cubes=[...box.querySelectorAll(".cube")];
  box.querySelectorAll(".cw").forEach(w=>w.addEventListener("animationend",e=>{if(e.target===w)w.classList.remove("pop3d")}));
  const st=CUBES.map(c=>({rx:c.rx,ry:c.ry,vx:0,vy:0}));
- const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const reduce=false;
  function size(){const w=box.getBoundingClientRect().width,s=Math.round(w*.22);box.style.setProperty("--s",s+"px");
   cubes.forEach((cu,i)=>{[...cu.children].forEach((f,k)=>{f.style.transform=FACE[k][1].replace("H",(s/2)+"px");const L=f.textContent.length,cj=f.classList.contains("zh");f.style.fontSize=Math.round(s*(cj?Math.min(.6,.78/L):Math.min(.62,1.15/Math.max(1,L*.62))))+"px"})})}
  function draw(i){const p=st[i];cubes[i].style.transform=`rotateX(${p.rx}deg) rotateY(${p.ry}deg)`}
@@ -1138,7 +1131,7 @@ document.querySelectorAll(".hit").forEach(g=>{
 
 /* hero parallax */
 const scene=document.querySelector(".scene"),pxs=[...document.querySelectorAll(".px")];
-if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+if(!false){
  scene.addEventListener("pointermove",e=>{const r=scene.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;pxs.forEach(p=>{const d=+p.dataset.d;p.style.transform=`translate(${x*d}px,${y*d}px)`})});
  scene.addEventListener("pointerleave",()=>pxs.forEach(p=>p.style.transform=""));
  /* tile tilt */
