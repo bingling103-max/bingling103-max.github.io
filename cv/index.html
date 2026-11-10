@@ -40,7 +40,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 
 /* nav */
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--bg)}
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--bg) 96%,transparent)}
 nav .in{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-block:12px}
 .brand{font-family:var(--f-display);font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:8px}
 .brand i{width:14px;height:14px;border-radius:50%;background:var(--orange);box-shadow:10px 0 0 var(--butter)}
@@ -165,7 +165,7 @@ footer{text-align:center;color:var(--muted);font-weight:600;font-size:.85rem;pad
 
 /* refinements */
 .tile,.wk,.stat{transition:transform .55s cubic-bezier(.2,1.5,.35,1),box-shadow .4s}
-.tile,.wk{box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 6%,transparent);transform-style:preserve-3d;will-change:transform}
+.tile,.wk{box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 6%,transparent)}
 .tile:hover,.wk:hover{box-shadow:0 18px 36px -18px color-mix(in srgb,var(--ink) 35%,transparent)}
 .tile:hover{transform:none}
 .seg button .n{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:999px;font-size:.72rem;margin-left:6px;background:var(--f-orange);color:var(--orange-ink)}
@@ -245,7 +245,7 @@ footer{text-align:center;color:var(--muted);font-weight:600;font-size:.85rem;pad
 .world{position:absolute;inset:0;width:100%;height:100%}
 .world g{will-change:transform}
 .chapters{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center}
-.chap{position:absolute;max-width:min(760px,calc(100% - 40px));width:min(760px,calc(100% - 40px));padding:46px 52px!important;border-radius:36px!important;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:28px;padding:24px 26px;box-shadow:0 30px 60px -30px rgba(20,10,40,.6);pointer-events:auto;opacity:0;transform:translateY(30px);transition:opacity .5s,transform .6s cubic-bezier(.2,.9,.3,1)}
+.chap{position:absolute;max-width:min(760px,calc(100% - 40px));width:min(760px,calc(100% - 40px));padding:46px 52px!important;border-radius:36px!important;background:var(--paper);border-radius:28px;padding:24px 26px;box-shadow:0 30px 60px -30px rgba(20,10,40,.6);pointer-events:auto;opacity:0;transform:translateY(30px);transition:opacity .5s,transform .6s cubic-bezier(.2,.9,.3,1)}
 .chap.on{opacity:1;transform:none}
 .chap .place{font-weight:800;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-ink)}
 .chap h3{font-size:clamp(2.8rem,6.5vw,4.6rem);font-weight:800;line-height:1;margin:10px 0 18px}
@@ -303,7 +303,7 @@ footer{text-align:center;color:var(--muted);font-weight:600;font-size:.85rem;pad
  --f-orange:#ff9f5a;--f-butter:#ffd84f;--f-sage:#6fd69a;--f-sky:#7cc8ff;--f-lilac:#c2a6ff;--f-display:"Shantell Sans","ZCOOL KuaiLe","Comic Neue","Segoe Print",system-ui,sans-serif;--bg:#fff6e6;--line:#1a1a1a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--f-orange:#ff9f5a;--f-butter:#ffd84f;--f-sage:#6fd69a;--f-sky:#7cc8ff;--f-lilac:#c2a6ff;--bg:#1b1830;--line:#0c0b16;--stk:#0c0b16}}
 :root[data-theme="dark"]{--f-orange:#ff9f5a;--f-butter:#ffd84f;--f-sage:#6fd69a;--f-sky:#7cc8ff;--f-lilac:#c2a6ff;--bg:#1b1830;--line:#0c0b16;--stk:#0c0b16}
-body{background-color:var(--bg);background-image:radial-gradient(color-mix(in srgb,var(--ink) 9%,transparent) 1.2px,transparent 1.4px);background-size:22px 22px}
+body{background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .055 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(color-mix(in srgb,var(--ink) 9%,transparent) 1.2px,transparent 1.4px);background-size:180px 180px,22px 22px}
 h1,h2,h3{font-family:var(--f-display);font-variation-settings:normal;letter-spacing:-.005em}
 .hero h1{font-weight:800;line-height:1}
 .c-orange,.c-butter,.c-sage,.c-sky,.c-lilac{color:#1a1a1a}
@@ -341,7 +341,7 @@ h1,h2,h3{font-family:var(--f-display);font-variation-settings:normal;letter-spac
 .wk .art,.wcard .art{border:2.5px solid #1a1a1a}
 .wdots button{border:2px solid var(--stk)}
 .chap .when{background:var(--butter);color:#1a1a1a;border:2px solid #1a1a1a}
-.world{filter:saturate(1.35)}
+
 #world .bd :is(rect,path,circle,ellipse){stroke:#1a1a1a;stroke-width:4;stroke-linejoin:round}
 #world .bd [fill="url(#glow)"],#world .bd .ns{stroke:none}
 .hint b{color:var(--orange-ink)}
@@ -415,15 +415,13 @@ body.intro-on .hero .pop,body.intro-on .hero .u path{animation-play-state:paused
 :root{--r:24px}
 .tile,.wk,.stat,.box,.ti,.now,.ribbon,.contact{position:relative}
 .tile,.ti{overflow:visible}
-.tile,.wk,.stat,.box,.ti,.now,.ribbon{border-radius:var(--r)!important}
+.tile,.wk,.stat,.box,.ti,.now,.ribbon{border-radius:28px 16px 30px 14px/16px 30px 14px 28px!important}
+.btn,.seg button,.copy,.hello span{border-radius:40px 34px 44px 30px/30px 44px 34px 40px!important}
+.callout,.rows li{border-radius:20px 12px 22px 10px/12px 22px 10px 20px!important}
 .tile,.wk,.stat,.box,.ti,.now,.ribbon,.chap,.contact,.wcard{border-color:transparent!important}
-.tile::before,.wk::before,.stat::before,.box::before,.ti::before,.now::before,.ribbon::before,.chap::before,.contact::before,.wcard::before{content:"";position:absolute;inset:-3px;border:3px solid var(--stk);border-radius:inherit;filter:url(#wob);pointer-events:none;z-index:5}
+.tile::before,.wk::before,.stat::before,.box::before,.ti::before,.now::before,.ribbon::before,.chap::before,.contact::before,.wcard::before{content:"";position:absolute;inset:-3px;border:3px solid var(--stk);border-radius:28px 16px 30px 14px/16px 30px 14px 28px;pointer-events:none;z-index:5}
 .tile .back{inset:-1px;border-radius:calc(var(--r) - 2px)}
-.btn,.seg button,.arr,.sndbtn,.copy,.chip,.yr,.plus,.hello span,.callout,.ico,.rows li{filter:url(#wob2)}
-.scene svg,.wk .art svg,.wcard .art svg,.iblocks svg{filter:url(#wob2)}
-html::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) html::after,:root:not([data-theme="light"])::after{mix-blend-mode:screen;opacity:.06}}
-:root[data-theme="dark"]::after{mix-blend-mode:screen;opacity:.06}
+
 /* sticker cursor (mouse only) */
 @media (hover:hover) and (pointer:fine){
  body{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M5 3l20 11-9 2.5L12 26z' fill='%23ffd23f' stroke='%231a1a1a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E") 4 2,auto}
@@ -453,7 +451,6 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
  <button class="iskip isnd" id="isnd" type="button" aria-pressed="true">🔊 Sound on · tap to mute</button><button class="iskip" id="iskip" type="button">Skip</button>
  <div class="ibar"></div>
 </div>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="wob" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3.2"/></filter><filter id="wob2" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="1" seed="2"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter></svg>
 <nav aria-label="View this CV for a role">
  <div class="in">
   <div class="brand"><i></i><span>Bingling Liu</span></div>
@@ -476,7 +473,7 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
    <div class="hello"><span>Kia ora</span><span>Hello</span><span>你好</span></div>
    <h1>Hi, I'm <span class="u">Bingling<svg viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true"><path d="M4 20 Q 80 4 150 16 T 296 12"/></svg></span>.</h1>
    <div class="role">ESOL &amp; Mandarin Teacher in Auckland</div>
-   <p>For over 10 years I've helped children aged 7–11, adult groups and one-on-one learners feel at home in a new language, with lessons that are fun from the very first day.</p>
+   <p>For over 10 years I've helped children, adult groups and one-on-one learners feel at home in a new language, with lessons that are fun from the very first day.</p>
    <div class="ctas">
     <button class="btn main" id="pdf" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>Download my CV</button>
     <a class="btn ghost" href="#contact">Say hello</a>
@@ -504,7 +501,7 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
  <div class="in stats">
   <div class="stat c-orange"><b>10+</b><span>years teaching in NZ</span></div>
   <div class="stat c-butter"><b>2</b><span>languages taught</span></div>
-  <div class="stat c-sage"><b>7 → adult</b><span>learners of every age</span></div>
+  <div class="stat c-sage"><b>All ages</b><span>little ones to adults</span></div>
   <div class="stat c-sky"><b>Level 7</b><span>ECE study in progress</span></div>
  </div>
 </header>
@@ -516,7 +513,7 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
   <div class="focus" id="focus" aria-live="polite"></div>
   <div class="tiles">
    <article class="tile c-orange" data-tags="esol mandarin"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="#ff7a45" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12M10 6v3M7 9c1 4 4 7 8 8M13 9c-1 4-4 7-8 9"/><path d="M17 26l5-12 5 12M19 22h6"/></svg></div><h3>Two languages, one strong method</h3><p>Postgraduate Diploma in Second Language Teaching. I teach English and Mandarin to learners starting from zero and beyond.</p><div class="back" aria-hidden="true" style="--bk:#ffd23f"><div class="bin"><span class="big">EN <i>⇄</i> 中文</span><div class="chips"><span class="chip">PG Dip · Waikato 2015</span><span class="chip">Zero → confident</span></div></div><svg class="doo" viewBox="0 0 60 60"><path d="M30 6l6 14 15 2-11 10 3 15-13-8-13 8 3-15L9 22l15-2z" fill="#ffd23f" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></article>
-   <article class="tile c-butter" data-tags="esol mandarin ece"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="#d99a12" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="11" r="4"/><circle cx="22" cy="9" r="3"/><path d="M3 26c0-5 3-8 7-8s7 3 7 8M17 20c1-3 3-4 5-4 3 0 6 3 6 8"/></svg></div><h3>Every age, every format</h3><p>Children aged 7–11, adult groups and one-on-one coaching in ESOL, PTE Academic, IELTS and Mandarin.</p><div class="back" aria-hidden="true" style="--bk:#ff8fc8"><div class="bin"><span class="big">7–11 · adults · 1:1</span><div class="chips"><span class="chip">ESOL</span><span class="chip">PTE</span><span class="chip">IELTS</span><span class="chip">Mandarin</span></div></div><svg class="doo" viewBox="0 0 60 60"><path d="M30 6l6 14 15 2-11 10 3 15-13-8-13 8 3-15L9 22l15-2z" fill="#ff8fc8" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></article>
+   <article class="tile c-butter" data-tags="esol mandarin ece"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="#d99a12" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="11" r="4"/><circle cx="22" cy="9" r="3"/><path d="M3 26c0-5 3-8 7-8s7 3 7 8M17 20c1-3 3-4 5-4 3 0 6 3 6 8"/></svg></div><h3>Every age, every format</h3><p>Children aged 7–11, adult groups and one-on-one coaching in ESOL, PTE Academic, IELTS and Mandarin.</p><div class="back" aria-hidden="true" style="--bk:#ff8fc8"><div class="bin"><span class="big">Kids · adults · 1:1</span><div class="chips"><span class="chip">ESOL</span><span class="chip">PTE</span><span class="chip">IELTS</span><span class="chip">Mandarin</span></div></div><svg class="doo" viewBox="0 0 60 60"><path d="M30 6l6 14 15 2-11 10 3 15-13-8-13 8 3-15L9 22l15-2z" fill="#ff8fc8" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></article>
    <article class="tile c-sage" data-tags="esol mandarin ece"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="#3f9a63" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13h20v13H6z"/><path d="M4 13l12-8 12 8M13 26v-7h6v7"/></svg></div><h3>Real-life situations</h3><p>Greetings, family, food, shopping and festivals, through games, role-plays and hands-on tasks.</p><div class="back" aria-hidden="true" style="--bk:#4fb3ff"><div class="bin"><span class="big">“Kia ora!” “你好!”</span><div class="chips"><span class="chip">Greetings</span><span class="chip">Family</span><span class="chip">Food</span><span class="chip">Shopping</span><span class="chip">Festivals</span></div></div><svg class="doo" viewBox="0 0 60 60"><path d="M30 6l6 14 15 2-11 10 3 15-13-8-13 8 3-15L9 22l15-2z" fill="#4fb3ff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></article>
    <article class="tile c-sky" data-tags="esol mandarin ece"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="#2f8fc0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h15a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-8l-5 4v-4H5a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3z"/><path d="M26 13a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-1v3l-4-3"/></svg></div><h3>Bilingual and inclusive</h3><p>Clear explanations for learners and families from many cultural and language backgrounds.</p><div class="back" aria-hidden="true" style="--bk:#41c47a"><div class="bin"><span class="big">Every learner understood</span><div class="chips"><span class="chip">English</span><span class="chip">普通话</span><span class="chip">Families too</span></div></div><svg class="doo" viewBox="0 0 60 60"><path d="M30 6l6 14 15 2-11 10 3 15-13-8-13 8 3-15L9 22l15-2z" fill="#41c47a" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></article>
    <article class="tile c-lilac" data-tags="esol mandarin ece"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="#7b62d6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M9 22h6M12 18v4"/><rect x="18" y="14" width="10" height="13" rx="2"/><path d="M21 19h4M21 23h3"/></svg></div><h3>Made by hand and by code</h3><p>Online drills, quizzes and slides, plus worksheets, flashcards, matching cards and storytelling prompts.</p><div class="back" aria-hidden="true" style="--bk:#ff7a2e"><div class="bin"><span class="big">Idea today, tool tomorrow</span><div class="chips"><span class="chip">Creative</span><span class="chip">Brings tools together</span><span class="chip">Built for each class</span><span class="chip">Claude Code</span></div></div><svg class="doo" viewBox="0 0 60 60"><path d="M30 6l6 14 15 2-11 10 3 15-13-8-13 8 3-15L9 22l15-2z" fill="#ff7a2e" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></article>
