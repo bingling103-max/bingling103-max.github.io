@@ -443,6 +443,17 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .intro-ov:not(.wait) .igo{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.6)}
 .intro-ov.wait .iwrap{opacity:.25}
 .intro-ov.wait .ibar{width:0!important}
+
+/* tap hint */
+.hint{display:inline-flex;align-items:center;gap:6px;margin:6px auto 0;position:relative;left:50%;transform:translateX(-50%) rotate(-2deg);background:var(--butter);color:#1a1a1a!important;border:3px solid var(--stk);box-shadow:4px 4px 0 var(--stk);border-radius:40px 34px 44px 30px/30px 44px 34px 40px;padding:8px 16px;font-family:var(--f-display);font-weight:800;font-size:1.05rem;animation:hintbob 2.2s ease-in-out infinite}
+.hint b{color:var(--orange-ink)!important}
+@keyframes hintbob{0%,100%{transform:translateX(-50%) rotate(-2deg)}50%{transform:translateX(-50%) translateY(-6px) rotate(1deg)}}
+.tapring{pointer-events:none;transform-box:fill-box;transform-origin:center}
+.tapring circle{transform-box:fill-box;transform-origin:center;animation:ring 1.8s ease-out infinite;opacity:0}
+.tapring .r2{animation-delay:.9s}
+@keyframes ring{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.hint.gone,.tapring.gone{display:none}
+@media (prefers-reduced-motion:reduce){.hint{animation:none}.tapring{display:none}}
 </style>
 
 <div class="intro-ov" id="intro" role="presentation">
@@ -507,8 +518,9 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
     <g class="pop p6"><g class="px" data-d="30"><g class="float f3 hit" data-cycle="l" role="button" tabindex="0" aria-label="Tap to change the greeting"><path d="M60 170h150a26 26 0 0 1 26 26v40a26 26 0 0 1-26 26h-20v24l-26-24h-104a26 26 0 0 1-26-26v-40a26 26 0 0 1 26-26z" fill="#fff" stroke="#1a1a1a" stroke-width="5"/><text x="135" y="226" text-anchor="middle" font-family="'Shantell Sans',sans-serif" font-weight="800" font-size="30" fill="#1a1a1a" class="lbl">Kia ora!</text></g></g></g>
     <!-- sparkles -->
     <g class="pop p6"><path d="M500 330l8 20 20 8-20 8-8 20-8-20-20-8 20-8z" fill="var(--orange)" stroke="#1a1a1a" stroke-width="3"/><path d="M110 420l6 14 14 6-14 6-6 14-6-14-14-6 14-6z" fill="var(--lilac)"/><g transform="translate(470 462)"><ellipse cx="0" cy="0" rx="30" ry="20" fill="#fff" stroke="#1a1a1a" stroke-width="4"/><circle cx="-8" cy="-2" r="3" fill="#1a1a1a"/><circle cx="8" cy="-2" r="3" fill="#1a1a1a"/><path d="M-5 6q5 4 10 0" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/></g><circle cx="140" cy="330" r="9" fill="var(--butter)"/></g>
+    <g class="tapring" id="tapring" aria-hidden="true"><circle cx="215" cy="365" r="70" fill="none" stroke="#1a1a1a" stroke-width="5"/><circle cx="215" cy="365" r="70" fill="none" stroke="var(--orange)" stroke-width="5" class="r2"/></g>
    </svg>
-   <div class="hint">Psst, <b>tap the blocks</b>.</div>
+   <div class="hint" id="hint">👆 <b>Tap the blocks</b> — they talk!</div>
   </div>
  </div>
  <div class="in stats">
@@ -892,6 +904,7 @@ document.querySelectorAll(".hit").forEach(g=>{
    {transform:"translateY(-50px) scale(1.05) rotate(-3deg)",offset:.6,easing:"cubic-bezier(.6,0,1,.6)"},
    {transform:"translateY(0) scale(1.1,.88)",offset:.84,easing:"ease-out"},
    {transform:"translateY(0) scale(1)"}],{duration:900})};
+ g.addEventListener("click",()=>{document.getElementById("hint")?.classList.add("gone");document.getElementById("tapring")?.classList.add("gone")});
  g.addEventListener("click",go);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}});
 });
 /* hero parallax */
