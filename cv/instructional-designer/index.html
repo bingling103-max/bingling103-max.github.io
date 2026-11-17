@@ -323,10 +323,46 @@ a.pc:hover .art::after{transform:translateX(120%)}
 .missing span{background:#fff0d6;border:1px dashed var(--gold);color:#8a5d10;border-radius:999px;padding:2px 10px}
 @media (max-width:760px){.cbmain{grid-template-columns:1fr}.cbtabs{display:none}}
 @media (max-width:560px){.cb .mnav{flex-direction:column;align-items:stretch;text-align:center}.cb .dbtns{justify-content:center}.cb .dbtns .btn{white-space:nowrap}}
+
+/* lesson records */
+.recw{background:var(--cream);border:1px solid var(--line);border-radius:26px;padding:18px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5)}
+.rtabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.rtabs button{font:800 14px var(--f-b);border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:7px 14px;cursor:pointer;transition:.25s}
+.rtabs button:hover{border-color:var(--teal);color:var(--teal)}
+.rtabs button.on{background:var(--teal);border-color:var(--teal);color:#fbf6ee;transform:translateY(-2px)}
+.rgrid{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;align-items:start}
+.sheet{position:relative;background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px 20px 16px;box-shadow:0 1px 0 #e6d9c6,0 6px 0 -2px #f6efe3,0 7px 0 -2px #e6d9c6,0 12px 0 -4px #f6efe3,0 13px 0 -4px #e6d9c6;perspective:1200px}
+.sheet.flip #sheetIn{animation:pageIn .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes pageIn{from{opacity:0;transform:rotateY(-25deg) translateX(-20px);transform-origin:0 50%}}
+.stamp{position:absolute;right:16px;top:12px;border:2.5px solid #2f8a60;color:#2f8a60;font-weight:900;font-size:12px;letter-spacing:.06em;border-radius:8px;padding:2px 8px;transform:rotate(8deg);opacity:.85}
+.sheet.flip .stamp{animation:stampIn .5s .35s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes stampIn{from{transform:rotate(8deg) scale(2.4);opacity:0}}
+.sheet h4{margin:0 0 10px;font:700 16px var(--f-d);color:var(--teal)}
+.lp{width:100%;border-collapse:collapse;font-size:13.5px;min-width:0;background:#fff}
+.lp th,.lp td{border:1px solid #d9cdbb;padding:7px 10px;vertical-align:top;white-space:normal;text-align:left}
+.lp th{background:#f1e6d6;color:var(--ink);font-size:13px;letter-spacing:0}
+.lp td:first-child{font-weight:800;width:30%;background:#fbf6ee}
+.lp td div{padding:1px 0}
+.track{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:16px}
+.trh{font:700 16px var(--f-d);color:var(--teal);margin-bottom:8px}
+.track ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.track li{display:flex;gap:10px;align-items:flex-start;background:var(--cream);border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;font-size:13.5px;font-weight:700;cursor:pointer;transition:.25s;animation:scrIn .4s both}
+.track li:hover{border-color:var(--teal)}
+.track li i{flex:none;width:20px;height:20px;border-radius:6px;border:2px solid var(--teal);display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff;transition:.25s}
+.track li small{display:block;font-size:11.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.track li.done{background:#e8f4ee;border-color:#8fd0b4}
+.track li.done i{background:#2f8a60;border-color:#2f8a60}
+.track li.done span{text-decoration:line-through;text-decoration-color:rgba(47,138,96,.5)}
+.trbar{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin-top:12px;font-size:13px;font-weight:800;color:var(--muted)}
+.trbar b{color:var(--teal)}
+.trbar i{grid-column:1/-1;height:8px;border-radius:8px;background:var(--sand);overflow:hidden}
+.trbar em{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--terra),var(--gold));transition:width .5s}
+.trnote{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+@media (max-width:760px){.rgrid{grid-template-columns:1fr}}
 </style></head><body>
 <nav><div class="wrap">
   <a class="logo" href="#top">Bingling Liu</a>
-  <a class="l" href="#fit">Role fit</a><a class="l" href="#work">Portfolio</a><a class="l" href="#module">Sample module</a><a class="l" href="#classbench">Class Bench</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#edu">Education</a>
+  <a class="l" href="#fit">Role fit</a><a class="l" href="#work">Portfolio</a><a class="l" href="#module">Sample module</a><a class="l" href="#classbench">Class Bench</a><a class="l" href="#records">Records</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#edu">Education</a>
   <a class="btn p" href="Bingling_Liu_CV.pdf" download>PDF CV</a>
 </div><div class="prog" id="prog"></div></nav>
 
@@ -533,6 +569,24 @@ a.pc:hover .art::after{transform:translateX(120%)}
   </div>
 </div></section>
 
+<section class="s alt" id="records"><div class="wrap">
+  <div class="eyebrow rv">After every class</div>
+  <h2 class="rv">Lesson records &amp; follow-up</h2>
+  <p class="intro rv">After each class I turn the Zoom transcript into a short lesson record: what we covered, the homework, and what I need to follow up. These are my real records from one week of my evening class (student names removed). Tap a day.</p>
+  <div class="recw rv">
+    <div class="rtabs" id="rtabs"><button class="on" data-d="0" type="button">Mon 9 Nov</button><button data-d="1" type="button">Tue 10 Nov</button><button data-d="2" type="button">Wed 11 Nov</button><button data-d="3" type="button">Thu 12 Nov</button></div>
+    <div class="rgrid">
+      <div class="sheet" id="sheet"><div class="stamp">Recorded ✓</div><div id="sheetIn"></div></div>
+      <div class="track">
+        <div class="trh">Follow-up tracker</div>
+        <ul id="fups"></ul>
+        <div class="trbar"><span>Followed up</span><b id="fpct">0%</b><i><em id="fbar"></em></i></div>
+        <p class="trnote">Tap an item to tick it off.</p>
+      </div>
+    </div>
+  </div>
+</div></section>
+
 <section class="s" id="exp"><div class="wrap">
   <div class="eyebrow rv">Experience</div>
   <h2 class="rv">Where I have worked</h2>
@@ -675,6 +729,34 @@ a.pc:hover .art::after{transform:translateX(120%)}
     T(function(){document.querySelector('.abc [data-o="b"]').classList.add('right');live.textContent='● marked';live.classList.remove('on');
       $('#missing').innerHTML='<span>'+NO_SUBMIT+'</span>';run.disabled=false},3600+L.length*420+500)});
   rst.addEventListener('click',reset);reset();
+})();
+</script>
+<script>(function(){
+  var D=[
+   {d:'Monday 9 Nov',a:['Review Unit 11: music words, present perfect (ever / never)','Pronunciation: stress in present perfect','Video: Dan &amp; Martina after the concert (11.16)','Agree or disagree with opinions'],
+    b:['Me too / Me neither / Did you? / Do you think so? / Yeah, maybe','Intonation (11.19) + reaction cards drill','Breakout: react to a partner’s opinions','Listening 11.21: James Bond film'],hw:'Homework link (sent after class)',
+    f:[['Homework','Send the homework link to the class'],['Next lesson','Review Listening 11.21 at the start of class']]},
+   {d:'Tuesday 10 Nov',a:['Review Listening 11.21: James Bond film and opinions','Reading: film reviews (Roma)','6 questions to talk about a film','Speaking: cinemas in NZ – “What time is the session?”'],
+    b:['Types of film vocabulary','I love / like / don’t mind / don’t like / hate + adjectives','Have you ever seen…? (cartoons)','Writing: pronouns (it / she), revise your film review'],hw:'Workbook Unit 11 Ex 1 a, b; Ex 2',
+    f:[['Admin','Remind 3 learners to complete their enrolment forms'],['Writing','Learners finish revising their film reviews'],['Next lesson','Correct common errors from the film reviews']]},
+   {d:'Wednesday 11 Nov',a:['Review: types of film; What kind of films do you like?','Class favourite films + how many times (once / twice)','Error correction from students’ film reviews'],
+    b:['Unit 11 Review: music, past participles, present perfect vs past simple','Multi-word verbs: call back, try on, fill out, come over, grow up','Breakout: How often do friends come over…?','Unit 11 survey; Unit 12 lead-in (travel)'],hw:'Unit 11 review exercise',
+    f:[['Feedback','Read the Unit 11 survey results before Unit 12']]},
+   {d:'Thursday 12 Nov',a:['Unit 12 lead-in: landscapes vocabulary','desert vs dessert (word stress)','Spelling + breakout: places for each landscape'],
+    b:['NZ road trip places + word meanings','Have you ever been to…? + follow-up questions','Reading: Work Around the World','Listening 12.3: Emily &amp; Chloe'],hw:'Unit 11 progress test on Canva',
+    f:[['Next lesson','Check Listening 12.3 answers'],['Admin','Check one learner’s Level 2 enrolment form with the office']]}];
+  var done={},cur=0,sheet=document.getElementById('sheet'),inn=document.getElementById('sheetIn'),ul=document.getElementById('fups');
+  function rows(x){return x.map(function(t){return '<div>'+t+'</div>'}).join('')}
+  function upd(){var tot=0,dn=0;D.forEach(function(x,i){x.f.forEach(function(_,j){tot++;if(done[i+'-'+j])dn++})});
+    var p=Math.round(dn/tot*100);document.getElementById('fpct').textContent=p+'% of the week';document.getElementById('fbar').style.width=p+'%'}
+  function show(i){cur=i;var x=D[i];
+    inn.innerHTML='<h4>Lesson Plan · Evening class</h4><table class="lp"><tr><th>Time / Date</th><th>'+x.d+'</th></tr><tr><td>6:00 pm – 7:00 pm</td><td>'+rows(x.a)+'</td></tr><tr><td>7:20 pm – 9:30 pm</td><td>'+rows(x.b)+'</td></tr><tr><td>HW</td><td>'+x.hw+'</td></tr></table>';
+    sheet.classList.remove('flip');void sheet.offsetWidth;sheet.classList.add('flip');
+    ul.innerHTML=x.f.map(function(f,j){var k=i+'-'+j;return '<li data-k="'+k+'" class="'+(done[k]?'done':'')+'" style="animation-delay:'+(j*90)+'ms"><i>'+(done[k]?'✓':'')+'</i><div><small>'+f[0]+'</small><span>'+f[1]+'</span></div></li>'}).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('#rtabs button'),function(b){b.classList.toggle('on',+b.dataset.d===i)});upd()}
+  ul.addEventListener('click',function(e){var li=e.target.closest('li');if(!li)return;var k=li.dataset.k;done[k]=!done[k];li.classList.toggle('done',done[k]);li.querySelector('i').textContent=done[k]?'✓':'';upd()});
+  document.getElementById('rtabs').addEventListener('click',function(e){var b=e.target.closest('button');if(b)show(+b.dataset.d)});
+  show(0);
 })();
 </script>
 </body></html>
