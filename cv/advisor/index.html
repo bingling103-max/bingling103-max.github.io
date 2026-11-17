@@ -215,11 +215,18 @@ tr.ok td.res{color:#24704e}tr.bad td.res{color:#a83a22}tr.warn td.res{color:#9a6
 @media (max-width:560px){.sum{grid-template-columns:1fr}.demo{padding:16px}}
 
 @media print{nav,.cta,.map{display:none}.rv{opacity:1;transform:none}}
+.letter{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:4px 22px;max-width:760px}
+.letter summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-weight:800;color:var(--teal);padding:14px 0}
+.letter summary::-webkit-details-marker{display:none}
+.letter summary span{color:var(--terra);font-size:20px;transition:transform .25s}
+.letter[open] summary span{transform:rotate(45deg)}
+.ltxt{border-top:1px solid var(--line);padding:14px 0 6px;color:var(--ink)}
+.ltxt p{margin:0 0 12px}
 </style></head><body>
 
 <nav><div class="wrap">
   <a class="logo" href="#top">Bingling Liu</a>
-  <a class="l" href="#fit">Role fit</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#demo">Demo</a><a class="l" href="#edu">Education</a>
+  <a class="l" href="#fit">Role fit</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#demo">Demo</a><a class="l" href="#edu">Education</a><a class="l" href="#letter">Letter</a>
   <a class="btn p" href="Bingling_Liu_CV.pdf" download>PDF CV</a>
 </div><div class="prog" id="prog"></div></nav>
 
@@ -372,6 +379,22 @@ tr.ok td.res{color:#24704e}tr.bad td.res{color:#a83a22}tr.warn td.res{color:#9a6
     <div class="ed rv"><b>BA in English Language and Literature, Minor in Accounting</b><em>2013</em><span>North China Electric Power University</span></div>
   </div>
   <p class="intro" style="margin-top:18px">NZ Police vetted · First Aid Certificate (2023) · References available on request</p>
+</div></section>
+
+<section class="s" id="letter"><div class="wrap">
+  <div class="eyebrow rv">Cover letter</div>
+  <h2 class="rv">Why this role</h2>
+  <details class="letter rv"><summary>Read my cover letter <span>＋</span></summary><div class="ltxt">
+    <p>Dear Hiring Manager,</p>
+    <p>I am writing to apply for the Student &amp; Programme Advisor role at Waipapa Taumata Rau | The University of Auckland. For the past 12 years I have worked with adult learners in New Zealand education, and the parts of my work I value most are the ones at the centre of this role: giving students clear advice, keeping their records right, and following up when someone starts to fall behind.</p>
+    <p>In my current role as an English Tutor at MSL Training / NZIE, I keep attendance, learning records and assessment results in SELMA. Because I see this information every week, I can notice early when a learner's attendance or progress drops, contact them, and refer support needs to the right team. Many of my learners are balancing study with work and family, so I have learned to give advice that is practical and realistic, not just correct.</p>
+    <p>At Aspiring Language Institute, I combined teaching with enrolment administration from 2024. I prepared offer-of-place letters and invoices for students and their education agents, checked programme details, dates and fees, and kept student information up to date in the school's system. I also prepared enrolment tests and assessments and took part in assessment review and pre-moderation with colleagues. Since 2023 I have also coached adults one-on-one for PTE Academic and IELTS, where I agree a study plan with each learner, track their progress and give honest advice about timing and next steps.</p>
+    <p>I work comfortably with people from many backgrounds. I have supported refugee, migrant and international learners since 2014, and I speak English and Mandarin. I enjoy working with academic and professional colleagues, and I recently ran a professional development session for fellow teachers on using AI tools in everyday work. I also bring a practical approach to systems: I use Excel and simple digital tools to keep information organised, so the right follow-up happens at the right time.</p>
+    <p>This role supports students through every stage of their studies, from choosing a programme to completing it. I would welcome the chance to help your students make good decisions along the way and to make sure no one slips through the gaps.</p>
+    <p>Thank you for considering my application. You can see an interactive version of my CV at bingling103-max.github.io/cv/advisor. I would be glad to talk with you further.</p>
+    <p>Yours sincerely,<br><b>Bingling Liu</b></p>
+  </div></details>
+  <div class="cta" style="margin-top:18px"><a class="btn g" href="Bingling_Liu_Cover_Letter.pdf" download>Download cover letter (PDF)</a></div>
 </div></section>
 
 <footer class="s"><div class="wrap">
