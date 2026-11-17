@@ -282,10 +282,51 @@ a.pc:hover .art::after{transform:translateX(120%)}
 @media (max-width:860px){.pf{grid-template-columns:1fr 1fr}.why{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.pf{grid-template-columns:1fr}.mbody{padding:16px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* class bench replay */
+.cb{background:var(--paper);border:1px solid var(--line);border-radius:26px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5);overflow:hidden}
+.cbbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--teal);color:#fbf6ee;padding:10px 18px}
+.cblogo{font:700 16px var(--f-d)}
+.cbtabs{display:flex;gap:6px;margin-right:auto}
+.cbtabs i{font-style:normal;font-size:12.5px;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.1);color:#cfe3df}
+.cbtabs i.on{background:#fbf6ee;color:var(--teal)}
+.cbmain{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;padding:18px}
+.chalk{background:#21403f;border-radius:18px;padding:18px 20px;color:#f4efe6;box-shadow:inset 0 0 0 6px #6b4a2f,inset 0 0 40px rgba(0,0,0,.35)}
+.chalk small{font-weight:800;color:#a9c9c2;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.chalk p{font:700 22px/1.3 var(--f-d);margin:6px 0 14px}
+.abc{display:grid;gap:8px}
+.abc div{position:relative;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);border-radius:12px;padding:8px 12px;font-weight:800;overflow:hidden;transition:border-color .4s,background .4s}
+.abc div span{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.15);font-size:13px;z-index:1}
+.abc .bn{margin-left:auto;z-index:1;font-variant-numeric:tabular-nums}
+.abc .bf{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(224,164,60,.28);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.abc div.right{border-color:#8fd0b4;background:rgba(143,208,180,.14)}
+.abc div.right .bf{background:rgba(143,208,180,.35)}
+.cbstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.cbstats div{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.cbstats b{display:block;font:700 24px var(--f-d);color:var(--teal)}
+.cbstats span{font-size:12.5px;color:var(--muted);font-weight:700}
+.sidehd{display:flex;justify-content:space-between;font-weight:900;font-size:13px;color:var(--teal);margin-bottom:8px}
+.livedot{color:var(--muted);font-weight:800}
+.livedot.on{color:#c4553a;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.4}}
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;min-height:150px;align-content:start}
+.seat{position:relative;background:var(--cream);border:1.5px solid var(--line);border-radius:14px;padding:8px 4px 6px;text-align:center;font-size:11.5px;font-weight:800;animation:seatIn .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes seatIn{from{transform:scale(0);opacity:0}}
+.seat .av{font-size:24px;line-height:1.1;display:block}
+.seat .st{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;min-height:14px}
+.seat.typing .st::after{content:"typing…";animation:blink 1s infinite}
+.seat.ok{border-color:#2f8a60;background:#e8f4ee}.seat.ok .st{color:#24704e}
+.seat.no{border-color:#c4553a;background:#fbe3db}.seat.no .st{color:#a83a22}
+.seat.ok::after,.seat.no::after{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;animation:seatIn .4s cubic-bezier(.3,1.6,.5,1)}
+.seat.ok::after{content:"✓";background:#2f8a60}.seat.no::after{content:"✗";background:#c4553a}
+.missing{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;font-weight:800;color:var(--muted)}
+.missing span{background:#fff0d6;border:1px dashed var(--gold);color:#8a5d10;border-radius:999px;padding:2px 10px}
+@media (max-width:760px){.cbmain{grid-template-columns:1fr}.cbtabs{display:none}}
+@media (max-width:560px){.cb .mnav{flex-direction:column;align-items:stretch;text-align:center}.cb .dbtns{justify-content:center}.cb .dbtns .btn{white-space:nowrap}}
 </style></head><body>
 <nav><div class="wrap">
   <a class="logo" href="#top">Bingling Liu</a>
-  <a class="l" href="#fit">Role fit</a><a class="l" href="#work">Portfolio</a><a class="l" href="#module">Sample module</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#edu">Education</a>
+  <a class="l" href="#fit">Role fit</a><a class="l" href="#work">Portfolio</a><a class="l" href="#module">Sample module</a><a class="l" href="#classbench">Class Bench</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#edu">Education</a>
   <a class="btn p" href="Bingling_Liu_CV.pdf" download>PDF CV</a>
 </div><div class="prog" id="prog"></div></nav>
 
@@ -356,7 +397,7 @@ a.pc:hover .art::after{transform:translateX(120%)}
     <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg></div>
       <h3>Adult education &amp; facilitation</h3><p>12 years facilitating adult groups face to face and online, using adult-learning best practice: plain language, short steps, lots of practice.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>MSL / NZIE · Aspiring · Waikato Institute</b><p>Daily classes for adults from many backgrounds, in the classroom and on Zoom and Canvas. PGDip in Second Language Teaching.</p></div></div></div></div>
     <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div>
-      <h3>Training records &amp; learning systems</h3><p>Attendance, results and learner records kept accurately; online courses delivered through an LMS.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>SELMA · Canvas · my own platform</b><p>I record attendance and results in SELMA, deliver through Canvas, and built a platform with a question bank, tests, auto-marking and results for every learner.</p></div></div></div></div>
+      <h3>Training records &amp; learning systems</h3><p>Attendance, results and learner records kept accurately; online courses delivered through an LMS.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>SELMA · Canvas · Class Bench</b><p>I record attendance and results in SELMA, deliver through Canvas, and built Class Bench, a platform with a question bank, tests, auto-marking and results for every learner.</p></div></div></div></div>
     <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg></div>
       <h3>Training the trainers</h3><p>I show colleagues new tools and methods so they can use them in their own sessions, and share resources across the team.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>AI professional development session</b><p>Designed and delivered a PD session for fellow teachers on using AI in everyday teaching, with simple, step-by-step slides.</p></div></div></div></div>
     <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
@@ -374,7 +415,7 @@ a.pc:hover .art::after{transform:translateX(120%)}
     <a class="pc rv" href="../samples/mandarin-ni-hao.html" target="_blank" rel="noopener"><span class="live">LIVE</span><div class="art">你好!</div><small>Self-paced lesson</small><h3>Mandarin Lesson 1 · Greetings</h3><p>Pictures, audio on demand, click-to-reveal and games, from first words to a short spoken exchange.</p><span class="go">Open the module →</span></a>
     <a class="pc rv" href="../samples/phonics-short-vowels.html" target="_blank" rel="noopener"><span class="live">LIVE</span><div class="art">c · a · t</div><small>Interactive practice</small><h3>Short Vowels · Phonics</h3><p>Step-by-step practice that builds from sounds to words, with instant feedback on every answer.</p><span class="go">Open the module →</span></a>
     <a class="pc rv" href="#module"><span class="live">TRY IT</span><div class="art">✈︎ FOD</div><small>Micro-module sample</small><h3>Spot the FOD</h3><p>A 3-minute workplace micro-module: objectives, a hazard-spotting activity, a scenario check and a completion record.</p><span class="go">Try it below ↓</span></a>
-    <div class="pc rv"><div class="art">▦ ✓</div><small>Learning platform</small><h3>My online class platform</h3><p>Question bank, tests and surveys with automatic marking, live results and a record for every learner. Used in every class I teach.</p><span class="go">Demo on request</span></div>
+    <a class="pc rv" href="#classbench"><span class="live">WATCH IT</span><div class="art">▦ ✓</div><small>Learning platform</small><h3>Class Bench</h3><p>My own learning platform: question bank, live whiteboard, tests and surveys with automatic marking and a record for every learner.</p><span class="go">Watch a replay ↓</span></a>
     <div class="pc rv"><div class="art">PTE</div><small>Course design</small><h3>PTE Academic skills series</h3><p>Multi-part course decks and practice tools for adults, built from the official scoring rules, with model answers and self-check steps.</p><span class="go">Samples on request</span></div>
     <div class="pc rv"><div class="art">AI ⇢ 👩‍🏫</div><small>Train-the-trainer</small><h3>"Can&#39;t find it? Ask Claude"</h3><p>A professional development session for teachers: one idea per slide, a live case study, and steps they could use the next day.</p><span class="go">Slides on request</span></div>
   </div>
@@ -457,6 +498,38 @@ a.pc:hover .art::after{transform:translateX(120%)}
     <div><b>Show, then do</b>A little input, then hands-on practice.</div>
     <div><b>Real scenario</b>The check is a decision on the job, not a definition.</div>
     <div><b>Feedback &amp; record</b>Every answer explained; completion recorded.</div>
+  </div>
+</div></section>
+
+<section class="s" id="classbench"><div class="wrap">
+  <div class="eyebrow rv">My learning platform</div>
+  <h2 class="rv">Class Bench</h2>
+  <p class="intro rv">I designed Class Bench and use it in every class I teach. Learners join from a phone link with no login. I send a question from the whiteboard, see every answer arrive live, and each piece of work is marked automatically and saved to Results. Press <b>Run a class</b> to watch a short replay.</p>
+  <div class="cb rv">
+    <div class="cbbar"><span class="cblogo">▦ Class Bench</span><span class="cbtabs"><i class="on">Whiteboard</i><i>Question Bank</i><i>Results</i></span><span class="badge" style="background:#fff5d9">Replay · made-up names</span></div>
+    <div class="cbmain">
+      <div class="board">
+        <div class="chalk">
+          <small>Question 3 of 6</small>
+          <p>Mia ____ to work by bus every day.</p>
+          <div class="abc"><div data-o="a"><span>a</span> go<b class="bn">0</b><i class="bf"></i></div><div data-o="b"><span>b</span> goes<b class="bn">0</b><i class="bf"></i></div><div data-o="c"><span>c</span> going<b class="bn">0</b><i class="bf"></i></div></div>
+        </div>
+        <div class="cbstats"><div><b id="cbJoin">0</b><span>joined</span></div><div><b id="cbSub">0</b><span>answered</span></div><div><b id="cbPct">–</b><span>correct</span></div></div>
+      </div>
+      <div class="side">
+        <div class="sidehd">Live board <span id="cbLive" class="livedot">● waiting</span></div>
+        <div class="seats" id="seats"></div>
+        <div class="sidehd" style="margin-top:12px">Not handed in yet</div>
+        <div class="missing" id="missing">–</div>
+      </div>
+    </div>
+    <div class="mnav"><span style="font-weight:800;color:var(--muted);font-size:13.5px">Learners join on their phones · answers are marked automatically</span><span class="dbtns"><button class="btn p" id="cbRun" type="button">▶ Run a class</button><button class="btn g" id="cbReset" type="button">Reset</button></span></div>
+  </div>
+  <div class="why">
+    <div><b>No login</b>One link, works on any phone; learners pick an avatar and a name.</div>
+    <div><b>Question Bank</b>Questions, tests and surveys saved and reused; my HTML lessons upload straight in.</div>
+    <div><b>Live and automatic</b>Answers appear as learners write; marking is instant.</div>
+    <div><b>Results &amp; records</b>Every learner's work by question, plus who has not handed in.</div>
   </div>
 </div></section>
 
@@ -579,6 +652,29 @@ a.pc:hover .art::after{transform:translateX(120%)}
       f.className='fb ok show';f.textContent='Correct. Act straight away, but only if it is safe, and always report it, so the area can be checked for more debris.'}
     else{o.disabled=true;f.className='fb no show';f.textContent='Not quite. FOD is everyone’s job, and waiting gives the object time to cause damage. Try again.'}})});
   show();
+})();
+</script>
+<script>(function(){
+  var $=function(q){return document.querySelector(q)},$$=function(q){return Array.prototype.slice.call(document.querySelectorAll(q))};
+  var L=[['🐨','Anna','b'],['🦊','Tom','b'],['🐼','Lucy','a'],['🐯','Sam','b'],['🐸','Mei','b'],['🦁','Raj','c'],['🐧','Eva','b'],['🐙','Ali','b']];
+  var NO_SUBMIT='Ali';
+  var seats=$('#seats'),run=$('#cbRun'),rst=$('#cbReset'),live=$('#cbLive'),timers=[],cnt;
+  function T(f,ms){timers.push(setTimeout(f,ms))}
+  function reset(){timers.forEach(clearTimeout);timers=[];seats.innerHTML='';cnt={a:0,b:0,c:0,sub:0,ok:0,join:0};
+    $$('.abc div').forEach(function(d){d.classList.remove('right');d.querySelector('.bn').textContent='0';d.querySelector('.bf').style.width='0'});
+    $('#cbJoin').textContent='0';$('#cbSub').textContent='0';$('#cbPct').textContent='–';$('#missing').textContent='–';
+    live.textContent='● waiting';live.classList.remove('on');run.disabled=false}
+  function bars(){var tot=Math.max(cnt.sub,1);['a','b','c'].forEach(function(o){var d=document.querySelector('.abc [data-o="'+o+'"]');d.querySelector('.bn').textContent=cnt[o];d.querySelector('.bf').style.width=(cnt[o]/tot*100)+'%'})}
+  run.addEventListener('click',function(){reset();run.disabled=true;live.textContent='● live';live.classList.add('on');
+    L.forEach(function(s,i){var el;
+      T(function(){el=document.createElement('div');el.className='seat';el.innerHTML='<span class="av">'+s[0]+'</span>'+s[1]+'<span class="st">joined</span>';seats.appendChild(el);cnt.join++;$('#cbJoin').textContent=cnt.join},300+i*260);
+      if(s[1]===NO_SUBMIT){T(function(){el.classList.add('typing');el.querySelector('.st').textContent=''},2600+i*120);return}
+      T(function(){el.classList.add('typing');el.querySelector('.st').textContent=''},2600+i*120);
+      T(function(){var ok=s[2]==='b';el.classList.remove('typing');el.classList.add(ok?'ok':'no');el.querySelector('.st').textContent=s[2]+(ok?' · correct':' · try again');
+        cnt[s[2]]++;cnt.sub++;if(ok)cnt.ok++;bars();$('#cbSub').textContent=cnt.sub;$('#cbPct').textContent=Math.round(cnt.ok/cnt.sub*100)+'%'},3600+i*420)});
+    T(function(){document.querySelector('.abc [data-o="b"]').classList.add('right');live.textContent='● marked';live.classList.remove('on');
+      $('#missing').innerHTML='<span>'+NO_SUBMIT+'</span>';run.disabled=false},3600+L.length*420+500)});
+  rst.addEventListener('click',reset);reset();
 })();
 </script>
 </body></html>
