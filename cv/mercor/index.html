@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bingling Liu · Chinese Linguistic Expert · Mercor application</title>
+<meta name="description" content="Bingling Liu — native Mandarin speaker, Chinese grammar and language specialist, bilingual educator. Interactive CV.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://bingling103-max.github.io/cv/mercor/">
+<meta property="og:title" content="Bingling Liu — Chinese Linguistic Expert application">
+<meta property="og:description" content="Native Mandarin speaker. 12+ years teaching Mandarin and English. Checking Chinese text for accuracy and naturalness.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2728%27 fill=%27%23c4553a%27/%3E%3Ctext x=%2732%27 y=%2743%27 text-anchor=%27middle%27 font-family=%27Georgia,serif%27 font-weight=%27700%27 font-size=%2732%27 fill=%27%23fbf6ee%27%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap">
+<style>
+:root{--cream:#fbf6ee;--paper:#fffdf9;--sand:#f1e6d6;--terra:#c4553a;--terra-d:#9e3f28;--terra-soft:#f6ddd3;--teal:#1f4a4c;--teal-soft:#dcebe8;--gold:#e0a43c;--ink:#2a2622;--muted:#6d655d;--line:#e6d9c6;
+  --f-d:"Fraunces",Georgia,serif;--f-b:"Nunito Sans","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.6 var(--f-b);padding-bottom:env(safe-area-inset-bottom)}
+a{color:var(--terra-d)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(251,246,238,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:18px;height:58px}
+.logo{font:700 18px var(--f-d);color:var(--teal);text-decoration:none;margin-right:auto;white-space:nowrap}
+nav a.l{font-weight:800;font-size:14px;color:var(--muted);text-decoration:none}
+nav a.l:hover{color:var(--terra)}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:11px 20px;font-weight:800;font-size:15px;text-decoration:none;border:2px solid var(--teal);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--teal)}
+.btn.p{background:var(--terra);border-color:var(--terra);color:#fff}
+.btn.p:hover{box-shadow:0 6px 0 var(--terra-d)}
+.btn.g{background:transparent;color:var(--teal)}
+nav .btn{padding:7px 14px;font-size:13.5px}
+/* hero */
+.hero{padding:56px 0 30px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
+.kicker{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;font-size:13px;color:var(--teal)}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--terra);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.7);opacity:.4}}
+h1{font:700 clamp(44px,7vw,76px)/1 var(--f-d);color:var(--teal);margin:18px 0 12px;letter-spacing:-.02em}
+h1 span{color:var(--terra)}
+.sub{font-size:19px;font-weight:700;color:var(--ink);margin:0 0 14px}
+.lead{color:var(--muted);font-size:16.5px;max-width:540px;margin:0 0 24px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.contact{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:14.5px;color:var(--muted);font-weight:700}
+.contact a{color:var(--muted);text-decoration:none}
+.contact a:hover{color:var(--terra)}
+.map{background:var(--paper);border:1px solid var(--line);border-radius:28px;padding:10px;box-shadow:0 18px 40px -24px rgba(31,74,76,.35)}
+.map svg{width:100%;height:auto;display:block}
+.dash{stroke-dasharray:4 7;animation:flow 2.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-22}}
+.pin{transform-box:fill-box;transform-origin:50% 100%;animation:bob 3s ease-in-out infinite}
+.pin.d2{animation-delay:.6s}.pin.d3{animation-delay:1.2s}.pin.d4{animation-delay:1.8s}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.ring{transform-box:fill-box;transform-origin:center;animation:ring 2.4s ease-out infinite}
+@keyframes ring{from{transform:scale(.6);opacity:.8}to{transform:scale(2.4);opacity:0}}
+/* stats */
+.stats{padding:8px 0 40px}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:18px 18px 16px;position:relative;overflow:hidden}
+.stat b{display:block;font:700 34px/1.05 var(--f-d);color:var(--terra)}
+.stat span{font-size:14px;color:var(--muted);font-weight:700}
+.stat::after{content:"";position:absolute;right:-18px;top:-18px;width:62px;height:62px;border-radius:50%;background:var(--teal-soft);opacity:.7}
+/* sections */
+section.s{padding:46px 0}
+section.alt{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{font-weight:900;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--terra)}
+h2{font:700 clamp(28px,4vw,40px)/1.12 var(--f-d);color:var(--teal);margin:6px 0 10px}
+.intro{color:var(--muted);max-width:640px;margin:0 0 28px}
+.fit{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--cream);border:1px solid var(--line);border-radius:22px;padding:20px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.card:hover{transform:translateY(-4px);border-color:var(--terra);box-shadow:0 14px 28px -20px rgba(196,85,58,.6)}
+.ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--terra-soft);color:var(--terra-d);margin-bottom:12px}
+.card:nth-child(even) .ic{background:var(--teal-soft);color:var(--teal)}
+.ic svg{width:24px;height:24px}
+.card h3{margin:0 0 6px;font-size:17px;color:var(--ink)}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.card .ev{margin-top:10px;font-size:12.5px;font-weight:800;color:var(--teal)}
+/* timeline */
+.tl{position:relative;padding-left:30px}
+.tl::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;border-left:2px dashed var(--line)}
+.job{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:20px;margin-bottom:14px}
+.job::before{content:"";position:absolute;left:-27px;top:24px;width:14px;height:14px;border-radius:50%;background:var(--cream);border:3px solid var(--terra)}
+.job.key::before{background:var(--terra)}
+.job summary{list-style:none;cursor:pointer;padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:baseline}
+.job summary::-webkit-details-marker{display:none}
+.job summary b{font-size:17px}
+.job summary em{font-style:normal;font-weight:800;color:var(--terra);font-size:14px;white-space:nowrap}
+.job summary small{grid-column:1/-1;color:var(--muted);font-size:14.5px;font-weight:600}
+.job summary::after{content:"+";position:absolute;right:20px;bottom:16px;font:700 20px var(--f-d);color:var(--teal);transition:transform .25s}
+.job[open] summary::after{transform:rotate(45deg)}
+.tag{display:inline-block;background:var(--terra-soft);color:var(--terra-d);font-size:12px;font-weight:900;border-radius:6px;padding:1px 8px;margin-left:6px;vertical-align:2px}
+.job ul{margin:0;padding:0 46px 18px 40px;color:var(--ink);font-size:15px}
+.job li{margin-bottom:6px}
+.job li::marker{color:var(--terra)}
+.hint{font-size:13.5px;color:var(--muted);margin:-14px 0 18px}
+/* skills */
+.sk{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.box{background:var(--cream);border:1px solid var(--line);border-radius:22px;padding:20px}
+.box h3{margin:0 0 12px;font-size:16px;color:var(--teal)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13.5px;font-weight:800}
+.chip.hot{background:var(--terra);border-color:var(--terra);color:#fff}
+.box p{margin:0;color:var(--muted);font-size:14.5px}
+.lang{display:grid;gap:10px}
+.lang div{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center;font-weight:800;font-size:14.5px}
+.bar{height:9px;border-radius:9px;background:var(--sand);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--terra),var(--gold));width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.in .bar i{width:var(--w)}
+/* projects + edu */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.edu{display:grid;gap:12px}
+.ed{display:grid;grid-template-columns:1fr auto;gap:2px 14px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px 18px}
+.ed b{font-size:15.5px}.ed em{font-style:normal;color:var(--terra);font-weight:900}
+.ed span{grid-column:1/-1;color:var(--muted);font-size:14px}
+.ed.hi{border-color:var(--terra);background:linear-gradient(90deg,var(--terra-soft),var(--paper) 70%)}
+footer{padding:44px 0 56px;text-align:center}
+footer h2{margin-bottom:8px}
+footer .cta{justify-content:center;margin-top:20px}
+footer .note{color:var(--muted);font-size:13.5px;margin-top:22px}
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr}
+  .stats .wrap{grid-template-columns:repeat(2,1fr)}
+  .fit,.sk{grid-template-columns:1fr 1fr}
+  .two{grid-template-columns:1fr}
+  nav a.l{display:none}
+}
+@media (max-width:560px){
+  .fit,.sk{grid-template-columns:1fr}
+  .hero{padding-top:34px}
+  .job ul{padding:0 22px 16px 34px}
+  .job summary{grid-template-columns:1fr;padding-right:44px}
+}
+
+/* ===== effects ===== */
+.prog{position:absolute;left:0;bottom:-1px;height:3px;width:100%;background:linear-gradient(90deg,var(--terra),var(--gold));transform-origin:0 50%;transform:scaleX(0)}
+h1 .w{display:inline-block;opacity:0;transform:translateY(.4em) rotate(2deg);animation:wordIn .9s cubic-bezier(.2,.8,.2,1) forwards}
+h1 .w:nth-child(2){animation-delay:.18s}
+@keyframes wordIn{to{opacity:1;transform:none}}
+.mapin{position:relative}
+.route-draw{transition:stroke-dashoffset 1.3s cubic-bezier(.6,.1,.3,1)}
+#planes{opacity:0;transition:opacity .8s}
+.drawn #planes{opacity:1}
+.pinbtn{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.pinbtn::after{content:"";position:absolute;inset:8px;border-radius:50%;border:2px solid var(--terra);opacity:0;transform:scale(.6);transition:.25s}
+.pinbtn:hover::after,.pinbtn:focus-visible::after,.pinbtn.on::after{opacity:1;transform:scale(1)}
+.pinbtn:focus-visible{outline:none}
+.tapnote{position:absolute;left:14px;bottom:12px;font-size:12px;font-weight:800;color:var(--muted);background:rgba(255,253,249,.9);border-radius:999px;padding:3px 10px;pointer-events:none}
+.pop{position:absolute;z-index:3;width:min(230px,70%);background:var(--teal);color:#fbf6ee;border-radius:16px;padding:12px 14px;font-size:13.5px;line-height:1.45;box-shadow:0 16px 30px -14px rgba(31,74,76,.7);opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
+.pop.show{opacity:1;transform:none;pointer-events:auto}
+.pop b{display:block;font:700 15px var(--f-d);color:#fff;margin-bottom:3px}
+.stat{transition:transform .3s}
+.stat:hover{transform:translateY(-4px) rotate(-1deg)}
+.stat::after{transition:transform .6s}
+.stat:hover::after{transform:scale(1.5)}
+/* card tilt + flip */
+.fit .card{padding:0;perspective:900px;background:transparent;border:0;cursor:pointer;outline:none;transform:none}
+.fit .card:hover{transform:none;box-shadow:none}
+.tilt{height:100%;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .35s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.inner{display:grid;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.2,.4,1)}
+.card.flip .inner{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;padding:20px;border:1px solid var(--line);background:var(--cream);position:relative;overflow:hidden}
+.face::before{content:"";position:absolute;inset:0;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(196,85,58,.16),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover .face::before,.card:focus-visible .face::before{opacity:1}
+.card:hover .front,.card:focus-visible .front{border-color:var(--terra)}
+.back{transform:rotateY(180deg);background:var(--teal);color:#e9f2f0;border-color:var(--teal);display:flex;flex-direction:column;justify-content:center}
+.back small{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:#f6c9b9}
+.back b{font:700 18px/1.25 var(--f-d);color:#fff;margin:6px 0 8px}
+.back p{margin:0;font-size:14px;color:#cfe3df}
+.flipme{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;font-weight:900;color:var(--terra-d)}
+.flipme i{font-style:normal;display:inline-block;transition:transform .4s}
+.card:hover .flipme i{transform:rotate(180deg)}
+/* timeline rail */
+.tl::before{display:none}
+.rail{position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:repeating-linear-gradient(var(--line) 0 6px,transparent 6px 11px)}
+.rail i{position:absolute;inset:0;background:linear-gradient(var(--terra),var(--gold));transform-origin:50% 0;transform:scaleY(var(--p,0));border-radius:2px}
+.job{transform:translateX(-24px)}
+.job.in{transform:none}
+.job::before{transition:background .4s,box-shadow .4s,transform .4s;transform:scale(.6)}
+.job.in::before{background:var(--terra);transform:scale(1);box-shadow:0 0 0 6px rgba(196,85,58,.15)}
+/* chips pop */
+.box .chip{opacity:0;transform:translateY(8px) scale(.9)}
+.box.in .chip{animation:chipIn .5s cubic-bezier(.3,1.4,.5,1) forwards;animation-delay:calc(var(--i,0) * 60ms + 200ms)}
+@keyframes chipIn{to{opacity:1;transform:none}}
+.bar{position:relative}
+.bar i{position:relative;overflow:hidden}
+.bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);transform:translateX(-100%);animation:shine 2.6s 1.4s ease-in-out infinite}
+@keyframes shine{to{transform:translateX(100%)}}
+.lang em{font-style:normal;font-size:12px;color:var(--muted);font-weight:800;margin-left:6px}
+/* demo */
+.demo{background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:22px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5)}
+.dtop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--f-butter,#fff5d9);border:1px dashed var(--gold);color:#8a5d10;font-weight:900;font-size:12.5px;border-radius:999px;padding:4px 12px}
+.dbtns{display:flex;gap:10px}
+.dbtns .btn{padding:9px 16px;font-size:14px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.tw{overflow-x:auto;border-radius:16px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:14px;background:var(--cream)}
+th{background:var(--teal);color:#fbf6ee;text-align:left;font-weight:800;font-size:12.5px;letter-spacing:.04em;padding:10px 12px;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);white-space:nowrap;transition:background .35s}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.scan td{background:#fff3c9}
+tr.ok td{background:#e8f4ee}
+tr.bad td{background:#fbe3db}
+tr.warn td{background:#fff0d6}
+td.res{font-weight:900;min-width:170px}
+tr.ok td.res{color:#24704e}tr.bad td.res{color:#a83a22}tr.warn td.res{color:#9a6510}
+.res span{display:inline-block;animation:chipIn .4s cubic-bezier(.3,1.4,.5,1) both}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.sum div{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.sum b{display:block;font:700 26px var(--f-d);color:var(--teal)}
+.sum span{font-size:13px;color:var(--muted);font-weight:700}
+.fx{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.fx code{font:700 12.5px ui-monospace,Consolas,monospace;background:var(--teal-soft);color:var(--teal);border-radius:8px;padding:5px 9px}
+@media (max-width:560px){.sum{grid-template-columns:1fr}.demo{padding:16px}}
+
+
+@media print{nav,.cta,.map,.mod{display:none}.rv{opacity:1;transform:none}}
+/* hero runway */
+.gate{font:800 11px var(--f-b)}
+/* portfolio */
+.pf{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pc{position:relative;display:flex;flex-direction:column;background:var(--cream);border:1px solid var(--line);border-radius:22px;padding:18px;text-decoration:none;color:var(--ink);overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s}
+a.pc:hover{transform:translateY(-5px) rotate(-.6deg);border-color:var(--terra);box-shadow:0 16px 30px -20px rgba(196,85,58,.7)}
+.pc .art{height:108px;border-radius:16px;margin-bottom:14px;display:grid;place-items:center;font:700 26px var(--f-d);color:var(--teal);background:linear-gradient(135deg,var(--teal-soft),var(--sand));position:relative;overflow:hidden}
+.pc:nth-child(2) .art{background:linear-gradient(135deg,var(--terra-soft),#fff5d9);color:var(--terra-d)}
+.pc:nth-child(3) .art{background:linear-gradient(135deg,#fff5d9,var(--teal-soft))}
+.pc:nth-child(5) .art{background:linear-gradient(135deg,var(--terra-soft),var(--teal-soft))}
+.pc .art::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s}
+a.pc:hover .art::after{transform:translateX(120%)}
+.pc small{font-weight:900;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--terra)}
+.pc h3{margin:4px 0 6px;font-size:16.5px}
+.pc p{margin:0 0 10px;color:var(--muted);font-size:14px;flex:1}
+.pc .go{font-weight:900;font-size:13px;color:var(--teal)}
+.pc .live{position:absolute;top:12px;right:12px;z-index:2;background:var(--terra);color:#fff;font-size:11px;font-weight:900;border-radius:999px;padding:2px 9px}
+/* micro-module */
+.mod{background:var(--paper);border:1px solid var(--line);border-radius:26px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5);overflow:hidden;max-width:820px}
+.mbar{display:flex;align-items:center;gap:12px;background:var(--teal);color:#fbf6ee;padding:12px 18px;font-weight:800;font-size:14px}
+.mbar .dots{display:flex;gap:6px;margin-left:auto}
+.mbar .dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .3s,transform .3s}
+.mbar .dots i.on{background:var(--gold);transform:scale(1.25)}
+.mbar .dots i.done{background:#8fd0b4}
+.mprog{height:4px;background:var(--sand)}.mprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--terra),var(--gold));transition:width .5s}
+.mbody{padding:22px;min-height:330px;position:relative}
+.scr{display:none;animation:scrIn .5s cubic-bezier(.2,.8,.2,1)}
+.scr.on{display:block}
+@keyframes scrIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.scr h3{font:700 22px var(--f-d);color:var(--teal);margin:0 0 8px}
+.scr p{margin:0 0 12px}
+.obj{background:var(--cream);border:1px dashed var(--terra);border-radius:16px;padding:12px 16px;margin:12px 0}
+.obj b{color:var(--terra-d)}
+.apron{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#5d6b6c;aspect-ratio:16/7;margin:6px 0 10px}
+.apron svg{width:100%;height:100%;display:block}
+.hot{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:0;padding:0;background:transparent;cursor:pointer}
+.hot::before{content:"";position:absolute;inset:6px;border-radius:50%;border:2px dashed rgba(255,255,255,.75);animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hot.found::before{border:3px solid #8fd0b4;animation:none;background:rgba(143,208,180,.25)}
+.hot.miss::before{border:3px solid #f6a88f;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.count{font-weight:900;color:var(--teal)}
+.opts{display:grid;gap:10px;margin:10px 0}
+.opt{text-align:left;font:700 15px var(--f-b);background:var(--cream);border:2px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--ink);transition:border-color .2s,background .2s,transform .2s}
+.opt:hover{border-color:var(--teal);transform:translateX(3px)}
+.opt.right{border-color:#2f8a60;background:#e8f4ee}
+.opt.wrong{border-color:#c4553a;background:#fbe3db}
+.fb{border-radius:14px;padding:12px 14px;font-size:14.5px;display:none}
+.fb.show{display:block;animation:scrIn .35s}
+.fb.ok{background:#e8f4ee;color:#1d5c40}.fb.no{background:#fbe3db;color:#8a2f1b}
+.mnav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;border-top:1px solid var(--line);background:var(--cream)}
+.mnav .btn{padding:9px 18px;font-size:14px}
+.cert{text-align:center;padding:10px 0}
+.cert .seal{width:96px;height:96px;margin:0 auto 10px;border-radius:50%;background:radial-gradient(circle,var(--gold) 0 55%,#c98a22 56% 60%,var(--gold) 61%);display:grid;place-items:center;font-size:40px;animation:pop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}}
+.rec{display:inline-grid;grid-template-columns:auto auto;gap:4px 16px;text-align:left;background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:12px 18px;font-size:14px;margin-top:6px}
+.rec span{color:var(--muted);font-weight:700}
+.conf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.conf i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(420px) rotate(540deg);opacity:0}}
+.why{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;max-width:820px}
+.why div{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.why b{display:block;color:var(--teal);font-size:13.5px}
+@media (max-width:860px){.pf{grid-template-columns:1fr 1fr}.why{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.pf{grid-template-columns:1fr}.mbody{padding:16px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* class bench replay */
+.cb{background:var(--paper);border:1px solid var(--line);border-radius:26px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5);overflow:hidden}
+.cbbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--teal);color:#fbf6ee;padding:10px 18px}
+.cblogo{font:700 16px var(--f-d)}
+.cbtabs{display:flex;gap:6px;margin-right:auto}
+.cbtabs i{font-style:normal;font-size:12.5px;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.1);color:#cfe3df}
+.cbtabs i.on{background:#fbf6ee;color:var(--teal)}
+.cbmain{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;padding:18px}
+.chalk{background:#21403f;border-radius:18px;padding:18px 20px;color:#f4efe6;box-shadow:inset 0 0 0 6px #6b4a2f,inset 0 0 40px rgba(0,0,0,.35)}
+.chalk small{font-weight:800;color:#a9c9c2;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.chalk p{font:700 22px/1.3 var(--f-d);margin:6px 0 14px}
+.abc{display:grid;gap:8px}
+.abc div{position:relative;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);border-radius:12px;padding:8px 12px;font-weight:800;overflow:hidden;transition:border-color .4s,background .4s}
+.abc div span{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.15);font-size:13px;z-index:1}
+.abc .bn{margin-left:auto;z-index:1;font-variant-numeric:tabular-nums}
+.abc .bf{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(224,164,60,.28);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.abc div.right{border-color:#8fd0b4;background:rgba(143,208,180,.14)}
+.abc div.right .bf{background:rgba(143,208,180,.35)}
+.cbstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.cbstats div{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.cbstats b{display:block;font:700 24px var(--f-d);color:var(--teal)}
+.cbstats span{font-size:12.5px;color:var(--muted);font-weight:700}
+.sidehd{display:flex;justify-content:space-between;font-weight:900;font-size:13px;color:var(--teal);margin-bottom:8px}
+.livedot{color:var(--muted);font-weight:800}
+.livedot.on{color:#c4553a;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.4}}
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;min-height:150px;align-content:start}
+.seat{position:relative;background:var(--cream);border:1.5px solid var(--line);border-radius:14px;padding:8px 4px 6px;text-align:center;font-size:11.5px;font-weight:800;animation:seatIn .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes seatIn{from{transform:scale(0);opacity:0}}
+.seat .av{font-size:24px;line-height:1.1;display:block}
+.seat .st{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;min-height:14px}
+.seat.typing .st::after{content:"typing…";animation:blink 1s infinite}
+.seat.ok{border-color:#2f8a60;background:#e8f4ee}.seat.ok .st{color:#24704e}
+.seat.no{border-color:#c4553a;background:#fbe3db}.seat.no .st{color:#a83a22}
+.seat.ok::after,.seat.no::after{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;animation:seatIn .4s cubic-bezier(.3,1.6,.5,1)}
+.seat.ok::after{content:"✓";background:#2f8a60}.seat.no::after{content:"✗";background:#c4553a}
+.missing{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;font-weight:800;color:var(--muted)}
+.missing span{background:#fff0d6;border:1px dashed var(--gold);color:#8a5d10;border-radius:999px;padding:2px 10px}
+@media (max-width:760px){.cbmain{grid-template-columns:1fr}.cbtabs{display:none}}
+@media (max-width:560px){.cb .mnav{flex-direction:column;align-items:stretch;text-align:center}.cb .dbtns{justify-content:center}.cb .dbtns .btn{white-space:nowrap}}
+
+/* lesson records */
+.recw{background:var(--cream);border:1px solid var(--line);border-radius:26px;padding:18px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5)}
+.rtabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.rtabs button{font:800 14px var(--f-b);border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:7px 14px;cursor:pointer;transition:.25s}
+.rtabs button:hover{border-color:var(--teal);color:var(--teal)}
+.rtabs button.on{background:var(--teal);border-color:var(--teal);color:#fbf6ee;transform:translateY(-2px)}
+.rgrid{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;align-items:start}
+.sheet{position:relative;background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px 20px 16px;box-shadow:0 1px 0 #e6d9c6,0 6px 0 -2px #f6efe3,0 7px 0 -2px #e6d9c6,0 12px 0 -4px #f6efe3,0 13px 0 -4px #e6d9c6;perspective:1200px}
+.sheet.flip #sheetIn{animation:pageIn .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes pageIn{from{opacity:0;transform:rotateY(-25deg) translateX(-20px);transform-origin:0 50%}}
+.stamp{position:absolute;right:16px;top:12px;border:2.5px solid #2f8a60;color:#2f8a60;font-weight:900;font-size:12px;letter-spacing:.06em;border-radius:8px;padding:2px 8px;transform:rotate(8deg);opacity:.85}
+.sheet.flip .stamp{animation:stampIn .5s .35s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes stampIn{from{transform:rotate(8deg) scale(2.4);opacity:0}}
+.sheet h4{margin:0 0 10px;font:700 16px var(--f-d);color:var(--teal)}
+.lp{width:100%;border-collapse:collapse;font-size:13.5px;min-width:0;background:#fff}
+.lp th,.lp td{border:1px solid #d9cdbb;padding:7px 10px;vertical-align:top;white-space:normal;text-align:left}
+.lp th{background:#f1e6d6;color:var(--ink);font-size:13px;letter-spacing:0}
+.lp td:first-child{font-weight:800;width:30%;background:#fbf6ee}
+.lp td div{padding:1px 0}
+.track{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:16px}
+.trh{font:700 16px var(--f-d);color:var(--teal);margin-bottom:8px}
+.track ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.track li{display:flex;gap:10px;align-items:flex-start;background:var(--cream);border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;font-size:13.5px;font-weight:700;cursor:pointer;transition:.25s;animation:scrIn .4s both}
+.track li:hover{border-color:var(--teal)}
+.track li i{flex:none;width:20px;height:20px;border-radius:6px;border:2px solid var(--teal);display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff;transition:.25s}
+.track li small{display:block;font-size:11.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.track li.done{background:#e8f4ee;border-color:#8fd0b4}
+.track li.done i{background:#2f8a60;border-color:#2f8a60}
+.track li.done span{text-decoration:line-through;text-decoration-color:rgba(47,138,96,.5)}
+.trbar{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin-top:12px;font-size:13px;font-weight:800;color:var(--muted)}
+.trbar b{color:var(--teal)}
+.trbar i{grid-column:1/-1;height:8px;border-radius:8px;background:var(--sand);overflow:hidden}
+.trbar em{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--terra),var(--gold));transition:width .5s}
+.trnote{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+@media (max-width:760px){.rgrid{grid-template-columns:1fr}}
+/* learner journey */
+.jr{position:relative;overflow:hidden}
+.jbody{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;padding:20px}
+.pipe{display:grid;gap:10px}
+.st2{display:grid;grid-template-columns:130px 1fr 52px;align-items:center;gap:10px;font-weight:800;font-size:14px}
+.st2 .lb small{display:block;font-size:11.5px;color:var(--muted);font-weight:700}
+.st2 .tr{height:26px;border-radius:9px;background:var(--sand);overflow:hidden;position:relative}
+.st2 .tr i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:linear-gradient(90deg,var(--teal),#2f6f6c);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.st2 .tr em{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:linear-gradient(90deg,var(--gold),#f0c46a);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.st2 .n{font:700 18px var(--f-d);color:var(--teal);text-align:right}
+.drop{margin:-6px 0 -4px 140px;font-size:12px;font-weight:900;color:var(--muted);display:flex;gap:6px;align-items:center;opacity:0;transition:.4s}
+.drop.show{opacity:1}
+.drop.big{color:var(--terra-d)}
+.drop.big::before{content:"⚠";}
+.drop.big span{background:var(--terra-soft);border-radius:6px;padding:1px 8px}
+.jside{display:grid;gap:12px;align-content:start}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.kpi b{display:block;font:700 26px/1.1 var(--f-d);color:var(--terra)}
+.kpi span{font-size:12px;font-weight:800;color:var(--muted)}
+.msg{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;font-size:14px;transition:.3s}
+.msg small{display:block;font-size:11.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--terra-d);margin-bottom:4px}
+.msg .to{font-weight:800;color:var(--teal);font-size:13.5px;margin-bottom:6px}
+.msg p{margin:0;line-height:1.5}
+.msg .ph{color:var(--muted);font-style:italic}
+.msg.sent{border-color:#8fd0b4;background:#f1faf5}
+.msg.sent small::after{content:" · sent ✓";color:#24704e}
+.dbtns{display:flex;gap:8px;flex-wrap:wrap}
+.jr .mnav{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line)}
+.jr .btn:disabled{opacity:.45;pointer-events:none}
+@media (max-width:760px){.jbody{grid-template-columns:1fr;padding:14px}.st2{grid-template-columns:96px 1fr 44px}.drop{margin-left:106px}}
+.tc{background:var(--paper);border:1px solid var(--line);border-radius:26px;box-shadow:0 20px 40px -30px rgba(31,74,76,.5);overflow:hidden;max-width:820px}
+.tcbar .badge{white-space:nowrap}.tcbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--teal);color:#fbf6ee;padding:12px 18px;font-weight:800;font-size:14px}
+.tcbody{padding:22px 24px 18px}
+.tctask{font-size:13.5px;color:var(--muted);font-weight:700;margin-bottom:14px}
+.tctask q{color:var(--ink);font-style:normal}
+.tcsent{display:flex;flex-wrap:wrap;gap:8px;font-size:clamp(22px,4vw,30px);line-height:1.3}
+.tcsent button{font:inherit;color:var(--ink);background:var(--cream);border:2px dashed var(--line);border-radius:14px;padding:6px 12px;cursor:pointer;transition:transform .15s,background .2s,border-color .2s}
+.tcsent button:hover{border-color:var(--gold);transform:translateY(-2px)}
+.tcsent button.hit{background:#fde3dc;border:2px solid var(--terra);color:var(--terra)}
+.tcsent button.miss{animation:tcshake .35s}
+.tcsent button.ok{background:#e3f1ec;border-color:#8fd0b4}
+.tcsent.done button{cursor:default;transform:none}
+@keyframes tcshake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.tchint{margin-top:12px;font-size:13.5px;font-weight:700;color:var(--muted)}
+.tcres{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px;animation:tcin .4s ease}
+@keyframes tcin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tctype{display:inline-block;background:var(--teal);color:#fbf6ee;font-weight:800;font-size:12.5px;border-radius:999px;padding:3px 12px;margin-bottom:10px}
+.tcrow{display:flex;gap:10px;align-items:baseline;font-size:20px;margin:4px 0}
+.tcrow i{font-style:normal;font-weight:900;width:20px}
+.tcrow.bad{color:#9a7f74}.tcrow.bad span{text-decoration:line-through;text-decoration-color:var(--terra)}
+.tcrow.bad i{color:var(--terra)}.tcrow.good i{color:#2f8f6a}.tcrow.good{font-weight:700}
+.tcwhy{margin-top:8px;font-size:15px;color:var(--ink)}
+.tcdots{display:flex;gap:6px;align-items:center}
+.tcdots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.tcdots i.on{background:var(--gold)}.tcdots i.done{background:var(--teal)}
+.tcdots b{white-space:nowrap;margin-left:8px;font-size:13.5px;color:var(--muted)}
+</style></head><body>
+<nav><div class="wrap">
+  <a class="logo" href="#top">Bingling Liu</a>
+  <a class="l" href="#fit">Role fit</a><a class="l" href="#check">Chinese text check</a><a class="l" href="#work">Portfolio</a><a class="l" href="#exp">Experience</a><a class="l" href="#skills">Skills</a><a class="l" href="#edu">Education</a>
+  <a class="btn p" href="Bingling_Liu_CV.pdf" download>PDF CV</a>
+</div><div class="prog" id="prog"></div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <span class="kicker"><i></i>Auckland · Remote · Application: Chinese Linguistic Expert, Mercor</span>
+    <h1><span class="w" style="color:var(--teal)">Bingling</span> <span class="w">Liu</span></h1>
+    <p class="sub">Native Mandarin speaker · Chinese grammar &amp; usage · Bilingual educator</p>
+    <p class="lead">I have taught Mandarin and English for more than 12 years, in Beijing and in New Zealand. Every day I look closely at language: why a sentence is wrong, why another one sounds unnatural, and how to say it better. I write and edit Chinese for real readers, and I use AI tools every day, always checking what they produce before it reaches my learners. Try my Chinese text check below.</p>
+    <div class="cta">
+      <a class="btn p" href="#check">Try the Chinese text check</a>
+      <a class="btn g" href="Bingling_Liu_CV.pdf" download>Download PDF CV</a>
+    </div>
+    <div class="contact"><span>📍 Auckland, NZ</span><a href="tel:+64221310069">📞 022 131 0069</a><a href="mailto:bingling103@gmail.com">✉️ bingling103@gmail.com</a></div>
+  </div>
+
+  <div class="map"><div class="mapin" id="mapin">
+    <svg viewBox="0 0 480 380" aria-hidden="true" id="mapsvg">
+      <defs><pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="#e6d9c6"/></pattern></defs>
+      <rect x="0" y="0" width="480" height="380" rx="22" fill="#fbf6ee"/>
+      <rect x="0" y="0" width="480" height="380" rx="22" fill="url(#dots)"/>
+      <!-- taxiway loop -->
+      <path id="loop" class="route" d="M70 190 A170 115 0 1 1 410 190 A170 115 0 1 1 70 190" fill="none" stroke="#e0a43c" stroke-width="3" stroke-linecap="round"/>
+      <!-- hub -->
+      <circle cx="240" cy="178" r="52" fill="#fff" stroke="#e6d9c6" stroke-width="2"/>
+      <text x="240" y="172" text-anchor="middle" font-size="30">🀄</text>
+      <text x="240" y="200" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="700" font-size="13" fill="#1f4a4c">中文</text>
+      <rect x="150" y="236" width="180" height="38" rx="14" fill="#1f4a4c"/>
+      <text x="240" y="253" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="700" font-size="13.5" fill="#fbf6ee">Natural, accurate Chinese</text>
+      <text x="240" y="266" text-anchor="middle" font-family="Nunito Sans,sans-serif" font-weight="700" font-size="10" fill="#dcebe8">read · check · rewrite · explain</text>
+      <g id="planes">
+        <g><circle r="7" fill="#c4553a"/><circle r="12" fill="none" stroke="#c4553a" stroke-opacity=".35" stroke-width="3"/><animateMotion dur="12s" repeatCount="indefinite" rotate="auto"><mpath href="#loop"/></animateMotion></g>
+      </g>
+      <!-- gates -->
+      <g class="pin"><circle cx="110" cy="116" r="8" fill="#c4553a"/><rect x="62" y="82" width="96" height="21" rx="10" fill="#fff" stroke="#e6d9c6"/><text x="110" y="97" text-anchor="middle" class="gate" fill="#2a2622">1 · Read</text></g>
+      <g class="pin d2"><circle cx="349" cy="102" r="8" fill="#1f4a4c"/><rect x="305" y="68" width="88" height="21" rx="10" fill="#fff" stroke="#e6d9c6"/><text x="349" y="83" text-anchor="middle" class="gate" fill="#2a2622">2 · Grammar</text></g>
+      <g class="pin d3"><circle cx="407" cy="210" r="8" fill="#e0a43c"/><rect x="380" y="228" width="92" height="21" rx="10" fill="#fff" stroke="#e6d9c6"/><text x="426" y="243" text-anchor="middle" class="gate" fill="#2a2622">3 · Word choice</text></g>
+      <g class="pin d4"><circle cx="270" cy="303" r="8" fill="#c4553a"/><rect x="226" y="320" width="98" height="21" rx="10" fill="#fff" stroke="#e6d9c6"/><text x="275" y="335" text-anchor="middle" class="gate" fill="#2a2622">4 · Context</text></g>
+      <g class="pin d2"><circle cx="93" cy="248" r="8" fill="#1f4a4c"/><rect x="20" y="268" width="92" height="21" rx="10" fill="#fff" stroke="#e6d9c6"/><text x="66" y="283" text-anchor="middle" class="gate" fill="#2a2622">5 · Rewrite</text></g>
+      <circle class="ring" cx="110" cy="116" r="10" fill="none" stroke="#c4553a" stroke-width="2"/>
+    </svg>
+    <button class="pinbtn" style="left:22.9%;top:30.5%" data-k="a" aria-label="Read"></button>
+    <button class="pinbtn" style="left:72.7%;top:26.8%" data-k="d" aria-label="Grammar"></button>
+    <button class="pinbtn" style="left:84.8%;top:55.3%" data-k="dv" aria-label="Word choice"></button>
+    <button class="pinbtn" style="left:56.3%;top:79.7%" data-k="i" aria-label="Context"></button>
+    <button class="pinbtn" style="left:19.4%;top:65.3%" data-k="e" aria-label="Rewrite"></button>
+    <div class="pop" id="pop" role="status"></div>
+    <span class="tapnote">Tap a stage</span>
+  </div></div>
+</div></header>
+
+<div class="stats"><div class="wrap">
+  <div class="stat rv"><b data-to="12">12</b><span>years teaching Mandarin &amp; English</span></div>
+  <div class="stat rv"><b data-to="30" data-suffix="+">30+</b><span>interactive lessons &amp; apps built</span></div>
+  <div class="stat rv"><b>PGDip</b><span>Second Language Teaching · Waikato</span></div>
+  <div class="stat rv"><b data-to="2">2</b><span>languages: Chinese (native) &amp; English</span></div>
+</div></div>
+
+<section class="s alt" id="fit"><div class="wrap">
+  <div class="eyebrow rv">Role fit</div>
+  <h2 class="rv">What I bring to the Chinese Linguistic Expert role</h2>
+  <p class="intro rv">Each point is based on work I have actually done. Tap a card to see where.</p>
+  <div class="fit">
+    <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M10 8.5l4 2-4 2z"/></svg></div>
+      <h3>Native Chinese, strong grammar</h3><p>I explain Chinese grammar, word order and characters to learners, so I can say why a sentence works.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>Waikato Chinese School · Heng Shu, Beijing</b><p>Taught Mandarin to children, adults and one-on-one learners (2013–2016): grammar, pinyin and character writing. Native Mandarin speaker.</p></div></div></div></div>
+    <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg></div>
+      <h3>Evaluating against criteria</h3><p>I mark language against clear rules, the same way every time, and explain each score.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>PTE coaching · Aspiring Language Institute</b><p>I mark PTE answers with Pearson’s official scoring rules. I prepared and marked assessments and took part in pre-moderation.</p></div></div></div></div>
+    <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div>
+      <h3>Spotting errors and fixing them</h3><p>I find the error, name it and give a natural alternative the learner can use.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>12+ years of correcting learners</b><p>Every class I correct writing and speaking, and I compare Chinese and English to explain the typical mistakes between them.</p></div></div></div></div>
+    <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg></div>
+      <h3>Writing and editing Chinese</h3><p>I write Chinese for real readers: accurate, natural and right for the audience.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>Chinese handouts · Xiaohongshu</b><p>I write Chinese-language exam-skills handouts for my students and short English lessons in Chinese for Chinese speakers in New Zealand.</p></div></div></div></div>
+    <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3>Tone and context</h3><p>I know when Chinese should be formal or casual, written or spoken.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>China and New Zealand</b><p>I have worked with Chinese-speaking learners and audiences in Beijing and in New Zealand, and adjust register for each reader.</p></div></div></div></div>
+    <div class="card rv" tabindex="0" role="button" aria-pressed="false"><div class="tilt"><div class="inner"><div class="face front"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-5A8 8 0 1 1 21 12z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg></div>
+      <h3>Checking AI output</h3><p>I use AI tools every day and always check what they write before anyone else sees it.</p><span class="flipme">See evidence <i>↻</i></span></div><div class="face back" aria-hidden="true"><small>Where I did this</small><b>30+ apps · AI PD session</b><p>I have built more than 30 teaching apps with AI tools, and designed and delivered a PD session for teachers, “How I Use AI in My Teaching”.</p></div></div></div></div>
+  </div>
+</div></section>
+
+<section class="s" id="work"><div class="wrap">
+  <div class="eyebrow rv">Portfolio</div>
+  <h2 class="rv">Work you can open and try</h2>
+  <p class="intro rv">Lessons and tools I have designed and built, including a Mandarin lesson for beginners. The live ones open in a new tab and work on phone or computer.</p>
+  <div class="pf">
+    <a class="pc rv" href="../samples/mandarin-ni-hao.html" target="_blank" rel="noopener"><span class="live">LIVE</span><div class="art">你好!</div><small>Self-paced lesson</small><h3>Mandarin Lesson 1 · Greetings</h3><p>Pictures, audio on demand, click-to-reveal and games, from first words to a short spoken exchange.</p><span class="go">Open the module →</span></a>
+    <a class="pc rv" href="#check"><span class="live">TRY IT</span><div class="art">中 ✓</div><small>Language evaluation</small><h3>Chinese text check</h3><p>Six sentences of the kind AI tools often write. Find what sounds wrong, then see a natural rewrite and the reason.</p><span class="go">Try it below ↓</span></a>
+    <a class="pc rv" href="../samples/how-i-use-ai-pd.html" target="_blank" rel="noopener"><span class="live">LIVE</span><div class="art">AI ⇢ 👩‍🏫</div><small>Train-the-trainer</small><h3>How I Use AI in My Teaching</h3><p>The interactive PD session I designed and delivered for fellow teachers: a live survey, hands-on tasks with timers, quick checks after each part and step-by-step demos.</p><span class="go">Open the session →</span></a>
+    <a class="pc rv" href="../samples/pte-di-describe-image.html" target="_blank" rel="noopener"><span class="live">LIVE</span><div class="art">🌗 PTE</div><small>Exam skills module</small><h3>PTE Describe Image · tricky images</h3><p>Moon phases, spread vs concentrated, natural processes and cycles: click-to-learn visuals, sentence patterns, then five kinds of practice.</p><span class="go">Open the module →</span></a>
+  </div>
+</div></section>
+
+<section class="s alt" id="check"><div class="wrap">
+  <div class="eyebrow rv">Try it</div>
+  <h2 class="rv">Chinese text check</h2>
+  <p class="intro rv">Six sentences of the kind AI tools often write in Chinese. Some are wrong; some are correct but do not sound natural. <b>Tap the part that sounds wrong</b>, then see a natural rewrite and a short reason, the way I would give feedback to a model or a learner.</p>
+  <div class="tc rv">
+    <div class="tcbar"><span>中 Chinese text check · model output</span><span class="badge">Sample sentences</span></div>
+    <div class="tcbody">
+      <div class="tctask" id="tcTask"></div>
+      <div class="tcsent" id="tcSent"></div>
+      <p class="tchint" id="tcHint">Tap the part that sounds wrong.</p>
+      <div class="tcres" id="tcRes" hidden>
+        <span class="tctype" id="tcType"></span>
+        <div class="tcrow bad"><i>✗</i><span id="tcBad"></span></div>
+        <div class="tcrow good"><i>✓</i><span id="tcGood"></span></div>
+        <p class="tcwhy" id="tcWhy"></p>
+      </div>
+    </div>
+    <div class="mnav"><span class="tcdots" id="tcDots"></span><span class="dbtns"><button class="btn g" id="tcShow" type="button">Show answer</button><button class="btn p" id="tcNext" type="button" disabled>Next →</button></span></div>
+  </div>
+  <div class="why">
+    <div><b>Grammar</b>Word order, measure words, 了 and 过, 把 and 被.</div>
+    <div><b>Natural phrasing</b>Correct is not enough: would a native speaker say it?</div>
+    <div><b>Context &amp; tone</b>Formal or casual, written or spoken, 你 or 您.</div>
+    <div><b>Clear feedback</b>Name the problem, give the fix, explain why.</div>
+  </div>
+</div></section>
+
+
+<section class="s" id="exp"><div class="wrap">
+  <div class="eyebrow rv">Experience</div>
+  <h2 class="rv">Where I have worked</h2>
+  <p class="hint rv">Tap a role to see details.</p>
+  <div class="tl" id="tl"><div class="rail"><i></i></div>
+    <details class="job key rv" open><summary><b>Chinese Language Teacher</b><em>2014 – 2016</em><small>Waikato Chinese School, Hamilton</small></summary>
+      <ul><li>Taught weekend Mandarin classes for children, adult group classes and one-on-one lessons.</li><li>Built listening, speaking, reading and character-writing skills step by step, with clear explanations of grammar and word use.</li></ul></details>
+    <details class="job key rv" open><summary><b>Chinese Teacher</b><em>2013 – 2014</em><small>Heng Shu Chinese School, Beijing</small></summary>
+      <ul><li>Taught Mandarin to international learners living and working in China, focusing on natural everyday communication.</li></ul></details>
+    <details class="job rv"><summary><b>PTE Academic &amp; IELTS Coach</b><em>2023 – Present</em><small>One-on-one coaching, Auckland and online</small></summary>
+      <ul><li>Coach mainly Chinese-speaking learners; write my own Chinese-language skill handouts based on Pearson&#39;s official scoring rules.</li><li>Mark practice answers against official criteria and explain each error and how to fix it.</li></ul></details>
+    <details class="job rv"><summary><b>English Tutor</b><em>Jun 2026 – Present</em><small>MSL Training / NZIE, Auckland</small></summary>
+      <ul><li>Teach adult English classes every week, morning and evening, including live online classes on Zoom.</li><li>Give learners clear, detailed feedback on grammar and word choice; keep accurate records and results.</li></ul></details>
+    <details class="job rv"><summary><b>ESOL Teacher</b><em>2017 – 2026</em><small>Aspiring Language Institute, Auckland</small></summary>
+      <ul><li>Taught adult learners from many language backgrounds, many of them Chinese speakers.</li><li>Prepared enrolment tests and mid-term assessments; contributed to assessment review and pre-moderation.</li><li>Designed and delivered a professional development session for teachers on using AI in their teaching.</li></ul></details>
+    <details class="job rv"><summary><b>Earlier roles</b><em>2014 – 2024</em><small>Hamilton · Auckland</small></summary>
+      <ul><li>Educator Support, Baby Kingdoms, Auckland (Mar–Jul 2024): bilingual English / Mandarin point of contact for educators and families.</li><li>ESOL Teacher, Waikato Institute of Education, Hamilton (2014–2016): taught refugees and migrants; prepared IELTS mock tests.</li></ul></details>
+
+  </div>
+</div></section>
+
+<section class="s alt" id="skills"><div class="wrap">
+  <div class="eyebrow rv">Skills</div>
+  <h2 class="rv">What I work with</h2>
+  <div class="sk">
+    <div class="box rv"><h3>Chinese language</h3><div class="chips"><span class="chip hot">Native Mandarin</span><span class="chip hot">Grammar &amp; syntax</span><span class="chip hot">Natural phrasing</span><span class="chip">Simplified Chinese</span><span class="chip">Hanyu Pinyin &amp; tones</span><span class="chip">Register &amp; tone</span><span class="chip">Chinese ⇄ English</span><span class="chip">Error correction</span></div></div>
+    <div class="box rv"><h3>AI &amp; digital tools</h3><div class="chips"><span class="chip hot">Claude</span><span class="chip hot">ChatGPT</span><span class="chip hot">Gemini</span><span class="chip">Checking AI output</span><span class="chip">Interactive HTML</span><span class="chip">Microsoft 365</span><span class="chip">Google Workspace</span><span class="chip">Zoom</span><span class="chip">Canva</span></div></div>
+    <div class="box rv"><h3>Languages</h3><div class="lang">
+      <div>Mandarin<span class="bar"><i style="--w:100%"></i></span></div>
+      <div>English<span class="bar"><i style="--w:92%"></i></span></div>
+      <div>Japanese<span class="bar"><i style="--w:25%"></i></span></div></div></div>
+  </div>
+</div></section>
+
+<section class="s" id="edu"><div class="wrap">
+  <div class="eyebrow rv">Education</div>
+  <h2 class="rv">Qualifications</h2>
+  <div class="edu">
+    <div class="ed hi rv"><b>Postgraduate Diploma in Second Language Teaching</b><em>2015</em><span>University of Waikato · second language acquisition, materials, assessment and evaluation</span></div>
+    <div class="ed rv"><b>BA in English Language and Literature, Minor in Accounting</b><em>2013</em><span>North China Electric Power University</span></div>
+  </div>
+  <p class="intro" style="margin-top:18px">Remote, flexible hours · Independent contractor · References available on request</p>
+</div></section>
+
+<footer class="s alt"><div class="wrap">
+  <div class="eyebrow">Get in touch</div>
+  <h2>Thank you for reading</h2>
+  <p class="intro" style="margin:0 auto">I would be glad to help a model write Chinese that is not only correct, but natural.</p>
+  <div class="cta"><a class="btn p" href="Bingling_Liu_CV.pdf" download>Download PDF CV</a><a class="btn g" href="mailto:bingling103@gmail.com">bingling103@gmail.com</a></div>
+  <p class="note">Looking for my teaching CV? <a href="../">ESOL &amp; Mandarin teaching CV</a></p>
+</div></footer>
+<script>
+(function(){
+  var $=function(q,c){return (c||document).querySelector(q)},$$=function(q,c){return Array.prototype.slice.call((c||document).querySelectorAll(q))};
+  $$('.box').forEach(function(b){$$('.chip',b).forEach(function(c,i){c.style.setProperty('--i',i)})});
+  function count(el){var to=+el.dataset.to,from=+(el.dataset.from||0),suf=el.dataset.suffix||'',t0=null,d=1500;
+    function st(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(from+(to-from)*e)+suf;if(p<1)requestAnimationFrame(st)}
+    el.textContent=from+suf;requestAnimationFrame(st)}
+  var els=$$('.rv,.lang');
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');var c=e.target.querySelector('[data-to]');if(c&&!c.dataset.done){c.dataset.done=1;count(c)}io.unobserve(e.target)}})},{threshold:.15});
+  els.forEach(function(e,i){if(!e.classList.contains('job'))e.style.transitionDelay=(i%3)*80+'ms';io.observe(e)});
+  var prog=$('#prog'),tl=$('#tl'),rail=$('.rail i');
+  function onScroll(){var h=document.documentElement,max=h.scrollHeight-innerHeight;prog.style.transform='scaleX('+(max>0?scrollY/max:0)+')';
+    var r=tl.getBoundingClientRect(),p=(innerHeight*.75-r.top)/r.height;rail.style.setProperty('--p',Math.max(0,Math.min(1,p)))}
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+  // taxiway draws in
+  var svg=$('#mapsvg'),routes=$$('.route',svg);
+  routes.forEach(function(p,i){var L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L;p.classList.add('route-draw');p.style.transitionDelay=(.4+i*.35)+'s'});
+  requestAnimationFrame(function(){requestAnimationFrame(function(){routes.forEach(function(p){p.style.strokeDashoffset=0})})});
+  setTimeout(function(){routes.forEach(function(p){p.classList.remove('route-draw');p.style.strokeDasharray='';p.style.strokeDashoffset='';p.style.transitionDelay='';p.classList.add('dash')});svg.parentNode.classList.add('drawn')},2000);
+  // gates
+  var info={a:['1 · Read','Read the whole text first: what is it for, and who is the reader?'],
+    d:['2 · Grammar','Word order, measure words, 了 and 过, 把 and 被: is every sentence correct?'],
+    dv:['3 · Word choice','Correct is not enough. Would a native speaker really say it this way?'],
+    i:['4 · Context','Formal or casual, written or spoken, 你 or 您: is the tone right for this reader?'],
+    e:['5 · Rewrite','Give a natural version and a short, clear reason, so the fix can be learned.']};
+  var pop=$('#pop'),mapin=$('#mapin'),cur=null;
+  $$('.pinbtn').forEach(function(b){b.addEventListener('click',function(ev){ev.stopPropagation();
+    $$('.pinbtn').forEach(function(x){x.classList.remove('on')});
+    if(cur===b){pop.classList.remove('show');cur=null;return}
+    cur=b;b.classList.add('on');var d=info[b.dataset.k];pop.innerHTML='<b>'+d[0]+'</b>'+d[1];
+    var W=mapin.clientWidth,H=mapin.clientHeight,x=b.offsetLeft,y=b.offsetTop,pw=pop.offsetWidth,ph=pop.offsetHeight;
+    var left=Math.max(8,Math.min(W-pw-8,x-pw/2)),top=y-ph-30;if(top<8)top=y+30;
+    pop.style.left=left+'px';pop.style.top=Math.min(top,H-ph-8)+'px';pop.classList.add('show')})});
+  document.addEventListener('click',function(){pop.classList.remove('show');$$('.pinbtn').forEach(function(x){x.classList.remove('on')});cur=null});
+  // cards
+  var fine=matchMedia('(pointer:fine)').matches;
+  $$('.fit .card').forEach(function(c){var t=$('.tilt',c);
+    if(fine){c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      t.style.setProperty('--ry',((x-.5)*14)+'deg');t.style.setProperty('--rx',((.5-y)*12)+'deg');
+      $$('.face',c).forEach(function(f){f.style.setProperty('--mx',x*100+'%');f.style.setProperty('--my',y*100+'%')})});
+      c.addEventListener('pointerleave',function(){t.style.setProperty('--ry','0deg');t.style.setProperty('--rx','0deg')})}
+    function flip(){var on=c.classList.toggle('flip');c.setAttribute('aria-pressed',on);$('.back',c).setAttribute('aria-hidden',!on);$('.front',c).setAttribute('aria-hidden',on)}
+    c.addEventListener('click',flip);c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();flip()}})});
+})();
+</script>
+
+<script>(function(){
+  var $=function(q){return document.querySelector(q)};
+  var Q=[
+   {t:'Task: translate <q>I have a good understanding of this problem.</q>',c:['我','对这个问题','有一个很好的理解','。'],b:[2],
+    y:'Translationese',x:'我对这个问题有一个很好的理解。',g:'我很了解这个问题。',w:'Chinese uses a verb here (了解). “有一个很好的理解” copies the English noun phrase “a good understanding”.'},
+   {t:'Task: describe a purchase',c:['他昨天','买了','一个','新的汽车','。'],b:[2],
+    y:'Measure word',x:'他昨天买了一个新的汽车。',g:'他昨天买了一辆新车。',w:'Cars take the measure word 辆, not 个. 新车 is also more natural than 新的汽车.'},
+   {t:'Task: talk about a daily routine',c:['我每天','学习中文','在图书馆','。'],b:[2],
+    y:'Word order',x:'我每天学习中文在图书馆。',g:'我每天在图书馆学习中文。',w:'In Chinese the place (在 + place) comes before the verb, not at the end as in English.'},
+   {t:'Task: reply to a customer about a refund',c:['你的退款','已经被处理了','，请查看','。'],b:[0,1],
+    y:'Register · 被',x:'你的退款已经被处理了，请查看。',g:'您的退款已经处理好了，请注意查收。',w:'To a customer, use 您. 被 is not needed here and sounds like a translation of the English passive.'},
+   {t:'Task: summarise a meeting',c:['我们需要','提高','这个问题','。'],b:[1],
+    y:'Collocation',x:'我们需要提高这个问题。',g:'我们需要解决这个问题。',w:'提高 goes with words like 水平 or 效率. A problem is 解决 (solved).'},
+   {t:'Task: dialogue · A asks <q>你吃饭了吗？</q> Find the unnatural part of B’s answer.',c:['是的，','我吃了','。'],b:[0],
+    y:'Natural dialogue',x:'是的，我吃了。',g:'吃了。/ 吃过了。',w:'Not wrong, but stiff. Chinese answers by repeating the verb; 是的 copies English “Yes”.'}
+  ];
+  var k=0,tries=0,first=0,done=[],sent=$('#tcSent'),res=$('#tcRes'),hint=$('#tcHint'),nx=$('#tcNext'),sh=$('#tcShow');
+  function dots(){$('#tcDots').innerHTML=Q.map(function(_,i){return '<i class="'+(i===k?'on':done[i]?'done':'')+'"></i>'}).join('')+'<b>'+(k+1)+' / '+Q.length+'</b>'}
+  function load(){var q=Q[k];tries=0;$('#tcTask').innerHTML=q.t;res.hidden=true;nx.disabled=true;sh.disabled=false;sent.className='tcsent';
+    hint.textContent='Tap the part that sounds wrong.';
+    sent.innerHTML=q.c.map(function(c,i){return c==='。'?'<span>。</span>':'<button type="button" data-i="'+i+'">'+c+'</button>'}).join('');dots()}
+  function reveal(){var q=Q[k];sent.classList.add('done');
+    Array.prototype.forEach.call(sent.querySelectorAll('button'),function(b){b.disabled=true;if(q.b.indexOf(+b.dataset.i)>-1)b.classList.add('hit')});
+    $('#tcType').textContent=q.y;$('#tcBad').textContent=q.x;$('#tcGood').textContent=q.g;$('#tcWhy').textContent=q.w;res.hidden=false;
+    done[k]=1;sh.disabled=true;nx.disabled=false;nx.textContent=k===Q.length-1?'Start again ↺':'Next →';
+    hint.textContent=k===Q.length-1?'All six checked · found first time: '+first+' / '+Q.length:'';dots()}
+  sent.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||sent.classList.contains('done'))return;
+    var q=Q[k],i=+b.dataset.i;tries++;
+    if(q.b.indexOf(i)>-1){if(tries===1)first++;reveal()}
+    else{b.classList.remove('miss');void b.offsetWidth;b.classList.add('miss','ok');hint.textContent=tries>1?'Look again, or press Show answer.':'This part is fine. Look again.'}});
+  sh.addEventListener('click',reveal);
+  nx.addEventListener('click',function(){if(k===Q.length-1){k=0;first=0;done=[]}else k++;load()});
+  load();
+})();
+</script>
+</body></html>
