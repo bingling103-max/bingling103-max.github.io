@@ -145,7 +145,7 @@ body.nofx *{animation:none!important;transition:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
 <div id="top"><h1>🔤 Short Vowels</h1><div id="tabs"></div>
- <div class="tools"><button data-t="text" class="on" title="Text on/off (T)">🔤</button><button data-t="zh" class="on" title="中文提示 on/off">中</button><button data-t="num" title="Picture numbers">🔢</button><button data-t="hid" title="Show hidden (right-click hides)">🙈</button><button data-t="fx" class="on" title="Animations">✨</button><button data-t="names" title="Student names">👥</button><button data-t="full" title="Full screen">⛶</button><button data-t="m" title="Smaller (-)">A−</button><button data-t="p" title="Bigger (=)">A+</button><button data-t="sfx" class="on" title="Sound effects">🔔</button></div></div>
+ <div class="tools"><button data-t="text" class="on" title="Text on/off (T)">🔤</button><button data-t="num" title="Picture numbers">🔢</button><button data-t="hid" title="Show hidden (right-click hides)">🙈</button><button data-t="fx" class="on" title="Animations">✨</button><button data-t="names" title="Student names">👥</button><button data-t="full" title="Full screen">⛶</button><button data-t="m" title="Smaller (-)">A−</button><button data-t="p" title="Bigger (=)">A+</button><button data-t="sfx" class="on" title="Sound effects">🔔</button></div></div>
 <main id="app"></main>
 <div id="zdim"></div><div id="modal"></div>
 <script>
@@ -232,7 +232,7 @@ const MODES=[['all','📋 All'],['one','🔎 One by one'],['drill','🖼️ Dril
 let MODE='all';
 function setMode(m){unzoom();stopRing();MODE=m;try{speechSynthesis.cancel()}catch(e){}$$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.m===m));$$('.mode').forEach(x=>x.classList.toggle('on',x.id==='m-'+m))}
 // ===== 📋 All =====
-function renderAll(){$('#m-all').innerHTML=`<h2>📋 Five short vowels <small class="zh">🔍 放大 · ▶ 领读整组 · 点小卡听词</small></h2><div class="cols">${VK.map(v=>`<div class="card col bd${v}"><div class="colh bg${v}"><span class="big">${v}</span><span style="flex:1;font-weight:800">${VS[v].nm}</span>${SAY(VS[v].an)}<button class="say" data-readall="${v}" title="Read all (领读)">▶</button></div>
+function renderAll(){$('#m-all').innerHTML=`<h2>📋 Five short vowels <small class="zh">🔍 Zoom · ▶ Read the group aloud · Tap a card to hear the word</small></h2><div class="cols">${VK.map(v=>`<div class="card col bd${v}"><div class="colh bg${v}"><span class="big">${v}</span><span style="flex:1;font-weight:800">${VS[v].nm}</span>${SAY(VS[v].an)}<button class="say" data-readall="${v}" title="Read all (领读)">▶</button></div>
  <div style="max-width:150px;margin:0 auto 8px">${PIC(VS[v].an)}</div><div class="mini">${WL[v].map(w=>`<div class="mi" data-mw="${w}">${PIC(w)}<div class="txh"><span class="tx">${WD(w,v)}</span></div></div>`).join('')}</div></div>`).join('')}</div>
  <div class="tip">👩‍🏫 Teacher: a = <b>/æ/</b> apple · e = <b>/e/</b> egg · i = <b>/ɪ/</b> insect · o = <b>/ɒ/</b> octopus · u = <b>/ʌ/</b> umbrella. 🔊 reads the whole word — model the single sounds yourself.</div>`}
 // ===== 🔎 One by one =====
@@ -242,7 +242,7 @@ function renderOne(){const L=oneList();ONE.i=(ONE.i+L.length)%L.length;const it=
  $('#m-one').innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">🔎 One by one <small>${ONE.i+1} / ${L.length}</small></h2>
  <div class="fil"><button class="fb${ONE.f==='all'?' on':''}" data-f="all" style="${ONE.f==='all'?'background:var(--ink)':''}">All</button>${VK.map(v=>`<button class="fb${ONE.f===v?' on bg'+v:''} bd${v}" data-f="${v}">${v}</button>`).join('')}</div></div>
  <div class="one"><div class="card bd${it.v}" data-main>${PIC(it.w)}</div>
- <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px"><div style="font-weight:800;color:var(--mute)">Tap each box: sound by sound 👆 <span class="zh">一格一个音</span></div>
+ <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px"><div style="font-weight:800;color:var(--mute)">Tap each box: sound by sound 👆 <span class="zh">one box, one sound</span></div>
   <div class="boxes">${[...it.w].map((c,k)=>`<div class="bx${k===1?' vow':''}" data-bx="${k}" data-c="${c}" data-v="${it.v}">${c}</div>`).join('')}</div>
   <div class="row"><button class="btn" data-blend>👆👆👆 Blend</button>${SAY(it.w)}</div>
   <div class="txh" style="font-size:calc(64px*var(--fz));min-height:1.3em"><span class="tx">${WD(it.w,it.v)}</span></div>
@@ -257,14 +257,14 @@ function quizTop(kind,title,zh){const q=QZ[kind];return `<div class="qtop"><span
 function renderQuiz(kind){const q=QZ[kind];const el=$('#m-'+kind);
  if(q.n>=10){el.innerHTML=`<div class="qwrap card"><div class="done">${q.stars>=8?'🏆':q.stars>=5?'🎉':'💪'} ${q.stars} / 10</div><div class="stars" style="font-size:40px">${'⭐'.repeat(q.stars)}</div><div class="row" style="margin:16px"><button class="btn co" data-again="${kind}">🔁 Again</button></div></div>`;sfx('tada');confetti();return}
  const it=q.list[q.n];
- if(kind==='vow')el.innerHTML=`<div class="qwrap">${quizTop(kind,'👂 Which vowel?','听整词，选中间的元音')}<div class="card"><button class="big-say" data-say="${it.w}">🔊</button>
+ if(kind==='vow')el.innerHTML=`<div class="qwrap">${quizTop(kind,'👂 Which vowel?','Listen to the word, choose the middle vowel')}<div class="card"><button class="big-say" data-say="${it.w}">🔊</button>
   <div class="qpic" style="max-width:320px;margin-top:10px;${q.show?'':'visibility:hidden'}" id="vpic">${PIC(it.w)}<div class="w" style="font-size:40px">${WD(it.w,it.v)}</div></div>
   <div class="vbtns">${VK.map(v=>`<button class="vb bg${v}" data-ans="${v}">${v}</button>`).join('')}</div></div></div>`;
- if(kind==='miss')el.innerHTML=`<div class="qwrap">${quizTop(kind,'🧩 Missing vowel','看图，补上中间的元音')}<div class="card"><div class="qpic" style="max-width:380px">${PIC(it.w)}</div>
+ if(kind==='miss')el.innerHTML=`<div class="qwrap">${quizTop(kind,'🧩 Missing vowel','Look at the picture, add the middle vowel')}<div class="card"><div class="qpic" style="max-width:380px">${PIC(it.w)}</div>
   <div class="row"><div class="slot"><span>${it.w[0]}</span><span class="gap" id="gap">?</span><span>${it.w[2]}</span></div>${SAY(it.w)}</div>
   <div class="vbtns">${VK.map(v=>`<button class="vb bg${v}" data-ans="${v}">${v}</button>`).join('')}</div></div></div>`;
  if(kind==='spell'){const extra=shuffle('abcdefghilmnoprstuvwxz'.split('').filter(c=>!it.w.includes(c))).slice(0,3);if(!q.tiles)q.tiles=shuffle([...it.w,...extra]);
-  el.innerHTML=`<div class="qwrap">${quizTop(kind,'✍️ Spell it','看图，点字母拼出整个词')}<div class="card"><div class="qpic" style="max-width:380px">${PIC(it.w)}</div>
+  el.innerHTML=`<div class="qwrap">${quizTop(kind,'✍️ Spell it','Look at the picture, tap letters to spell the word')}<div class="card"><div class="qpic" style="max-width:380px">${PIC(it.w)}</div>
   <div class="row"><div class="slot" id="sslot">${[0,1,2].map(k=>`<span class="${q.fill[k]?'':'gap'}">${q.fill[k]?q.fill[k].c:'_'}</span>`).join('')}</div>${SAY(it.w)}</div>
   <div class="tiles">${q.tiles.map((c,k)=>`<button class="tl${q.fill.some(f=>f.k===k)?' used':''}" data-tile="${k}">${c}</button>`).join('')}</div><div class="row"><button class="btn" data-clr>↺ Clear</button></div></div></div>`}}
 function answer(kind,v,btn){const q=QZ[kind];const it=q.list[q.n];
@@ -279,7 +279,7 @@ function tile(k){const q=QZ.spell;const it=q.list[q.n];if(q.fill.length>=3||q.fi
   if(s===it.w){sl.classList.add('ok');sfx('ding');if(q.first)q.stars++;$$('#sslot span')[1].className='v'+it.v;setTimeout(()=>{q.n++;q.first=true;q.fill=[];q.tiles=null;renderQuiz('spell')},1300)}
   else{sl.classList.add('no');sfx('nope');q.first=false;setTimeout(()=>{q.fill=[];renderQuiz('spell')},700)}}}
 // ===== 🎮 Games =====
-const GAMES=[['flip','🃏 Flip & match','翻翻卡：图和词配对',['4 pairs','6 pairs','8 pairs']],['wm',"🙈 What's missing?",'藏一张，说出少了哪个',['4 pictures','6 pictures','8 · 2 missing']],['sort','🧺 Sort by vowel','点一个词，再点它的元音筐',['8 words','12 words','20 words']],['flash','⚡ Flash','闪一下图，快说出词',['1.5 s','0.8 s','0.4 s']]];
+const GAMES=[['flip','🃏 Flip & match','Match each picture to its word',['4 pairs','6 pairs','8 pairs']],['wm',"🙈 What's missing?",'One card hides: say which is missing',['4 pictures','6 pictures','8 · 2 missing']],['sort','🧺 Sort by vowel','Tap a word, then tap its vowel basket',['8 words','12 words','20 words']],['flash','⚡ Flash','A picture flashes: say the word fast',['1.5 s','0.8 s','0.4 s']]];
 let G={g:'flip',lv:1};
 function renderGames(){$('#m-games').innerHTML=`<div class="gtabs">${GAMES.map(g=>`<button class="tab${G.g===g[0]?' on':''}" data-g="${g[0]}">${g[1]}</button>`).join('')}</div>
  <div class="row" style="justify-content:space-between;margin-bottom:10px"><b class="zh">${GAMES.find(g=>g[0]===G.g)[2]}</b><span class="row">${GAMES.find(g=>g[0]===G.g)[3].map((l,k)=>`<button class="fb${G.lv===k+1?' on':''}" style="${G.lv===k+1?'background:var(--ink)':''}" data-lv="${k+1}">${'①②③'[k]} ${l}</button>`).join('')}</span></div><div id="gb"></div>`;
@@ -326,7 +326,7 @@ document.addEventListener('mouseover',e=>{const c=e.target.closest('.card,.mi,.p
 document.addEventListener('contextmenu',e=>{const m=e.target.closest('main');if(!m)return;e.preventDefault();const x=e.target.closest('.card,.mi,.pic,.btn,.row,.sent,h2,.boxes')||e.target;x.classList.toggle('xh')});
 // ===== reveal =====
 document.addEventListener('click',e=>{const a=e.target.closest('.rv');if(!a||e.target.closest('.say'))return;a.classList.toggle('open');sfx('pop')});
-// ===== speak a list one by one (领读) =====
+// ===== speak a list one by one =====
 function sayList(list,onEach,done){let i=0;try{speechSynthesis.cancel()}catch(e){}const nx=()=>{if(i>=list.length){done&&done();return}const t=list[i];onEach&&onEach(i);i++;
  try{const u=new SpeechSynthesisUtterance(t);const v=VO.find(v=>/en-NZ/i.test(v.lang))||VO.find(v=>/en-AU/i.test(v.lang))||VO.find(v=>/en-GB/i.test(v.lang))||VO[0];if(v)u.voice=v;u.rate=.82;u.onend=()=>setTimeout(nx,350);speechSynthesis.speak(u)}catch(e){}};nx()}
 document.addEventListener('click',e=>{const a=e.target.closest('[data-readall]');if(!a)return;e.stopPropagation();const v=a.dataset.readall;const col=a.closest('.col');const its=$$('.mi',col);
@@ -335,7 +335,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-readall]')
 let NAMES=['Student A','Student B','Student C','Student D','Student E','Student F','Student G','Student H'];try{const n=JSON.parse(localStorage.getItem('sv-names')||'null');if(n&&n.length)NAMES=n}catch(e){}
 const PICK=()=>`<span class="row" style="gap:6px"><button class="btn" data-pick>🎯 Pick</button><b class="pickout"></b></span>`;
 document.addEventListener('click',e=>{const a=e.target.closest('[data-pick]');if(!a)return;const o=a.parentElement.querySelector('.pickout');let k=0;const t=setInterval(()=>{o.textContent='🎯 '+NAMES[Math.floor(Math.random()*NAMES.length)];sfx('flip');if(++k>8){clearInterval(t);sfx('ding')}},90)});
-function editNames(){const m=$('#modal');m.innerHTML=`<div class="card mbox"><h2>👥 Student names <small class="zh">一行一个名字</small></h2><textarea id="nm" rows="9">${NAMES.join('\n')}</textarea><div class="row"><button class="btn co" data-nsave>Save</button><button class="btn" data-nclose>Close</button></div></div>`;m.classList.add('on')}
+function editNames(){const m=$('#modal');m.innerHTML=`<div class="card mbox"><h2>👥 Student names <small class="zh">one name per line</small></h2><textarea id="nm" rows="9">${NAMES.join('\n')}</textarea><div class="row"><button class="btn co" data-nsave>Save</button><button class="btn" data-nclose>Close</button></div></div>`;m.classList.add('on')}
 document.addEventListener('click',e=>{if(e.target.closest('[data-nsave]')){NAMES=$('#nm').value.split('\n').map(x=>x.trim()).filter(Boolean);if(!NAMES.length)NAMES=['Student A'];try{localStorage.setItem('sv-names',JSON.stringify(NAMES))}catch(x){}$('#modal').classList.remove('on')}
  if(e.target.closest('[data-nclose]')||e.target.id==='modal')$('#modal').classList.remove('on');if(e.target.id==='zdim')unzoom()});
 // ===== confetti =====
@@ -344,7 +344,7 @@ function confetti(){if(document.body.classList.contains('nofx'))return;const box
 const DR={i:0,look:'normal',t:0,step:0,order:WORDS};
 let RING=null;function stopRing(){if(RING){clearInterval(RING);RING=null}}
 function renderDrill(){stopRing();const it=DR.order[DR.i%DR.order.length];const hint=[`starts with <b>${it.w[0]}</b>`,`vowel: <b class="v${it.v}">${it.v}</b>`,WD(it.w,it.v)];
- $('#m-drill').innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">🖼️ Picture drill <small>${DR.i%DR.order.length+1} / ${DR.order.length}</small> <small class="zh">看图说词 · 剪影 / 放大 / 模糊 / 倒计时</small></h2>
+ $('#m-drill').innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">🖼️ Picture drill <small>${DR.i%DR.order.length+1} / ${DR.order.length}</small> <small class="zh">Say the word · shadow / zoom / blur / countdown</small></h2>
  <span class="row">${[['normal','🖼️ Normal'],['sil','⬛ Shadow'],['zoom','🔍 Zoom in'],['blur','🌫️ Blur']].map(l=>`<button class="fb${DR.look===l[0]?' on':''}" style="${DR.look===l[0]?'background:var(--ink)':''}" data-look="${l[0]}">${l[1]}</button>`).join('')}</span></div>
  <div class="one"><div class="card bd${it.v} drl look-${DR.look}" data-main>${PIC(it.w)}</div>
  <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px">
@@ -354,7 +354,7 @@ function renderDrill(){stopRing();const it=DR.order[DR.i%DR.order.length];const 
   <div class="ans" style="font-size:calc(60px*var(--fz));min-height:1.3em">${DR.step>=4?`${WD(it.w,it.v)} ${SAY(it.w)}`:'🤔'}</div>
   <div class="sent">${DR.step>=4?`${SENTH(it)} ${SAY(SENT[it.w])}`:''}</div>
   <div class="row"><button class="btn co" data-dans>👀 Answer</button><button class="btn" data-dn="-1">◀</button><button class="btn co" data-dn="1">Next ▶</button><button class="btn" data-dn="r">🎲</button></div>${PICK()}</div></div>
- <div class="tip">Shadow → students guess the thing · Zoom in → drag the picture · then say the word and the sentence. <span class="zh">剪影先猜东西；放大可拖动；最后说词 + 说句子</span></div>`;
+ <div class="tip">Shadow → students guess the thing · Zoom in → drag the picture · then say the word and the sentence.</div>`;
  if(DR.look==='zoom')dragZoom($('#m-drill .drl .pic'))}
 function startRing(){stopRing();if(!DR.t)return;const el=$('#m-drill');const fg=$('.rfg',el),tx=$('.rt',el);let left=DR.t*10;const tot=left;
  RING=setInterval(()=>{left--;const f=left/tot;fg.style.strokeDashoffset=283*(1-f);fg.style.stroke=f>.5?'#2f9a5b':f>.25?'#f5b82e':'#e0484d';tx.textContent=Math.ceil(left/10);if(left<=30&&left%10===0){tx.classList.remove('beat');void tx.offsetWidth;tx.classList.add('beat');sfx('pop')}
@@ -371,7 +371,7 @@ document.addEventListener('click',e=>{let a;const t=e.target;
 const FRAMES=['I can see a ___.','It is a ___.','This is my ___.'];
 const SN={i:0,f:0,open:0,order:shuffle(WORDS)};
 function renderSent(){const it=SN.order[SN.i%SN.order.length];const fr=SN.f<FRAMES.length?FRAMES[SN.f].replace('___',`<mark class="v${it.v}">${it.w}</mark>`):SENTH(it);const plain=fr.replace(/<[^>]+>/g,'');
- $('#m-sent').innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">🗣️ Say a sentence <small class="zh">看图 → 选句型 → 学生先说 → 点开核对</small></h2>
+ $('#m-sent').innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">🗣️ Say a sentence <small class="zh">Picture → choose a pattern → students speak first → tap to check</small></h2>
  <span class="row">${FRAMES.map((f,k)=>`<button class="fb${SN.f===k?' on':''}" style="${SN.f===k?'background:var(--ink)':''}" data-fr="${k}">${f}</button>`).join('')}<button class="fb${SN.f===3?' on':''}" style="${SN.f===3?'background:var(--ink)':''}" data-fr="3">⭐ Story sentence</button></span></div>
  <div class="one"><div class="card bd${it.v}" data-main>${PIC(it.w)}</div>
  <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
