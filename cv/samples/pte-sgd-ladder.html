@@ -1,0 +1,648 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SGD 58 阶梯</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EEF3F0;--panel:#FFFFFF;--panel2:#F6F9F7;--ink:#14302A;--muted:#5A6D67;--line:#D2DCD7;
+  --accent:#1D6B58;--accent-ink:#FFFFFF;--accent-soft:#DCEDE6;--gold:#B7812A;--goldbg:#FBF1DC;
+  --A:#C4553B;--B:#2F66A8;--C:#7550A3;--Abg:#FBE9E4;--Bbg:#E4EDF8;--Cbg:#EFE8F7;
+  --ok:#23804F;--okbg:#E2F3E9;--bad:#B93A2C;--badbg:#FBE6E3;--shade:rgba(10,25,20,.55);
+  --fs:19px;
+  --f-disp:"Bricolage Grotesque","Noto Sans SC",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--bg:#0E1916;--panel:#15241F;--panel2:#1A2C26;--ink:#E4EEEA;--muted:#9BB0A8;--line:#2A3E37;
+  --accent:#4DB292;--accent-ink:#06120E;--accent-soft:#1D3A30;--gold:#E0B35A;--goldbg:#2D2616;
+  --A:#EE8C74;--B:#86AEE6;--C:#BA9BE2;--Abg:#35201B;--Bbg:#1A2940;--Cbg:#2A2139;
+  --ok:#5CCB8C;--okbg:#15321F;--bad:#F08576;--badbg:#3A1C18;--shade:rgba(0,0,0,.7);}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#0E1916;--panel:#15241F;--panel2:#1A2C26;--ink:#E4EEEA;--muted:#9BB0A8;--line:#2A3E37;
+  --accent:#4DB292;--accent-ink:#06120E;--accent-soft:#1D3A30;--gold:#E0B35A;--goldbg:#2D2616;
+  --A:#EE8C74;--B:#86AEE6;--C:#BA9BE2;--Abg:#35201B;--Bbg:#1A2940;--Cbg:#2A2139;
+  --ok:#5CCB8C;--okbg:#15321F;--bad:#F08576;--badbg:#3A1C18;--shade:rgba(0,0,0,.7);}
+html{font-size:var(--fs)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.5;font-size:1rem}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 60px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.topin{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.brand{font-family:var(--f-disp);font-weight:800;font-size:1.15rem;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px}
+.brand .num{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:0 8px;font-size:1rem}
+.brand small{font-family:var(--f-body);font-weight:400;color:var(--muted);font-size:.7rem}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.tab{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;font-size:.8rem}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools{display:flex;gap:6px;align-items:center;font-size:.75rem;color:var(--muted)}
+.tools select,.tools button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 8px;font-size:.75rem;color:var(--ink)}
+
+/* topics */
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:18px}
+.tp{border:1.5px solid var(--line);background:var(--panel);border-radius:14px;padding:10px 12px;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center}
+.tp .ic{font-size:1.7rem;grid-row:span 2}
+.tp b{font-size:.82rem;line-height:1.25}
+.tp .meta{font-size:.68rem;color:var(--muted);display:flex;gap:8px}
+.tp[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.lv{color:var(--gold);letter-spacing:1px}
+
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:18px 0 6px;align-items:end}
+.rung{border:none;background:var(--panel);border-radius:10px 10px 4px 4px;padding:8px 6px 10px;text-align:left;border-bottom:4px solid var(--line);display:flex;flex-direction:column;gap:2px;min-height:64px}
+.rung .n{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.rung .t{font-weight:700;font-size:.78rem;line-height:1.2}
+.rung.done{border-bottom-color:var(--ok)}
+.rung.done .n::after{content:" ✓";color:var(--ok)}
+.rung[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.rung[aria-pressed="true"] .n{color:var(--bg);opacity:.75}
+.rung:nth-child(1){min-height:56px}.rung:nth-child(2){min-height:66px}.rung:nth-child(3){min-height:76px}.rung:nth-child(4){min-height:86px}.rung:nth-child(5){min-height:96px}.rung:nth-child(6){min-height:106px}.rung:nth-child(7){min-height:116px}
+.ladcap{font-size:.7rem;color:var(--muted);display:flex;justify-content:space-between}
+@media (max-width:760px){.ladder{grid-template-columns:repeat(4,1fr)}.rung{min-height:56px!important}}
+
+/* cards */
+.stephead{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:22px 0 10px}
+.stephead h2{font-family:var(--f-disp);font-weight:800;font-size:1.6rem;margin:0;letter-spacing:-.02em;text-wrap:balance}
+.stephead p{margin:0;color:var(--muted);font-size:.85rem;flex-basis:100%}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px;position:relative}
+.card h3{font-family:var(--f-disp);font-weight:700;margin:0 36px 8px 0;font-size:1.1rem;line-height:1.25}
+.zbtn{position:absolute;top:10px;right:10px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;width:32px;height:32px;font-size:.85rem;line-height:1}
+.card.zoomed{position:fixed;inset:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));z-index:100;overflow:auto;font-size:1.45em;box-shadow:0 0 0 100vmax var(--shade);padding:28px 32px}
+.card.zoomed .zbtn{position:sticky;float:right;top:0;width:auto;padding:0 12px;height:38px}
+.card.zoomed .zbtn::after{content:" 关闭"}
+.sp{border-left:5px solid var(--sc);background:linear-gradient(90deg,var(--sbg),var(--panel) 60%)}
+.sp.A{--sc:var(--A);--sbg:var(--Abg)}.sp.B{--sc:var(--B);--sbg:var(--Bbg)}.sp.C{--sc:var(--C);--sbg:var(--Cbg)}
+.who{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.badge{display:inline-grid;place-items:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--sc);color:#fff;font-family:var(--f-disp);font-weight:800;font-size:.9rem}
+.A .badge,.badge.A{--sc:var(--A)}.B .badge,.badge.B{--sc:var(--B)}.C .badge,.badge.C{--sc:var(--C)}
+.badge.A{background:var(--A)}.badge.B{background:var(--B)}.badge.C{background:var(--C)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1.5px solid var(--line);background:var(--panel2);border-radius:10px;padding:7px 14px;font-size:.85rem;font-weight:700}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.play{background:var(--goldbg);border-color:var(--gold);color:var(--ink)}
+.btn.play.on{background:var(--gold);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.q{margin-top:12px}
+.q .ql{font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:700}
+.opts{display:grid;gap:6px}
+.opt{border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 12px;text-align:left;font-size:.9rem}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opts.inline{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.fb{margin-top:8px;font-size:.85rem;padding:8px 12px;border-radius:10px;background:var(--panel2)}
+.fb.ok{background:var(--okbg)}.fb.bad{background:var(--badbg)}
+.script{margin-top:10px;font-size:.92rem;background:var(--panel2);border-radius:10px;padding:10px 14px;border:1px dashed var(--line)}
+.script mark{background:var(--goldbg);color:inherit;border-radius:3px;padding:0 2px}
+.muted{color:var(--muted)}
+.small{font-size:.78rem}
+.en{font-size:1rem}
+.phrase{font-family:var(--f-body);font-weight:700;background:var(--accent-soft);border-radius:8px;padding:6px 10px;display:inline-block}
+.now{font-size:.8rem;color:var(--muted);min-height:1.4em}
+.now b{color:var(--ink)}
+
+/* notes */
+.nbank{display:flex;flex-wrap:wrap;gap:8px;min-height:44px;padding:10px;border:1px dashed var(--line);border-radius:12px;background:var(--panel2)}
+.chip{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700}
+.chip.sel{border-color:var(--gold);background:var(--goldbg);box-shadow:0 0 0 3px var(--goldbg)}
+.chip.ok{border-color:var(--ok);background:var(--okbg)}.chip.bad{border-color:var(--bad);background:var(--badbg)}
+.boxes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+@media (max-width:760px){.boxes{grid-template-columns:1fr 1fr}}
+.box{border:2px solid var(--line);border-radius:12px;min-height:130px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--panel);text-align:left}
+.box.target{border-color:var(--gold)}
+.box .bl{font-family:var(--f-disp);font-weight:800;font-size:.95rem;display:flex;justify-content:space-between;align-items:center}
+.box.A .bl{color:var(--A)}.box.B .bl{color:var(--B)}.box.C .bl{color:var(--C)}
+.box .bh{font-size:.68rem;color:var(--muted);font-weight:400;font-family:var(--f-body)}
+.teacher{margin-top:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:760px){.teacher{grid-template-columns:1fr}}
+.teacher div{background:var(--goldbg);border-radius:10px;padding:8px 10px;font-family:var(--f-mono);font-size:.78rem;white-space:pre-line}
+.teacher b{font-family:var(--f-disp);display:block;margin-bottom:2px}
+.sym{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem}
+.sym code{font-family:var(--f-mono);font-weight:700;background:var(--panel2);padding:1px 6px;border-radius:6px}
+
+/* builder */
+.sent{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.sent:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.slot{min-height:48px;border:2px dashed var(--line);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;background:var(--panel2)}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--okbg)}
+.slot.bad{border-color:var(--bad)}
+.pool{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ck{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:5px 10px;font-size:.9rem}
+.ck.used{visibility:hidden}
+.sn{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);font-weight:700}
+
+/* speak */
+.frames{display:grid;gap:8px}
+.frame{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;padding:10px 12px;border-radius:12px;background:var(--panel2)}
+.frame .fl{font-family:var(--f-disp);font-weight:800;font-size:.8rem;color:var(--muted);padding-top:3px;min-width:4.2em}
+.frame .ft{font-size:1.05rem;font-weight:700}
+.frame .fh{grid-column:2;font-family:var(--f-mono);font-size:.78rem;color:var(--gold)}
+.blank{display:inline-block;min-width:5em;border-bottom:2px solid var(--muted);height:1em}
+.fade{display:flex;gap:6px;flex-wrap:wrap}
+.timer{margin-top:12px;background:var(--panel2);border-radius:14px;padding:12px 14px}
+.tbig{font-family:var(--f-mono);font-weight:700;font-size:2.2rem;line-height:1}
+.tlab{font-size:.8rem;color:var(--muted)}
+.bar{position:relative;height:16px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:8px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);width:0}
+.bar .zone{position:absolute;top:0;bottom:0;left:58.33%;width:25%;background:repeating-linear-gradient(45deg,transparent 0 6px,rgba(183,129,42,.35) 6px 12px)}
+.barlab{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.65rem;color:var(--muted);margin-top:3px}
+.chk{display:grid;gap:6px}
+.ci{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 10px;border-radius:10px;background:var(--panel2);font-size:.88rem}
+.ci .sc{display:flex;gap:4px}
+.ci .sc button{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;width:2.2em;height:2em;font-family:var(--f-mono);font-weight:700}
+.ci .sc button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.total{font-family:var(--f-mono);font-weight:700;font-size:1.3rem}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+.mnotes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:760px){.mnotes{grid-template-columns:1fr}}
+.mnotes label{font-family:var(--f-disp);font-weight:800;font-size:.85rem}
+.mnotes textarea{width:100%;min-height:110px;border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--panel);color:var(--ink);font-family:var(--f-mono);font-size:.8rem;resize:vertical}
+.model{font-size:1rem;line-height:1.7}
+.model .s{border-radius:4px;padding:1px 0}
+.upl{font-size:.8rem}
+.upl input{font-size:.75rem;max-width:100%}
+audio{max-width:100%;margin-top:6px}
+
+/* guide */
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.score div{background:var(--panel2);border-radius:12px;padding:10px;text-align:center}
+.score b{font-family:var(--f-mono);font-size:1.5rem;display:block}
+.flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.85rem}
+.flow span{background:var(--panel2);border-radius:10px;padding:8px 10px;font-weight:700}
+.flow em{font-style:normal;color:var(--muted)}
+ul.clean{margin:6px 0 0;padding-left:1.1em}
+ul.clean li{margin:4px 0}
+.do li::marker{content:"✔ ";color:var(--ok)}
+.dont li::marker{content:"✘ ";color:var(--bad)}
+.bank .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.bank .item:last-child{border-bottom:none}
+.say{border:1px solid var(--gold);background:var(--goldbg);border-radius:8px;padding:3px 9px;font-size:.8rem;flex:none}
+.pic{font-size:2.4rem;line-height:1}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s linear}}
+</style>
+
+<header class="top"><div class="topin">
+  <div class="brand"><span class="num">58</span>SGD 阶梯 <small>Summarize Group Discussion · 小刀老师</small></div>
+  <nav class="nav" aria-label="页面">
+    <button class="tab" data-view="ladder" aria-pressed="true">练习阶梯</button>
+    <button class="tab" data-view="bank" aria-pressed="false">句型库</button>
+  </nav>
+  <div class="tools">
+    <label for="rate">语速</label>
+    <select id="rate"><option value="0.8">慢 0.8</option><option value="0.9" selected>中 0.9</option><option value="1">考试 1.0</option></select>
+    <button id="fsm" aria-label="字体变小">A−</button><button id="fsp" aria-label="字体变大">A+</button>
+    <button id="stopall">⏹ 停止声音</button>
+  </div>
+</div></header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+/* ============ DATA ============ */
+const TOPICS=[
+{id:'jobs',lv:1,ic:'☕',zh:'大学生该不该打工',q:'Should university students have part-time jobs?',
+ sp:[
+ {k:'A',name:'Amy',g:'f',st:'for',zh:'支持：打工学到生活技能，还能赚房租。',
+  text:"I think part-time jobs are good for university students. When I worked in a café, I learned how to talk to customers and how to manage my time. I also earned money for my rent, so I didn't need to ask my parents for help. For me, a job teaches real-life skills.",
+  main:'Jobs teach real-life skills and give students money.',wrong:['Jobs are bad for students\' grades.','Students should work full-time.'],kw:['café','real-life skills','money for my rent']},
+ {k:'B',name:'Ben',g:'m',st:'against',zh:'反对：打工时间太长会累，影响学习。',
+  text:"I don't really agree. Many students work too many hours. Last year, my friend worked thirty hours a week, and he failed two courses. He was always tired in class. I think study should come first.",
+  main:'Working too many hours can hurt students\' study.',wrong:['Students should find better jobs.','Café jobs are the best jobs.'],kw:['too many hours','failed two courses','tired']},
+ {k:'C',name:'Chloe',g:'f',st:'solution',zh:'折中：限制每周10–15小时，学校多提供校内工作。',
+  text:"I think you both have a point. A job can be useful, but students need a limit. Maybe ten to fifteen hours a week is enough. Universities could also offer more jobs on campus, so students don't waste time travelling.",
+  main:'Students should work fewer hours, and universities could offer jobs on campus.',wrong:['Students should never work.','Students should travel to work.'],kw:['limit','ten to fifteen hours','jobs on campus']}],
+ rel:{B:'disagree',C:'solution'},
+ chips:[['part-time jobs?','T'],['+ real-life skills','A'],['money for rent','A'],['− too many hours','B'],['tired → failed','B'],['SOL limit 10–15 h','C'],['jobs on campus','C'],['useful, but balance','E']],
+ notes:{T:'uni students + part-time jobs?',A:'+ café → skills,\n  time mgmt\n+ money for rent',B:'− too many hours\n→ tired, failed 2',C:'both OK, BUT limit\nSOL 10–15 h/wk\n+ jobs on campus',E:'useful, but\nstudy first / balance'},
+ ans:["The speakers discussed|whether university students|should have|part-time jobs.",
+      "The first speaker supported part-time jobs|because students can learn|real-life skills|and earn money for rent.",
+      "However,|the second speaker disagreed|and said that working too many hours|can make students tired|and hurt their study.",
+      "The third speaker|agreed with both speakers|and suggested|a limit of ten to fifteen hours a week|and more jobs on campus.",
+      "Overall,|the discussion showed that|a part-time job can be useful,|but students need|a good balance."],
+ zhAns:['话题','A 的观点+原因','B 反对 A','C 折中+办法','总结']},
+
+{id:'phones',lv:1,ic:'📱',zh:'课堂上能不能用手机',q:'Should students be allowed to use phones in class?',
+ sp:[
+ {k:'A',name:'Jack',g:'m',st:'against',zh:'反对：学生总刷社交媒体，没法专心；老师收手机后大家更认真。',
+  text:"In my opinion, phones should not be allowed in class. Students check social media all the time, so they can't focus on the lesson. Last term, our English teacher collected our phones at the start of every class. After that, everyone listened more carefully and joined the discussions.",
+  main:'Phones stop students from focusing, so they should not be allowed.',wrong:['Phones help students join discussions.','Teachers should use more phones.'],kw:['social media','can\'t focus','collected our phones']},
+ {k:'B',name:'Mia',g:'f',st:'for',zh:'支持：手机是学习工具（查词、拍白板），成年学生还要接紧急电话。',
+  text:"I don't agree with a total ban. Phones are useful learning tools. We use them to look up new words, take photos of the whiteboard and check our timetable. Also, many adult students have children, so they need to answer calls in an emergency. A complete ban is too strict.",
+  main:'Phones are useful learning tools, so a total ban is too strict.',wrong:['Phones are only for games.','Children should bring phones to class.'],kw:['learning tools','look up new words','emergency']},
+ {k:'C',name:'Sam',g:'m',st:'solution',zh:'折中：问题不是手机，是怎么用；定清楚规则。',
+  text:"I can see both sides. The real problem is not the phone. It's how students use it. Teachers could make clear rules. For example, phones should be put away during tests and group work, but students can use them for dictionaries and research.",
+  main:'Teachers should make clear rules about when students can use phones.',wrong:['All phones should be taken away.','Students can use phones in tests.'],kw:['both sides','clear rules','dictionaries and research']}],
+ rel:{B:'disagree',C:'solution'},
+ chips:[['phones in class?','T'],['− social media','A'],['can\'t focus','A'],['+ learning tools','B'],['emergency calls','B'],['SOL clear rules','C'],['away in tests','C'],['rules > total ban','E']],
+ notes:{T:'phones in class OK?',A:'− social media\n→ can\'t focus\nEX teacher took phones',B:'≠ A\n+ tools: words, photos\n+ emergency (kids)',C:'both sides\nSOL clear rules\naway in tests,\nOK for dictionary',E:'rules better\nthan total ban'},
+ ans:["The speakers talked about|whether students|should be allowed|to use phones in class.",
+      "The first speaker|was against phones in class|because students use social media|and cannot focus on the lesson.",
+      "However,|the second speaker disagreed|and said that phones are useful learning tools,|for example for looking up new words.",
+      "The third speaker|saw both sides|and suggested|clear rules for using phones in class.",
+      "Overall,|the discussion showed that|clear rules may work better|than a total ban."],
+ zhAns:['话题','A 反对+原因','B 反对 A','C 看两边+办法','总结']},
+
+{id:'online',lv:2,ic:'💻',zh:'大学要不要多开网课',q:'Should universities offer more online classes?',
+ sp:[
+ {k:'A',name:'Emma',g:'f',st:'for',zh:'支持：灵活（有工作/孩子的人），省路费时间，还能回看。',
+  text:"I think universities should offer more online classes. A lot of students have part-time jobs or young children, and online learning gives them flexibility. They can study at night or at the weekend. They also save time and money because they don't need to travel to campus every day. And if they miss something, they can watch the video again. For busy people, this makes university possible.",
+  main:'Online classes give busy students flexibility and save travel time.',wrong:['Online classes are cheaper for universities.','Students should study only at night.'],kw:['flexibility','save time and money','watch the video again']},
+ {k:'B',name:'David',g:'m',st:'partly',zh:'部分同意：灵活重要，但面授更好——好提问；网课孤单、没动力。',
+  text:"Flexibility is important, I agree, but I think face-to-face classes are still better for most students. In a classroom, it's much easier to ask questions and get help straight away. When I studied online during the lockdown, I felt quite lonely, and it was hard to stay motivated. I often watched the lectures late or didn't finish them. So I worry that online learning works well only for very organised students.",
+  main:'Face-to-face classes are better for asking questions and staying motivated.',wrong:['Online learning is always better.','Lockdowns should happen again.'],kw:['face-to-face','ask questions','lonely','motivated']},
+ {k:'C',name:'Lucy',g:'f',st:'solution',zh:'折中：混合式——讲座放网上，辅导课/实验/小组作业留在校园。',
+  text:"I think the best answer is a mix of both. Universities could put the lectures online, because students just listen to them anyway. But tutorials, labs and group projects should stay on campus, because that's where students really need to talk to each other and to the teacher. This kind of blended learning gives students flexibility and still keeps the social side of university.",
+  main:'Universities should mix both: lectures online, tutorials and group work on campus.',wrong:['All classes should be online.','Students should not talk to teachers.'],kw:['a mix of both','lectures online','tutorials, labs','blended learning']}],
+ rel:{B:'partly',C:'solution'},
+ chips:[['more online classes?','T'],['+ flexibility (jobs, kids)','A'],['save travel time','A'],['F2F: easy to ask Qs','B'],['lonely, low motivation','B'],['SOL blended','C'],['lectures online / labs on campus','C'],['mix = best','E']],
+ notes:{T:'more online classes?',A:'+ flexible (jobs, kids)\n+ save time/$\n+ watch again',B:'= flexible, BUT\nF2F better: ask Qs\n− lonely, no motivation',C:'SOL mix / blended\nlectures online\ntutorials, labs on campus',E:'blended = best\nflexible + social'},
+ ans:["The speakers discussed|whether universities|should offer|more online classes.",
+      "The first speaker|supported online classes|because they give busy students flexibility|and save travel time.",
+      "The second speaker|agreed that flexibility is important,|but he said that face-to-face classes|are better for asking questions|and staying motivated.",
+      "The third speaker|suggested a mix of both,|with lectures online|and tutorials and group work|on campus.",
+      "Overall,|the speakers seemed to agree|that blended learning|may be the best choice."],
+ zhAns:['话题','A 支持+原因','B 部分同意，但…','C 折中+办法','总结']},
+
+{id:'transport',lv:2,ic:'🚌',zh:'城市公交该不该免费',q:'Should public transport be free in big cities?',
+ sp:[
+ {k:'A',name:'Tom',g:'m',st:'for',zh:'支持：减少堵车和污染，帮助低收入人群。',
+  text:"I'd like to see free public transport in big cities. If buses and trains were free, more people would leave their cars at home. That means less traffic and less air pollution. It would also help people on low incomes, because transport costs can be a big part of their weekly budget. Some cities overseas tried it, and more people started using buses.",
+  main:'Free transport could reduce traffic and pollution and help people on low incomes.',wrong:['People should buy more cars.','Buses are too expensive to build.'],kw:['less traffic','air pollution','low incomes']},
+ {k:'B',name:'Grace',g:'f',st:'partly',zh:'部分同意：想法好，但太贵（加税）；公交本来就挤、晚点，应先改善服务。',
+  text:"I like the idea, but I'm worried about the cost. Someone has to pay for it, so it would probably mean higher taxes or higher rates. Also, in my city the buses are already crowded at peak times, and they're often late. If transport became free, the buses might be even more crowded. I think we should spend the money on better services first, like more frequent buses.",
+  main:'Free transport is expensive, and buses are already crowded, so services should improve first.',wrong:['Taxes should be lower for drivers.','Buses should run less often.'],kw:['cost','higher taxes','crowded','more frequent buses']},
+ {k:'C',name:'Ken',g:'m',st:'solution',zh:'折中：先对学生、老人、低收入免费，同时加车，试行后再推广。',
+  text:"I think both of you have good points. Maybe free transport doesn't have to be for everyone at the start. It could be free for students, older people and people on low incomes, and everyone else could pay a lower fare. At the same time, the council could use some of the money to add more buses. Then we can see if it works before making it free for everyone.",
+  main:'Start with free transport for some groups, add more buses, and test it first.',wrong:['Only students should use buses.','The council should stop all buses.'],kw:['at the start','students, older people','add more buses']}],
+ rel:{B:'partly',C:'solution'},
+ chips:[['free public transport?','T'],['+ less traffic & pollution','A'],['helps low income','A'],['− cost → taxes','B'],['buses crowded & late','B'],['SOL free for some groups','C'],['more buses, test first','C'],['start step by step','E']],
+ notes:{T:'free public transport\nin big cities?',A:'+ fewer cars → less\ntraffic, pollution\n+ low income',B:'like idea BUT\n− cost → taxes\n− crowded, late\n→ improve service 1st',C:'SOL free for students,\nold, low income\n+ more buses → test',E:'benefits, but\nstep by step'},
+ ans:["The speakers discussed|whether public transport|should be free|in big cities.",
+      "The first speaker|supported free transport|because it could reduce traffic and pollution|and help people on low incomes.",
+      "The second speaker|liked the idea,|but she was worried about the cost|and said that buses are already crowded.",
+      "The third speaker|suggested|making transport free for some groups first,|such as students and older people,|and adding more buses.",
+      "Overall,|the discussion showed that|free transport has benefits,|but it may be better|to start step by step."],
+ zhAns:['话题','A 支持+原因','B 部分同意，但…','C 折中+办法','总结']},
+
+{id:'record',lv:3,ic:'🎥',zh:'大学讲座要不要自动录像',q:'Should university lectures be recorded automatically?',
+ sp:[
+ {k:'A',name:'Sarah',g:'f',st:'for',zh:'支持：生病/家事/交通问题缺课可补；考前回看难点；对国际学生有帮助。',
+  text:"I think universities should record most lectures automatically. Students do not always miss classes because they are lazy. Sometimes they are sick, have family responsibilities, or have transport problems. Recordings also allow students to revisit difficult explanations, especially when a lecturer introduces complicated ideas quickly. I rarely watch a whole recording again, but I often replay ten or fifteen minutes before an exam. For international students, being able to listen to a difficult section twice is also very helpful.",
+  main:'Recordings help students who miss class and let them review difficult parts.',wrong:['Students miss class because they are lazy.','Lecturers speak too slowly.'],kw:['sick, family, transport','revisit difficult explanations','international students']},
+ {k:'B',name:'Michael',g:'m',st:'partly',zh:'部分同意：有好处，但出勤率下降、错过讨论；还有隐私和版权问题。',
+  text:"I understand those benefits, but I am less enthusiastic about recording everything. In one of my courses, attendance dropped after recordings became available, because some students thought watching the video later was the same as being in class. It was not. They missed questions, discussions and group activities. There can also be privacy issues. Students may not want to ask questions if they know they are being recorded. Lecturers may also use material that cannot legally be put online.",
+  main:'Recording everything may reduce attendance and cause privacy and copyright problems.',wrong:['Videos are better than classes.','Students ask too many questions.'],kw:['attendance dropped','missed discussions','privacy','cannot legally be put online']},
+ {k:'C',name:'Nina',g:'f',st:'solution',zh:'折中：只录主讲部分、敏感讨论暂停；视频限时在线；需要参与的课保留考勤；先试点。',
+  text:"I agree that recordings are useful, but the second speaker raises real concerns. Maybe this doesn't have to be all or nothing. Universities could record the main lecture but pause the recording during sensitive discussions or student activities. Recordings could stay online for a limited time, not forever. Lecturers could still have attendance rules when participation is important. A pilot programme might be the best way to see if this works.",
+  main:'Universities should find a compromise: record only the main lecture, for a limited time.',wrong:['Universities should stop all recordings.','Recordings should stay online forever.'],kw:['not all or nothing','main lecture','limited time','attendance rules','pilot']}],
+ rel:{B:'partly',C:'solution'},
+ chips:[['record all lectures?','T'],['+ sick/family → catch up','A'],['replay hard parts','A'],['− attendance dropped','B'],['privacy & copyright','B'],['SOL record main lecture','C'],['limited time + attendance','C'],['limited policy','E']],
+ notes:{T:'record lectures\nautomatically?',A:'+ miss class: sick,\nfamily → catch up\n+ replay hard parts',B:'= benefits BUT\n− attendance ↓\n− privacy, copyright',C:'agree A + B\'s worry\nSOL main lecture only\nlimited time, attend. rules',E:'useful, but\nlimited policy'},
+ ans:["The discussion focused on|whether university lectures|should be recorded|automatically.",
+      "The first speaker|strongly supported recording|because it helps students who miss class|and lets them review difficult parts.",
+      "In contrast,|the second speaker|was worried that attendance may drop,|and he also mentioned|privacy and copyright problems.",
+      "The third speaker|agreed with both sides|and proposed a compromise,|such as recording only the main lecture|for a limited time.",
+      "Overall,|the speakers saw the value of recordings,|but they suggested|a more limited policy."],
+ zhAns:['话题','A 支持+原因','B 对比：担心','C 折中+办法','总结']},
+
+{id:'group',lv:3,ic:'👥',zh:'大学小组作业好不好',q:'Are group assignments a good idea at university?',
+ sp:[
+ {k:'A',name:'Olivia',g:'f',st:'for',zh:'支持：工作都要团队合作；互相学习；分担工作量。',
+  text:"I think group assignments are really valuable at university. In almost every job, you have to work in a team, so students need to practise this skill before they graduate. When I did a group project in marketing, I learned a lot from my classmates, because everyone had different ideas and different strengths. We also shared the workload, so we could do a bigger and better project than one person could do alone. For me, group work prepares students for real life.",
+  main:'Group work teaches teamwork, which students need for future jobs.',wrong:['Marketing is the most useful subject.','Students should work alone.'],kw:['work in a team','learned from my classmates','shared the workload']},
+ {k:'B',name:'James',g:'m',st:'partly',zh:'部分同意：团队重要，但不公平（有人不干活却同分）；难约时间；压力大。',
+  text:"Teamwork is important, but in reality, group assignments are often unfair. In most groups, one or two people do most of the work, and the others do very little. But everyone gets the same mark. That's really frustrating for hard-working students. It's also difficult to find a time to meet, because many students have jobs and live far from campus. To be honest, I found group projects more stressful than helpful.",
+  main:'Group assignments are often unfair because everyone gets the same mark.',wrong:['Students should live on campus.','Group projects are too easy.'],kw:['unfair','the same mark','difficult to find a time','stressful']},
+ {k:'C',name:'Hannah',g:'f',st:'solution',zh:'同意A的价值，并解决B的问题：互评、明确分工、线上开会。',
+  text:"I agree with the first speaker that teamwork is a useful skill, and I think the second speaker's problem can be fixed. Universities could use peer assessment. That means each student marks how much the other members did, so lazy students can't get a free mark. Groups could also give each member a clear role at the start, and meet online instead of on campus. With these changes, group work could be both useful and fair.",
+  main:'Group work can be fair with peer assessment, clear roles and online meetings.',wrong:['Group work should be stopped.','Teachers should do the marking alone.'],kw:['peer assessment','clear role','meet online','useful and fair']}],
+ rel:{B:'partly',C:'solution'},
+ chips:[['group assignments good?','T'],['+ teamwork for jobs','A'],['share work, learn','A'],['− unfair: same mark','B'],['hard to meet, stressful','B'],['SOL peer assessment','C'],['clear roles, meet online','C'],['useful if fair','E']],
+ notes:{T:'group assignments\nat uni – good?',A:'+ teamwork → jobs\n+ learn from others\n+ share workload',B:'= teamwork BUT\n− unfair, same mark\n− hard to meet, stress',C:'= A; fix B\'s problem\nSOL peer assessment\nclear roles, online',E:'useful\nif fair'},
+ ans:["The speakers discussed|whether group assignments|are a good idea|at university.",
+      "The first speaker|supported group work|because it teaches teamwork,|which students need for future jobs.",
+      "However,|the second speaker|said that group assignments are often unfair,|because some students do very little|but get the same mark.",
+      "The third speaker|agreed that teamwork is useful|and suggested solutions|such as peer assessment,|clear roles and online meetings.",
+      "Overall,|the discussion showed that|group work can be useful|if it is made fair."],
+ zhAns:['话题','A 支持+原因','B 部分同意，但…','C 同意A+解决B','总结']}
+];
+
+const STANCE={for:'支持 ✔',against:'反对 ✘',partly:'部分同意，但有担心',solution:'看到两边，给出办法'};
+const RELB={agree:'同意 A，并补充',disagree:'不同意 A',partly:'部分同意 A，但有担心'};
+const RELC={agreeA:'只支持 A',agreeB:'只支持 B',solution:'看到两边，提出办法 / 折中'};
+const RELPHRASE={
+ disagree:'However, the second speaker disagreed and said that …',
+ partly:'The second speaker agreed that …, but he/she was worried that …',
+ agree:'The second speaker agreed and added that …',
+ solution:'The third speaker saw both sides and suggested that …'};
+const STEPS=[
+ {n:'0',t:'认识题型',d:'这道题考什么、58 分要做到什么'},
+ {n:'1',t:'听一个人',d:'一次只听一个 speaker：他支持还是反对？主要观点是什么？'},
+ {n:'2',t:'找关系',d:'B 和 A 是什么关系？C 做了什么？关系词就是加分点。'},
+ {n:'3',t:'记笔记',d:'听完整讨论，把关键词放进五格笔记。'},
+ {n:'4',t:'搭句子',d:'用笔记搭出五句话。点词块，按顺序排好。'},
+ {n:'5',t:'扶着说',d:'看着框架开口说：全提示 → 半提示 → 无提示。'},
+ {n:'6',t:'全真模拟',d:'只听一次 · 10 秒准备 · 最多 120 秒。'}];
+const CHECK=[
+ ['第一句说出了话题（The speakers discussed whether …）'],
+ ['说对了 A 的观点（加一个原因更好）'],
+ ['说对了 B 的观点，没有和 A 搞混'],
+ ['说对了 C 的观点 / 办法'],
+ ['用了关系词（However / agreed … but / suggested），并用 Overall 结尾'],
+ ['一直在说：没有停顿超过 3 秒，没有编原文没有的内容']];
+
+/* ============ STATE ============ */
+const S={view:'ladder',t:0,step:0,a1:{},a2:{},place:{},sel:null,chk3:false,build:{},pools:{},fade:0,showHint:true,scores:{},mockPlayed:false,showModel:false};
+let PROG={};
+try{PROG=JSON.parse(localStorage.getItem('sgd58')||'{}')||{}}catch(e){PROG={}}
+function saveProg(){try{localStorage.setItem('sgd58',JSON.stringify(PROG))}catch(e){}}
+function markDone(step){const id=T().id;PROG[id]=PROG[id]||{};if(!PROG[id][step]){PROG[id][step]=1;saveProg();renderLadder()}}
+const T=()=>TOPICS[S.t];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ============ SPEECH (only on 🔊 press) ============ */
+const synth=window.speechSynthesis;let VO={f:[],m:[]};let tok=0;let playingBtn=null;
+function pickVoices(){if(!synth)return;const vs=synth.getVoices().filter(v=>/^en/i.test(v.lang));
+ const pref=v=>(/en-(GB|AU|NZ)/i.test(v.lang)?0:1)+(/google|natural|online/i.test(v.name)?0:.5);
+ vs.sort((a,b)=>pref(a)-pref(b));
+ const fem=/female|samantha|karen|moira|tessa|serena|victoria|zira|libby|sonia|natasha|hazel|susan|fiona|kate|catherine|aria|jenny|emma|kathy|allison|ava|olivia|amy/i;
+ const mal=/\bmale|daniel|alex\b|fred|david|ryan|william|guy|arthur|george|mark|oliver|thomas|james|lee|rishi|aaron|tom/i;
+ const f=vs.filter(v=>fem.test(v.name)),m=vs.filter(v=>!fem.test(v.name)&&mal.test(v.name));
+ const any=vs[0]||null;VO.f=[f[0]||any,f[1]||f[0]||any];VO.m=[m[0]||any,m[1]||m[0]||any];}
+if(synth){pickVoices();synth.onvoiceschanged=pickVoices}
+function voiceFor(topic,k){const sp=topic.sp;const i=sp.findIndex(s=>s.k===k);const g=sp[i].g;
+ const nth=sp.slice(0,i).filter(s=>s.g===g).length;
+ const base=g==='f'?1.08:0.88;return{v:(VO[g]||[])[nth%2],p:nth?base+(g==='f'?.14:-.08):base}}
+function rate(){return parseFloat(document.getElementById('rate').value)||0.9}
+function sentences(t){return t.match(/[^.!?]+[.!?]+["']?|[^.!?]+$/g)||[t]}
+function stopAll(){tok++;if(synth)synth.cancel();if(playingBtn){playingBtn.classList.remove('on');playingBtn.textContent=playingBtn.dataset.label;playingBtn=null}setNow('')}
+function setNow(h){document.querySelectorAll('.now').forEach(n=>n.innerHTML=h)}
+function playQueue(items,btn,onDone){
+ if(!synth){setNow('这个浏览器不支持朗读，请换 Chrome / Safari / Edge。');return}
+ const was=btn&&btn===playingBtn;stopAll();if(was)return;
+ const my=++tok;if(btn){playingBtn=btn;btn.dataset.label=btn.dataset.label||btn.textContent;btn.classList.add('on');btn.textContent='⏹ 停止'}
+ const q=[];items.forEach(it=>sentences(it.text).forEach(s=>q.push({...it,text:s.trim()})));
+ let i=0;const next=()=>{if(my!==tok)return;if(i>=q.length){if(btn){btn.classList.remove('on');btn.textContent=btn.dataset.label;playingBtn=null}setNow('');onDone&&onDone();return}
+  const it=q[i++];const u=new SpeechSynthesisUtterance(it.text);if(it.v)u.voice=it.v;u.lang=(it.v&&it.v.lang)||'en-GB';u.pitch=it.p||1;u.rate=rate();
+  if(it.label)setNow(it.label);u.onend=next;u.onerror=next;synth.speak(u)};
+ next();}
+function spItems(topic,keys){return keys.map(k=>{const s=topic.sp.find(x=>x.k===k);const vv=voiceFor(topic,k);return{text:s.text,v:vv.v,p:vv.p,label:`正在说：<span class="badge ${k}">${k}</span> <b>Speaker ${k}</b>`}})}
+function sayText(text,btn){playQueue([{text,v:VO.f[0],p:1}],btn)}
+
+/* ============ RENDER ============ */
+const app=document.getElementById('app');
+function zb(){return '<button class="zbtn" data-zoom aria-label="放大这张卡">🔍</button>'}
+function render(){
+ if(S.view==='bank'){app.innerHTML=bankView();return}
+ app.innerHTML=`<div class="topics" id="topics"></div><div class="ladder" id="ladder"></div>
+ <div class="ladcap"><span>⬆ 一步一步往上爬</span><span>先选话题（★ 越多越长），再从第 1 步开始</span></div>
+ <div id="step"></div>`;
+ renderTopics();renderLadder();renderStep();}
+function renderTopics(){const el=document.getElementById('topics');if(!el)return;
+ el.innerHTML=TOPICS.map((t,i)=>{const d=Object.keys(PROG[t.id]||{}).length;return`<button class="tp" data-topic="${i}" aria-pressed="${i===S.t}"><span class="ic" aria-hidden="true">${t.ic}</span><b>${esc(t.zh)}</b><span class="meta"><span class="lv">${'★'.repeat(t.lv)}${'☆'.repeat(3-t.lv)}</span><span>${d}/6 步</span></span></button>`}).join('')}
+function renderLadder(){const el=document.getElementById('ladder');if(!el)return;const p=PROG[T().id]||{};
+ el.innerHTML=STEPS.map((s,i)=>`<button class="rung ${i&&p[i]?'done':''}" data-step="${i}" aria-pressed="${i===S.step}"><span class="n">STEP ${s.n}</span><span class="t">${s.t}</span></button>`).join('');renderTopics()}
+function head(){const s=STEPS[S.step];const t=T();return`<div class="stephead"><h2>${S.step?`${t.ic} ${esc(t.q)}`:'这道题到底考什么？'}</h2><p><b>STEP ${s.n} · ${s.t}</b> — ${s.d}</p></div>`}
+function renderStep(){const el=document.getElementById('step');if(!el)return;
+ const f=[step0,step1,step2,step3,step4,step5,step6][S.step];el.innerHTML=head()+f();}
+
+/* STEP 0 */
+function step0(){return`<div class="grid g2">
+ <div class="card">${zb()}<h3><span class="pic">🎧</span> 考试流程</h3>
+  <div class="flow"><span>🎧 听 3 个人讨论<br><small class="muted">约 2.5–3 分钟 · 只播一次</small></span><em>→</em><span>⏱ 10 秒准备</span><em>→</em><span>🗣 最多 120 秒说</span></div>
+  <p class="small muted">每场考试 2–3 题，同时算 <b>Listening</b> 和 <b>Speaking</b>。话题是大学、学习、社会这类学术讨论。</p></div>
+ <div class="card">${zb()}<h3><span class="pic">📊</span> 怎么给分</h3>
+  <div class="score"><div><b>0–6</b>Content 内容</div><div><b>0–5</b>Pronunciation 发音</div><div><b>0–5</b>Oral Fluency 流利</div></div>
+  <p class="small muted">没有单独的语法分。内容最重要：<b>说对三个人 + 他们的关系</b>。流利 ≠ 说得快，是<b>不卡、不重复、不推翻重说</b>。</p></div>
+ <div class="card">${zb()}<h3><span class="pic">🎯</span> 58 分目标：做到这 5 件事就够</h3>
+  <ul class="clean do">
+   <li>第一句说出<b>话题</b>：The speakers discussed whether …</li>
+   <li><b>A、B、C 每人一个主要观点</b>（加一个原因更好）</li>
+   <li>至少用<b>一个关系词</b>：However / agreed … but / suggested</li>
+   <li>用 <b>Overall</b> 收尾</li>
+   <li><b>一直说</b>，说到 70–100 秒就可以，不用说满 2 分钟</li></ul>
+  <ul class="clean dont">
+   <li>不编原文没有的内容</li><li>不把 A 和 B 搞混</li><li>不背很长的万能模板</li></ul></div>
+ <div class="card">${zb()}<h3><span class="pic">📝</span> 五格笔记</h3>
+  <div class="boxes">
+   ${['T','A','B','C','E'].map(b=>`<div class="box ${b}" style="min-height:80px"><div class="bl">${{T:'TOPIC',A:'A',B:'B',C:'C',E:'END'}[b]}</div><span class="small muted">${{T:'讨论什么？',A:'观点+原因',B:'观点+原因',C:'观点/办法',E:'总体方向'}[b]}</span></div>`).join('')}</div>
+  <p class="small" style="margin-top:10px">速记符号：</p>
+  <div class="sym"><span><code>+</code> 支持/好处</span><span><code>−</code> 反对/坏处</span><span><code>=</code> 同意</span><span><code>≠</code> 不同意</span><span><code>→</code> 导致</span><span><code>SOL</code> 办法</span><span><code>EX</code> 例子</span><span><code>?</code> 没听清，不说</span></div></div>
+ <div class="card" style="grid-column:1/-1">${zb()}<h3><span class="pic">🪜</span> 六步阶梯怎么用</h3>
+  <div class="grid g3">${STEPS.slice(1).map(s=>`<div class="frame"><span class="fl">STEP ${s.n}</span><span><b>${s.t}</b><br><span class="small muted">${s.d}</span></span></div>`).join('')}</div>
+  <p class="small muted" style="margin-top:10px">上课：老师用 🔍 放大卡片投屏，一起做 1–4 步。回家：学生自己做 5–6 步，用手机录音，上传回听，按清单自评。</p>
+  <div class="row" style="margin-top:6px"><button class="btn pri" data-step="1">开始 STEP 1 →</button></div></div>
+ </div>`}
+
+/* STEP 1 */
+function step1(){const t=T();return`<div class="grid g3">${t.sp.map(s=>{
+ const a=S.a1[t.id+s.k]||{};const opts=S.pools['o'+t.id+s.k]||(S.pools['o'+t.id+s.k]=shuffle([s.main,...s.wrong]));
+ const stBtns=Object.keys(STANCE).map(k=>{let c='';if(a.st){if(k===s.st)c='ok';else if(k===a.st)c='bad'}return`<button class="opt ${c}" data-a1="${s.k}" data-kind="st" data-v="${k}">${STANCE[k]}</button>`}).join('');
+ const mBtns=opts.map(o=>{let c='';if(a.m){if(o===s.main)c='ok';else if(o===a.m)c='bad'}return`<button class="opt en ${c}" data-a1="${s.k}" data-kind="m" data-v="${esc(o)}">${esc(o)}</button>`}).join('');
+ const both=a.st&&a.m;
+ return`<div class="card sp ${s.k}">${zb()}<h3 class="who"><span class="badge">${s.k}</span> Speaker ${s.k}</h3>
+ <div class="row"><button class="btn play" data-play="${s.k}">🔊 听 Speaker ${s.k}</button></div>
+ <div class="now"></div>
+ <div class="q"><div class="ql">① 他/她的态度？</div><div class="opts">${stBtns}</div></div>
+ <div class="q"><div class="ql">② 主要观点是？</div><div class="opts">${mBtns}</div></div>
+ ${both?`<div class="fb ${a.st===s.st&&a.m===s.main?'ok':'bad'}">${a.st===s.st&&a.m===s.main?'✔ 全对！':'再听一遍，看看原文里的黄色关键词。'}<br><b>中文要点：</b>${esc(s.zh)}</div>
+ <button class="btn" data-toggle="scr${s.k}" style="margin-top:8px">📄 看原文</button><div class="script" id="scr${s.k}" hidden>${hl(s.text,s.kw)}</div>`:''}
+ </div>`}).join('')}</div>
+ <div class="row" style="margin-top:14px"><button class="btn" data-reset1>🔄 重做这一步</button><button class="btn pri" data-step="2">下一步：找关系 →</button></div>`}
+function hl(text,kw){let h=esc(text);kw.forEach(k=>{const e=esc(k).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');h=h.replace(new RegExp(e,'i'),m=>`<mark>${m}</mark>`)});return h}
+
+/* STEP 2 */
+function step2(){const t=T();const a=S.a2[t.id]||{};
+ const q=(who,set,ans)=>{const chosen=a[who];return`<div class="opts">${Object.keys(set).map(k=>{let c='';if(chosen){if(k===ans)c='ok';else if(k===chosen)c='bad'}return`<button class="opt ${c}" data-a2="${who}" data-v="${k}">${set[k]}</button>`}).join('')}</div>
+ ${chosen?`<div class="fb ${chosen===ans?'ok':'bad'}">${chosen===ans?'✔ 对！':'✘ 正确答案是：'+set[ans]}<br>考试里这样说：<br><span class="phrase en">${esc(RELPHRASE[ans])}</span> <button class="say" data-say="${esc(RELPHRASE[ans].replace(/…/g,''))}">🔊</button></div>`:''}`};
+ return`<div class="grid g2">
+ <div class="card">${zb()}<h3>先听整段讨论（A → B → C）</h3>
+  <div class="row"><button class="btn play" data-play="all">🔊 听完整讨论</button></div><div class="now"></div>
+  <p class="small muted">听的时候只想一个问题：<b>他们是在吵架，还是在补充，还是在找办法？</b></p>
+  <div class="grid" style="gap:6px;margin-top:6px">${t.sp.map(s=>`<div class="frame"><span class="fl"><span class="badge ${s.k}">${s.k}</span></span><span class="small">${esc(s.zh)}</span></div>`).join('')}</div></div>
+ <div class="card">${zb()}<h3>关系词 = 加分点</h3>
+  <div class="bank">${['disagree','partly','agree','solution'].map(k=>`<div class="item"><span><span class="small muted">${{disagree:'不同意',partly:'部分同意，但…',agree:'同意+补充',solution:'给办法'}[k]}</span><br><span class="en">${esc(RELPHRASE[k])}</span></span><button class="say" data-say="${esc(RELPHRASE[k].replace(/…/g,''))}">🔊</button></div>`).join('')}</div></div>
+ <div class="card sp B">${zb()}<h3 class="who"><span class="badge">B</span> Speaker B 对 A 是什么态度？</h3>${q('B',RELB,t.rel.B)}</div>
+ <div class="card sp C">${zb()}<h3 class="who"><span class="badge">C</span> Speaker C 做了什么？</h3>${q('C',RELC,t.rel.C)}</div>
+ </div>
+ <div class="row" style="margin-top:14px"><button class="btn" data-reset2>🔄 重做</button><button class="btn pri" data-step="3">下一步：记笔记 →</button></div>`}
+
+/* STEP 3 */
+function step3(){const t=T();const key='c'+t.id;const order=S.pools[key]||(S.pools[key]=shuffle(t.chips.map((c,i)=>i)));
+ const pl=S.place[t.id]||(S.place[t.id]={});
+ const chip=i=>{let c='';if(S.chk3&&pl[i]!==undefined)c=pl[i]===t.chips[i][1]?'ok':'bad';if(S.sel===i)c+=' sel';return`<button class="chip ${c}" data-chip="${i}">${esc(t.chips[i][0])}</button>`};
+ const bank=order.filter(i=>pl[i]===undefined).map(chip).join('')||'<span class="small muted">全部放好了 → 点「检查」</span>';
+ const lab={T:['TOPIC','讨论什么'],A:['A','观点+原因'],B:['B','观点+原因'],C:['C','办法'],E:['END','总体']};
+ return`<div class="card">${zb()}<h3>听完整讨论，把关键词放进五格笔记</h3>
+ <div class="row"><button class="btn play" data-play="all">🔊 听完整讨论</button><span class="small muted">点一个词块（变黄）→ 再点一个格子放进去。点格子里的词块可以拿出来。</span></div><div class="now"></div>
+ <div class="nbank" style="margin-top:10px">${bank}</div>
+ <div class="boxes">${['T','A','B','C','E'].map(b=>`<div class="box ${b} ${S.sel!==null?'target':''}" data-box="${b}" role="button" tabindex="0"><div class="bl">${lab[b][0]}<span class="bh">${lab[b][1]}</span></div>${order.filter(i=>pl[i]===b).map(chip).join('')}</div>`).join('')}</div>
+ <div class="row" style="margin-top:12px"><button class="btn pri" data-check3>✔ 检查</button><button class="btn" data-reset3>🔄 重来</button><button class="btn" data-toggle="tnotes">👩‍🏫 看老师的笔记</button></div>
+ ${S.chk3?`<div class="fb ${Object.keys(pl).length===t.chips.length&&t.chips.every((c,i)=>pl[i]===c[1])?'ok':'bad'}">${Object.keys(pl).length===t.chips.length&&t.chips.every((c,i)=>pl[i]===c[1])?'✔ 全对！笔记就是答案的骨架。':'红色的词块放错了，拿出来再试。'}</div>`:''}
+ <div class="teacher" id="tnotes" hidden>${['T','A','B','C','E'].map(b=>`<div><b>${lab[b][0]}</b>${esc(t.notes[b])}</div>`).join('')}</div>
+ </div>
+ <div class="card" style="margin-top:14px">${zb()}<h3>记笔记的 3 条规矩</h3><ul class="clean">
+ <li>每人只记 <b>1 个观点 + 1 个原因</b>，不要什么都记。</li>
+ <li>用符号：<code>+ − = ≠ → SOL</code>，不写完整句子。</li>
+ <li>没听清的打 <code>?</code>，考试时<b>不说</b>，不要猜。</li></ul></div>
+ <div class="row" style="margin-top:14px"><button class="btn pri" data-step="4">下一步：搭句子 →</button></div>`}
+
+/* STEP 4 */
+function step4(){const t=T();const done=t.ans.filter((s,i)=>isBuilt(i)).length;
+ return`<div class="card">${zb()}<h3>用笔记搭出五句话 <span class="small muted">(${done}/5)</span></h3>
+ <p class="small muted">点下面的词块，按顺序排好。点上面排好的词块可以退回。</p>
+ ${t.ans.map((s,i)=>{const ch=s.split('|');const pk='p'+t.id+i;const pool=S.pools[pk]||(S.pools[pk]=shuffle(ch.map((c,j)=>j)));
+  const b=S.build[t.id+i]||[];const full=b.length===ch.length;const ok=isBuilt(i);
+  return`<div class="sent"><div class="row"><span class="sn">句 ${i+1} · ${t.zhAns[i]}</span>${ok?`<button class="say" data-say="${esc(ch.join(' '))}">🔊 读一遍</button>`:''}</div>
+  <div class="slot ${full?(ok?'ok':'bad'):''}">${b.map(j=>`<button class="ck" data-unb="${i}" data-j="${j}">${esc(ch[j])}</button>`).join('')}</div>
+  ${ok?'':`<div class="pool">${pool.map(j=>`<button class="ck ${b.includes(j)?'used':''}" data-bld="${i}" data-j="${j}">${esc(ch[j])}</button>`).join('')}<button class="btn small" data-hint4="${i}">💡 提示下一块</button></div>`}
+  ${full&&!ok?'<div class="fb bad small">顺序不对，点词块退回再试。</div>':''}</div>`}).join('')}
+ </div>
+ ${done===5?`<div class="card" style="margin-top:14px">${zb()}<h3>完整答案（约 ${t.ans.join(' ').replace(/\|/g,' ').split(/\s+/).length} 词 · 大约 45–60 秒）</h3>
+  <p class="model en">${t.ans.map(s=>esc(s.replace(/\|/g,' '))).join(' ')}</p>
+  <div class="row"><button class="btn play" data-sayall>🔊 听范文</button></div><div class="now"></div>
+  <p class="small muted">58 分就是这个水平：话题 + 三个人 + 一个关系词 + 结尾。说熟了以后，每人再多加一个原因，就能说到 70–90 秒。</p></div>`:''}
+ <div class="row" style="margin-top:14px"><button class="btn" data-reset4>🔄 重做</button><button class="btn pri" data-step="5">下一步：扶着说 →</button></div>`}
+function isBuilt(i){const t=T();const b=S.build[t.id+i]||[];const n=t.ans[i].split('|').length;return b.length===n&&b.every((j,k)=>j===k)}
+
+/* STEP 5 */
+function step5(){const t=T();const lvl=S.fade;
+ const F=[
+  ['TOPIC','The speakers discussed whether <span class="blank"></span>.','T'],
+  ['A','The first speaker supported / was against <span class="blank"></span> because <span class="blank"></span>.','A'],
+  ['B','However, the second speaker disagreed and said that <span class="blank"></span>.<br><span class="small muted">或 The second speaker agreed that …, but he/she was worried that …</span>','B'],
+  ['C','The third speaker saw both sides and suggested <span class="blank"></span>.','C'],
+  ['END','Overall, the discussion showed that <span class="blank"></span>.','E']];
+ const half=['The speakers discussed …','The first speaker …','However, … / … agreed, but …','The third speaker suggested …','Overall, …'];
+ const frames=F.map((f,i)=>`<div class="frame"><span class="fl">${f[0]}</span><span class="ft en">${lvl===0?f[1]:lvl===1?esc(half[i]):'&nbsp;'}</span>${S.showHint?`<span class="fh">${esc(t.notes[f[2]]).replace(/\n/g,' · ')}</span>`:''}</div>`).join('');
+ return`<div class="grid g2">
+ <div class="card">${zb()}<h3>看着框架说出来</h3>
+  <div class="fade">${['全提示','半提示','无提示'].map((n,i)=>`<button class="tab" data-fade="${i}" aria-pressed="${i===lvl}">${i+1}. ${n}</button>`).join('')}
+  <button class="tab" data-hint aria-pressed="${S.showHint}">笔记提示 ${S.showHint?'开':'关'}</button></div>
+  <div class="frames" style="margin-top:10px">${frames}</div>
+  <p class="small muted" style="margin-top:8px">先用「全提示」说 2 遍，再「半提示」，最后「无提示」+ 关掉笔记。同一题说 3 遍，一遍比一遍顺。</p></div>
+ <div class="card">${zb()}<h3>计时说</h3>
+  <div class="row"><button class="btn play" data-play="all">🔊 再听一遍讨论</button></div><div class="now"></div>
+  ${timerHTML('t5')}
+  ${uploadHTML('u5')}
+  </div>
+ <div class="card" style="grid-column:1/-1">${zb()}<h3>自评清单（每项 0 / 1 / 2 分，≥ 9 分达标）</h3>${checkHTML('c5')}</div>
+ </div>
+ <div class="row" style="margin-top:14px"><button class="btn pri" data-step="6">下一步：全真模拟 →</button></div>`}
+function timerHTML(id){return`<div class="timer" id="${id}"><div class="row" style="justify-content:space-between"><div><div class="tlab" data-tl>准备好了就点开始</div><div class="tbig" data-tb>0:10</div></div>
+ <div class="row"><button class="btn pri" data-tstart="${id}">▶ 开始 10 秒准备</button><button class="btn" data-tstop="${id}">■ 说完了</button></div></div>
+ <div class="bar"><span class="zone"></span><i data-tbar></i></div><div class="barlab"><span>0s</span><span>60s</span><span style="color:var(--gold)">▨ 70–100s 目标区</span><span>120s</span></div></div>`}
+function uploadHTML(id){return`<div class="upl" style="margin-top:12px"><b>🎙 录音回听</b><br><span class="muted">用手机录音 App 录下自己，然后在这里上传，自己回听（不会上传到网上）。</span><br><input type="file" accept="audio/*" id="${id}" data-upload><div data-aud></div></div>`}
+function checkHTML(id){const sc=S.scores[id]||[];const tot=sc.reduce((a,b)=>a+(b||0),0);const all=sc.filter(x=>x!==undefined).length===6;
+ return`<div class="chk">${CHECK.map((c,i)=>`<div class="ci"><span>${i+1}. ${c[0]}</span><span class="sc">${[0,1,2].map(v=>`<button data-sc="${id}" data-i="${i}" data-v="${v}" aria-pressed="${sc[i]===v}">${v}</button>`).join('')}</span></div>`).join('')}</div>
+ <div class="row" style="margin-top:10px;justify-content:space-between"><span class="total ${all?(tot>=9?'pass':'fail'):''}">${tot} / 12 ${all?(tot>=9?'✔ 达标':'· 还差一点，看看哪项是 0 分'):''}</span></div>`}
+
+/* STEP 6 */
+function step6(){const t=T();return`<div class="grid">
+ <div class="card">${zb()}<h3>全真模拟：只听一次</h3>
+  <p class="small muted">点下面的按钮，讨论<b>只播一次</b>（语速自动用考试速度 1.0）。边听边在五格里记笔记。播完自动开始 10 秒准备，然后计时 120 秒。</p>
+  <div class="row"><button class="btn play" data-mock ${S.mockPlayed?'disabled':''}>${S.mockPlayed?'已播放（考试只能听一次）':'🔊 开始（只播一次）'}</button><button class="btn" data-mockreset>🔄 重新模拟</button></div><div class="now"></div>
+  <div class="mnotes" style="margin-top:10px">${['TOPIC','A','B','C','END'].map(b=>`<div><label for="mn${b}">${b}</label><textarea id="mn${b}" spellcheck="false"></textarea></div>`).join('')}</div>
+  ${timerHTML('t6')}
+  ${uploadHTML('u6')}</div>
+ <div class="card">${zb()}<h3>说完后：自评（≥ 9 分达标）</h3>${checkHTML('c6')}</div>
+ <div class="card">${zb()}<h3>对照：老师笔记 + 58 分参考答案</h3>
+  <button class="btn" data-toggle="m6">👀 显示 / 隐藏</button>
+  <div id="m6" hidden><div class="teacher">${['T','A','B','C','E'].map(b=>`<div><b>${{T:'TOPIC',A:'A',B:'B',C:'C',E:'END'}[b]}</b>${esc(t.notes[b])}</div>`).join('')}</div>
+  <p class="model en" style="margin-top:12px">${t.ans.map(s=>esc(s.replace(/\|/g,' '))).join(' ')}</p>
+  <div class="row"><button class="btn play" data-sayall>🔊 听参考答案</button></div>
+  <button class="btn" data-toggle="scr6" style="margin-top:8px">📄 看讨论原文</button>
+  <div class="script" id="scr6" hidden>${t.sp.map(s=>`<p><span class="badge ${s.k}">${s.k}</span> ${hl(s.text,s.kw)}</p>`).join('')}</div></div></div>
+ </div>
+ <div class="row" style="margin-top:14px">${S.t<TOPICS.length-1?`<button class="btn pri" data-nexttopic>下一个话题 ${TOPICS[S.t+1].ic} →</button>`:'<span class="muted">六个话题全部完成！换一个话题再模拟一次，看分数稳不稳。</span>'}</div>`}
+
+/* BANK */
+function bankView(){const G=[
+ ['🟢 开头：话题','The speakers discussed whether …','The discussion focused on whether …','The speakers talked about …'],
+ ['🟠 说 A','The first speaker supported … because …','The first speaker was against … because …','The first speaker said that …'],
+ ['🔵 B 和 A 的关系','However, the second speaker disagreed and said that …','The second speaker agreed that …, but he was worried that …','In contrast, the second speaker thought that …','The second speaker agreed and added that …'],
+ ['🟣 C：办法 / 折中','The third speaker saw both sides and suggested that …','The third speaker agreed with the first speaker and suggested …','The third speaker proposed a compromise, such as …'],
+ ['⚪ 结尾','Overall, the discussion showed that …','Overall, the speakers seemed to agree that …','Overall, the speakers had different views on …'],
+ ['🆘 没听清怎么办','The second speaker also talked about (关键词).','He gave an example about (关键词).','→ 只说听清的；听不清就用关键词 + talked about，继续说，别停。']];
+ return`<div class="stephead"><h2>句型库</h2><p>只背这些短句子，内容用自己的笔记填。点 🔊 听发音。</p></div>
+ <div class="grid g2">${G.map(g=>`<div class="card bank">${zb()}<h3>${g[0]}</h3>${g.slice(1).map(s=>`<div class="item"><span class="en">${esc(s)}</span>${/[→（]/.test(s)?'':`<button class="say" data-say="${esc(s.replace(/…|\(.*?\)/g,''))}">🔊</button>`}</div>`).join('')}</div>`).join('')}
+ <div class="card">${zb()}<h3>说话小窍门</h3><ul class="clean">
+ <li>意群说：The first speaker supported recording / because it helps students / who miss class.</li>
+ <li>说错一个小词<b>不要重来</b>，继续往下说。</li>
+ <li>不要说 “Thank you for listening” —— 不加分。</li>
+ <li>话题词先读熟：<b>attendance</b> /əˈtendəns/，<b>flexibility</b> /ˌfleksəˈbɪləti/，<b>compromise</b> /ˈkɒmprəmaɪz/</li></ul></div></div>`}
+
+/* ============ TIMER ============ */
+let TM={};
+function tick(id){const el=document.getElementById(id);const st=TM[id];if(!el||!st)return;
+ const now=(Date.now()-st.start)/1000;
+ if(st.phase==='prep'){const left=Math.max(0,10-now);el.querySelector('[data-tb]').textContent='0:'+String(Math.ceil(left)).padStart(2,'0');el.querySelector('[data-tl]').textContent='⏱ 准备：看笔记，想好第一句';el.querySelector('[data-tbar]').style.width='0';
+  if(left<=0){st.phase='speak';st.start=Date.now()}}
+ else{const s=Math.min(120,now);el.querySelector('[data-tb]').textContent=Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+  el.querySelector('[data-tl]').textContent=s<70?'🗣 说！一直说下去':s<=100?'✔ 很好，可以准备 Overall 结尾':'⚠ 该结尾了';el.querySelector('[data-tbar]').style.width=(s/120*100)+'%';
+  if(s>=120){stopTimer(id,'时间到')}}}
+function startTimer(id){stopTimer(id);TM[id]={phase:'prep',start:Date.now()};TM[id].iv=setInterval(()=>tick(id),200);tick(id)}
+function stopTimer(id,msg){const st=TM[id];if(st){clearInterval(st.iv);const el=document.getElementById(id);if(el&&st.phase==='speak'){const s=Math.min(120,(Date.now()-st.start)/1000);el.querySelector('[data-tl]').textContent=(msg||'说完了')+`：${Math.round(s)} 秒 `+(s<60?'· 有点短，每人加一个原因':s<=105?'· 长度正好':'· 很充分');}}delete TM[id]}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',e=>{const b=e.target.closest('button,[data-box]');if(!b)return;const d=b.dataset;
+ if(d.zoom!==undefined){const c=b.closest('.card');c.classList.toggle('zoomed');return}
+ if(d.view){S.view=d.view;document.querySelectorAll('.tab[data-view]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.view===S.view));stopAll();render();return}
+ if(d.topic!==undefined){S.t=+d.topic;S.sel=null;S.chk3=false;S.mockPlayed=false;stopAll();render();return}
+ if(d.step!==undefined){S.step=+d.step;S.sel=null;stopAll();Object.keys(TM).forEach(k=>stopTimer(k));if(S.view!=='ladder'){S.view='ladder';document.querySelectorAll('.tab[data-view]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.view==='ladder'));render()}else{renderLadder();renderStep()}
+   document.getElementById('ladder').scrollIntoView({behavior:'smooth',block:'start'});return}
+ if(d.play){const t=T();playQueue(spItems(t,d.play==='all'?['A','B','C']:[d.play]),b);return}
+ if(d.say!==undefined){sayText(d.say,b);return}
+ if(d.sayall!==undefined){sayText(T().ans.map(s=>s.replace(/\|/g,' ')).join(' '),b);return}
+ if(d.toggle){const x=document.getElementById(d.toggle);if(x)x.hidden=!x.hidden;return}
+ if(d.a1){const t=T();const k=t.id+d.a1;S.a1[k]=S.a1[k]||{};if(S.a1[k][d.kind])return;S.a1[k][d.kind]=d.v;
+   const zoomed=b.closest('.card').classList.contains('zoomed');renderStep();if(zoomed)reZoom(d.a1);
+   if(t.sp.every(s=>{const a=S.a1[t.id+s.k]||{};return a.st&&a.m}))markDone(1);return}
+ if(d.reset1!==undefined){T().sp.forEach(s=>{delete S.a1[T().id+s.k];delete S.pools['o'+T().id+s.k]});renderStep();return}
+ if(d.a2){const t=T();S.a2[t.id]=S.a2[t.id]||{};if(S.a2[t.id][d.a2])return;S.a2[t.id][d.a2]=d.v;const zc=b.closest('.card').classList.contains('zoomed');renderStep();if(zc)zoomSel('.sp.'+d.a2);if(S.a2[t.id].B&&S.a2[t.id].C)markDone(2);return}
+ if(d.reset2!==undefined){delete S.a2[T().id];renderStep();return}
+ if(d.chip!==undefined){const i=+d.chip;const pl=S.place[T().id];const zc=isZ(b);if(pl[i]!==undefined&&b.closest('[data-box]')){delete pl[i];S.chk3=false;S.sel=null}else{S.sel=S.sel===i?null:i}renderStep();if(zc)zoomSel('#step .card');return}
+ if(d.box&&S.sel!==null){S.place[T().id][S.sel]=d.box;S.sel=null;S.chk3=false;const zc=isZ(b);renderStep();if(zc)zoomSel('#step .card');return}
+ if(d.check3!==undefined){S.chk3=true;const t=T(),pl=S.place[t.id];const zc=isZ(b);renderStep();if(zc)zoomSel('#step .card');if(t.chips.every((c,i)=>pl[i]===c[1]))markDone(3);return}
+ if(d.reset3!==undefined){S.place[T().id]={};S.chk3=false;S.sel=null;delete S.pools['c'+T().id];renderStep();return}
+ if(d.bld!==undefined){const k=T().id+d.bld;S.build[k]=S.build[k]||[];const j=+d.j;if(!S.build[k].includes(j))S.build[k].push(j);step4Re(b);return}
+ if(d.unb!==undefined){const k=T().id+d.unb;S.build[k]=(S.build[k]||[]).filter(x=>x!==+d.j);step4Re(b);return}
+ if(d.hint4!==undefined){const i=+d.hint4,k=T().id+i;let arr=S.build[k]||[];let p=0;while(p<arr.length&&arr[p]===p)p++;S.build[k]=arr.slice(0,p).concat([p]);step4Re(b);return}
+ if(d.reset4!==undefined){T().ans.forEach((s,i)=>{delete S.build[T().id+i];delete S.pools['p'+T().id+i]});renderStep();return}
+ if(d.fade!==undefined){S.fade=+d.fade;S.showHint=S.fade<2;rerenderKeep(b);return}
+ if(d.hint!==undefined){S.showHint=!S.showHint;rerenderKeep(b);return}
+ if(d.tstart){startTimer(d.tstart);return}
+ if(d.tstop){stopTimer(d.tstop);return}
+ if(d.sc){const sc=S.scores[d.sc]||(S.scores[d.sc]=[]);sc[+d.i]=+d.v;const card=b.closest('.card');const z=card.classList.contains('zoomed');
+   card.querySelector('.chk').parentNode;const holder=document.createElement('div');holder.innerHTML=checkHTML(d.sc);
+   const chk=card.querySelector('.chk');const row=chk.nextElementSibling;chk.replaceWith(holder.children[0]);row.replaceWith(holder.children[0]);
+   if(sc.filter(x=>x!==undefined).length===6)markDone(d.sc==='c5'?5:6);return}
+ if(d.mock!==undefined){if(S.mockPlayed)return;S.mockPlayed=true;b.disabled=true;const r=document.getElementById('rate');const old=r.value;r.value='1';
+   playQueue(spItems(T(),['A','B','C']),null,()=>{r.value=old;b.textContent='已播放（考试只能听一次）';startTimer('t6')});
+   setTimeout(()=>{b.textContent='🎧 正在播放…只播一次'},0);return}
+ if(d.mockreset!==undefined){S.mockPlayed=false;stopAll();stopTimer('t6');delete S.scores.c6;renderStep();return}
+ if(d.nexttopic!==undefined){S.t++;S.step=1;S.mockPlayed=false;S.sel=null;S.chk3=false;stopAll();render();window.scrollTo({top:0,behavior:'smooth'});return}
+});
+function isZ(b){const c=b.closest('.card');return c&&c.classList.contains('zoomed')}
+function zoomSel(sel){const c=document.querySelector(sel);if(c)c.classList.add('zoomed')}
+function reZoom(k){const c=document.querySelector('.sp.'+k);if(c)c.classList.add('zoomed')}
+function step4Re(b){const z=isZ(b);const y=window.scrollY;renderStep();if(z)zoomSel('#step .card');window.scrollTo(0,y);if(T().ans.every((s,i)=>isBuilt(i)))markDone(4)}
+function rerenderKeep(b){const cards=[...document.querySelectorAll('#step .card')];const zi=cards.findIndex(c=>c.classList.contains('zoomed'));
+ // keep timer running: only rerender frames card
+ const card=b.closest('.card');const tmp=document.createElement('div');tmp.innerHTML=step5();const fresh=tmp.querySelector('.card');card.replaceWith(fresh);if(zi===0)fresh.classList.add('zoomed')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.card.zoomed').forEach(c=>c.classList.remove('zoomed'))}
+ if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-box]')){e.preventDefault();e.target.click()}});
+document.addEventListener('change',e=>{if(e.target.matches('[data-upload]')){const f=e.target.files&&e.target.files[0];if(!f)return;const box=e.target.parentNode.querySelector('[data-aud]');box.innerHTML='';const a=document.createElement('audio');a.controls=true;a.src=URL.createObjectURL(f);box.appendChild(a)}});
+document.getElementById('stopall').onclick=stopAll;
+let fs=19;try{fs=+localStorage.getItem('sgd58fs')||19}catch(e){}
+function setFs(v){fs=Math.max(14,Math.min(28,v));document.documentElement.style.setProperty('--fs',fs+'px');try{localStorage.setItem('sgd58fs',fs)}catch(e){}}
+document.getElementById('fsm').onclick=()=>setFs(fs-1);document.getElementById('fsp').onclick=()=>setFs(fs+1);setFs(fs);
+render();
+</script>
+
+</body></html>
