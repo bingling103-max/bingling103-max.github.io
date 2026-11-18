@@ -1,0 +1,701 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>DI 月相与分布</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: night-sky observatory notebook — tab rail on top, one topic per view, big classroom type */
+:root{
+  --bg:#f3f4f8; --paper:#ffffff; --ink:#1b2340; --muted:#5d6584; --line:#d9dcea;
+  --night:#1f2a52; --moon:#e9c46a; --moonDim:#c9ccd8; --lit:#f6e7b0; --dark:#3a4470;
+  --ok:#2a8a5f; --bad:#c2453b; --accent:#3b5bdb; --chip:#eef0fa;
+  --f-display:"Literata", Georgia, "Times New Roman", serif;
+  --f-body:"Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1426; --paper:#171e38; --ink:#e8eaf6; --muted:#a3a9c6; --line:#2c3558;
+  --night:#0a0f22; --moon:#f0cf74; --moonDim:#5b6488; --lit:#f6e7b0; --dark:#2a3360;
+  --ok:#4cc38a; --bad:#ef7a6f; --accent:#8ea6ff; --chip:#222a4a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1426; --paper:#171e38; --ink:#e8eaf6; --muted:#a3a9c6; --line:#2c3558;
+  --night:#0a0f22; --moon:#f0cf74; --moonDim:#5b6488; --lit:#f6e7b0; --dark:#2a3360;
+  --ok:#4cc38a; --bad:#ef7a6f; --accent:#8ea6ff; --chip:#222a4a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:18px;line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 20px;margin-bottom:14px}
+h1{font-family:var(--f-display);font-size:clamp(28px,4.5vw,42px);margin:0;line-height:1.15;text-wrap:balance}
+.sign{color:var(--muted);font-size:15px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;flex-wrap:wrap;padding-block:10px;border-bottom:1px solid var(--line);margin-bottom:22px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.tabs button{font:inherit;font-size:17px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 16px;border-radius:999px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--night);color:#fff;border-color:var(--night)}
+button{font-family:inherit}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h2{font-family:var(--f-display);font-size:30px;margin:28px 0 6px;text-wrap:balance}
+h3{font-size:21px;margin:22px 0 8px}
+.lead{color:var(--muted);margin:0 0 16px;max-width:62ch}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.grid2>*{min-width:0}
+.sky{background:var(--night);border-radius:14px;padding:12px;overflow-x:auto}
+.sky svg{display:block;width:100%;height:auto;min-width:560px}
+table.vt{border-collapse:collapse;width:100%;font-size:17px}
+table.vt th,table.vt td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.vt th{color:var(--muted);font-weight:500;font-size:14px;letter-spacing:.04em}
+.en{font-weight:700}
+.ipa{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+.tip{background:var(--chip);border-radius:10px;padding:10px 14px;font-size:16px;margin-top:12px}
+.tip b{color:var(--accent)}
+.tpl{margin-top:14px}
+.tpl ol{margin:10px 0 0;padding-left:0;list-style:none;display:grid;gap:6px}
+.tpl li{display:grid;grid-template-columns:2.2em 1fr;gap:6px;align-items:baseline;font-size:19px}
+.tpl li .n{font-family:var(--f-mono);color:var(--muted);font-size:15px}
+.tpl li .s{min-width:0}
+.tpl li.shared .n{color:var(--moon)}
+.blank{display:inline-block;min-width:4em;border-bottom:2px dashed var(--muted);color:transparent}
+.tpl .ctl{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 14px;border-radius:10px;cursor:pointer;font-size:16px}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.kw{background:color-mix(in srgb,var(--moon) 35%,transparent);border-radius:4px;padding:0 3px}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.bank>div{min-width:0}
+.bank h4{margin:0 0 6px;font-size:17px}
+.bank ul{margin:0;padding-left:1.1em}
+.bank li{margin:3px 0}
+.ex{display:block;color:var(--muted);font-size:16px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pair>div{min-width:0}
+.tag{display:inline-block;font-size:13px;letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);margin-bottom:6px}
+.phen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
+@media (max-width:760px){.phen,.pair{grid-template-columns:1fr}}
+.pic{background:var(--chip);border-radius:12px;padding:8px}
+.pic svg{width:100%;height:auto;display:block}
+.subnav{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.subnav button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:16px}
+.subnav button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.flow span{background:var(--chip);padding:6px 12px;border-radius:8px}
+.flow i{font-style:normal;color:var(--muted)}
+/* practice */
+.qcard{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:center}
+@media (max-width:640px){.qcard{grid-template-columns:1fr}}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.opt{border:2px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 12px;border-radius:10px;cursor:pointer;font-size:18px;text-align:left}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--paper))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--paper))}
+.fb{min-height:1.6em;margin-top:8px;font-weight:500}
+.fb.ok{color:var(--ok)} .fb.no{color:var(--bad)}
+.score{font-family:var(--f-mono);color:var(--muted);font-size:15px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.order{display:flex;flex-wrap:wrap;gap:8px}
+.order button{border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:18px}
+.order button.done{border-color:var(--ok);opacity:.55}
+.timer{font-family:var(--f-mono);font-size:44px;font-variant-numeric:tabular-nums;line-height:1}
+.phase{font-size:15px;color:var(--muted)}
+.bar{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>div{height:100%;background:var(--accent);width:0;transition:width .3s linear}
+.foot{margin-top:40px;color:var(--muted);font-size:14px;text-align:right}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div>
+    <h1>DI 月相 · 集中分散 · 自然现象</h1>
+    <div class="sign">PTE Describe Image · 58 冲分版 · 小刀老师</div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" id="tabs">
+  <button role="tab" data-v="moon">① 月相</button>
+  <button role="tab" data-v="dist">② 集中 vs 分散</button>
+  <button role="tab" data-v="nature">③ 自然现象</button>
+  <button role="tab" data-v="flow">④ 流程·周期表达</button>
+  <button role="tab" data-v="drill">⑤ 练习</button>
+</nav>
+
+<!-- ============ MOON ============ -->
+<section id="v-moon" data-view>
+  <h2>月相 Moon Phases</h2>
+  <p class="lead">点任意一个月亮，看名字。先认图，再背词，最后套模板 E 说六句。</p>
+  <div class="sky"><svg id="moonRing" viewBox="0 0 900 250" role="img" aria-label="八个月相"></svg></div>
+  <div class="tip" id="moonInfo">👆 点一个月亮</div>
+
+  <h3>八个名字</h3>
+  <div class="panel" style="overflow-x:auto">
+  <table class="vt">
+    <thead><tr><th>顺序</th><th>英文</th><th>中文</th><th>58 版简单说法</th></tr></thead>
+    <tbody id="moonTable"></tbody>
+  </table>
+  </div>
+
+  <h3>四个关键词</h3>
+  <div class="bank">
+    <div class="panel"><h4>waxing <span class="ipa">/ˈwæksɪŋ/</span></h4>渐盈，变大<span class="ex">The moon is waxing. = It is getting bigger.</span></div>
+    <div class="panel"><h4>waning <span class="ipa">/ˈweɪnɪŋ/</span></h4>渐亏，变小<span class="ex">The moon is waning. = It is getting smaller.</span></div>
+    <div class="panel"><h4>crescent <span class="ipa">/ˈkresənt/</span></h4>月牙（很细）<span class="ex">a thin crescent moon</span></div>
+    <div class="panel"><h4>gibbous <span class="ipa">/ˈɡɪbəs/</span></h4>凸月（大半个）<span class="ex">58 分可说 more than half</span></div>
+  </div>
+  <div class="tip"><b>记法：</b>wax 往上长（变大），wane 往下走（变小）。名字记不住就说 <b>a thin moon / a half moon / a big moon</b>，照样拿分。</div>
+
+  <h3>其他常用词</h3>
+  <div class="bank">
+    <div class="panel"><ul>
+      <li><span class="en">lunar cycle</span> 月相周期（约 29.5 天）</li>
+      <li><span class="en">the lit part</span> 被照亮的部分</li>
+      <li><span class="en">orbit the Earth</span> 绕地球转</li>
+      <li><span class="en">reflect sunlight</span> 反射太阳光</li>
+    </ul></div>
+    <div class="panel"><ul>
+      <li><span class="en">get bigger / get smaller</span></li>
+      <li><span class="en">we cannot see the moon</span>（新月）</li>
+      <li><span class="en">half of the moon is lit</span>（上/下弦）</li>
+      <li><span class="en">the whole moon is bright</span>（满月）</li>
+    </ul></div>
+  </div>
+
+  <div class="panel tpl" data-tpl="moon"></div>
+</section>
+
+<!-- ============ DISTRIBUTION ============ -->
+<section id="v-dist" data-view hidden>
+  <h2>集中 vs 分散 Distribution</h2>
+  <p class="lead">地图上的点、散点图、人口分布图都用这一组词。三张图：集中、分散、均匀。</p>
+  <div class="grid2" id="distTrio"></div>
+
+  <h3>表达库</h3>
+  <div class="bank">
+    <div class="panel"><span class="tag">集中 CONCENTRATED</span><ul>
+      <li><span class="en">be concentrated in</span> 集中在
+        <span class="ex">Most people are concentrated in the south.</span></li>
+      <li><span class="en">be clustered around</span> 聚集在…周围
+        <span class="ex">The dots are clustered around the city.</span></li>
+      <li><span class="en">densely populated</span> 人口稠密</li>
+      <li><span class="en">close together</span> 挨得很近（58 版首选）</li>
+    </ul></div>
+    <div class="panel"><span class="tag">分散 SCATTERED</span><ul>
+      <li><span class="en">be scattered across</span> 散布在
+        <span class="ex">Small towns are scattered across the country.</span></li>
+      <li><span class="en">be spread out</span> 分散开</li>
+      <li><span class="en">sparsely populated</span> 人口稀少</li>
+      <li><span class="en">far apart</span> 离得很远（58 版首选）</li>
+    </ul></div>
+    <div class="panel"><span class="tag">均匀 / 不均匀</span><ul>
+      <li><span class="en">evenly distributed</span> 分布均匀</li>
+      <li><span class="en">unevenly distributed</span> 分布不均</li>
+      <li><span class="en">the majority of … are in …</span> 大多数在…</li>
+      <li><span class="en">only a few …</span> 只有少数</li>
+    </ul></div>
+  </div>
+
+  <h3>散点图怎么说</h3>
+  <div class="grid2" id="scatterPair"></div>
+  <div class="tip"><b>58 版只说两种：</b>点贴着一条线往上 → <b>The dots are close to a line going up.</b>　点到处都是 → <b>The dots are far apart, so there is no clear pattern.</b></div>
+
+  <h3>方位词（只用五个）</h3>
+  <div class="flow"><span>north</span><span>south</span><span>centre</span><span>top</span><span>bottom</span></div>
+  <div class="tip">地名不确定就不说，用方位词代替。In the north / In the centre / At the bottom of the map.</div>
+
+  <div class="panel tpl" data-tpl="dist"></div>
+</section>
+
+<!-- ============ NATURE ============ -->
+<section id="v-nature" data-view hidden>
+  <h2>自然现象 Natural Phenomena</h2>
+  <p class="lead">都是周期或过程图，全部用模板 E：开头 → 中间 → 结尾。六步的图也只说三步。</p>
+  <div class="subnav" id="natNav"></div>
+  <div class="phen">
+    <div class="pic" id="natPic"></div>
+    <div>
+      <div class="panel" id="natWords"></div>
+    </div>
+  </div>
+  <div class="panel tpl" id="natTpl"></div>
+</section>
+
+<!-- ============ FLOW ============ -->
+<section id="v-flow" data-view hidden>
+  <h2>流程 · 周期通用表达</h2>
+  <p class="lead">先判断：一条线走到底（流程），还是转一圈回到开头（周期）。</p>
+  <div class="pair">
+    <div class="panel"><span class="tag">流程 LINEAR</span>
+      <div class="pic"><svg viewBox="0 0 320 90" aria-hidden="true">
+        <g font-family="Noto Sans SC" font-size="13" text-anchor="middle">
+        <rect x="6" y="28" width="70" height="34" rx="8" fill="var(--paper)" stroke="var(--accent)"/><text x="41" y="50" fill="var(--ink)">Step 1</text>
+        <rect x="125" y="28" width="70" height="34" rx="8" fill="var(--paper)" stroke="var(--accent)"/><text x="160" y="50" fill="var(--ink)">Step 2</text>
+        <rect x="244" y="28" width="70" height="34" rx="8" fill="var(--paper)" stroke="var(--accent)"/><text x="279" y="50" fill="var(--ink)">Step 3</text>
+        <path d="M80 45h40M199 45h40" stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        </g></svg></div>
+      <p style="margin:8px 0 0">种子长成树、做面包、造纸</p></div>
+    <div class="panel"><span class="tag">周期 CYCLE</span>
+      <div class="pic"><svg viewBox="0 0 320 90" aria-hidden="true">
+        <g font-family="Noto Sans SC" font-size="13" text-anchor="middle">
+        <circle cx="160" cy="45" r="34" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+        <circle cx="160" cy="11" r="9" fill="var(--accent)"/><circle cx="194" cy="45" r="9" fill="var(--accent)"/>
+        <circle cx="160" cy="79" r="9" fill="var(--accent)"/><circle cx="126" cy="45" r="9" fill="var(--accent)"/>
+        <text x="255" y="50" fill="var(--ink)">back to start</text>
+        </g></svg></div>
+      <p style="margin:8px 0 0">月相、水循环、四季、生命周期</p></div>
+  </div>
+
+  <h3>表达库</h3>
+  <div class="bank">
+    <div class="panel"><span class="tag">开头</span><ul>
+      <li>The process begins with …</li>
+      <li>The cycle starts with …</li>
+      <li>First, …</li>
+      <li>At the first stage, …</li>
+    </ul></div>
+    <div class="panel"><span class="tag">中间</span><ul>
+      <li>Next, …</li>
+      <li>Then, …</li>
+      <li>After that, …</li>
+      <li>… turns into / becomes …</li>
+    </ul></div>
+    <div class="panel"><span class="tag">结尾</span><ul>
+      <li>Finally, …</li>
+      <li>At the end, …</li>
+      <li>The cycle repeats.（周期）</li>
+      <li>It goes back to the start.（周期）</li>
+    </ul></div>
+    <div class="panel"><span class="tag">整体</span><ul>
+      <li>There are four stages in this process.</li>
+      <li>The diagram shows how … changes.</li>
+      <li>It takes about one month / one year.</li>
+      <li>The arrows show the order.</li>
+    </ul></div>
+  </div>
+
+  <h3>常用动词（一般现在时）</h3>
+  <div class="bank">
+    <div class="panel"><ul>
+      <li><span class="en">grow / get bigger</span> 变大</li>
+      <li><span class="en">get smaller</span> 变小</li>
+      <li><span class="en">go up / rise</span> 上升</li>
+      <li><span class="en">fall / go down</span> 下降、落下</li>
+    </ul></div>
+    <div class="panel"><ul>
+      <li><span class="en">turn into / become</span> 变成</li>
+      <li><span class="en">move around</span> 绕着转</li>
+      <li><span class="en">block</span> 挡住</li>
+      <li><span class="en">pull</span> 拉（引力）</li>
+    </ul></div>
+  </div>
+  <div class="tip"><b>两条规矩：</b>全程一般现在时；周期图结尾加一句 <b>and the cycle repeats</b>，流程图不加。</div>
+
+  <div class="panel tpl" data-tpl="flow"></div>
+</section>
+
+<!-- ============ DRILL ============ -->
+<section id="v-drill" data-view hidden>
+  <h2>练习</h2>
+  <div class="subnav" id="drillNav">
+    <button data-d="p1" aria-pressed="true">认月相</button>
+    <button data-d="p2">集中还是分散</button>
+    <button data-d="p3">选词填句</button>
+    <button data-d="p4">排顺序</button>
+    <button data-d="p5">开口说 40 秒</button>
+  </div>
+
+  <div class="panel" data-drill="p1">
+    <div class="qhead"><b>这是哪个月相？</b><span class="score" id="s1"></span></div>
+    <div class="qcard"><div class="sky" style="padding:6px"><svg id="q1pic" viewBox="0 0 200 200" style="min-width:0"></svg></div>
+      <div><div class="opts" id="q1opts"></div><div class="fb" id="q1fb"></div>
+      <button class="btn pri" id="q1next">下一题</button></div></div>
+  </div>
+
+  <div class="panel" data-drill="p2" hidden>
+    <div class="qhead"><b>这些点是什么分布？</b><span class="score" id="s2"></span></div>
+    <div class="qcard"><div class="pic" id="q2pic"></div>
+      <div><div class="opts" id="q2opts"></div><div class="fb" id="q2fb"></div>
+      <button class="btn pri" id="q2next">下一题</button></div></div>
+  </div>
+
+  <div class="panel" data-drill="p3" hidden>
+    <div class="qhead"><b>选一个词填空</b><span class="score" id="s3"></span></div>
+    <p id="q3text" style="font-size:22px;margin:4px 0 14px"></p>
+    <div class="opts" id="q3opts"></div><div class="fb" id="q3fb"></div>
+    <button class="btn pri" id="q3next">下一题</button>
+  </div>
+
+  <div class="panel" data-drill="p4" hidden>
+    <div class="qhead"><b id="q4title"></b><span class="score" id="s4"></span></div>
+    <p class="lead" style="margin-bottom:8px">按顺序点。点错会提示。</p>
+    <div class="order" id="q4opts"></div>
+    <ol id="q4done" style="font-size:19px"></ol>
+    <div class="fb" id="q4fb"></div>
+    <button class="btn pri" id="q4next">换一组</button>
+  </div>
+
+  <div class="panel" data-drill="p5" hidden>
+    <div class="qhead"><b>看图说 · 25 秒准备 + 40 秒说</b>
+      <select id="q5sel" class="btn" aria-label="选择图片"></select></div>
+    <div class="phen">
+      <div class="pic" id="q5pic"></div>
+      <div>
+        <div class="phase" id="q5phase">准备好就点开始</div>
+        <div class="timer" id="q5time">0:25</div>
+        <div class="bar"><div id="q5bar"></div></div>
+        <div class="ctl" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn pri" id="q5go">开始</button>
+          <button class="btn" id="q5reset">重来</button>
+        </div>
+      </div>
+    </div>
+    <div class="tpl" id="q5tpl"></div>
+  </div>
+</section>
+
+<div class="foot">小刀老师 · PTE DI 专项</div>
+</div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker>
+  <marker id="ahw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9fb2ff"/></marker>
+</defs></svg>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+
+/* ---------- moon drawing ---------- */
+// phase index 0..7 : new, waxing crescent, first quarter, waxing gibbous, full, waning gibbous, last quarter, waning crescent
+function moonSVG(cx,cy,r,idx){
+  const th=idx/8*2*Math.PI;
+  let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#3a4470" stroke="#6c78a8" stroke-width="1.5"/>`;
+  if(idx===0) return s;
+  if(idx===4) return s+`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#f6e7b0"/>`;
+  const rx=Math.abs(Math.cos(th))*r, top=`${cx} ${cy-r}`, bot=`${cx} ${cy+r}`;
+  let d;
+  if(idx<4){ // waxing, lit on right
+    const sw = idx<2?0:1; // crescent bulges right(0), gibbous left(1)
+    d = idx===2 ? `M${top} A${r} ${r} 0 0 1 ${bot} Z` : `M${top} A${r} ${r} 0 0 1 ${bot} A${rx} ${r} 0 0 ${sw} ${top} Z`;
+  } else { // waning, lit on left
+    const sw = idx>6?1:0;
+    d = idx===6 ? `M${top} A${r} ${r} 0 0 0 ${bot} Z` : `M${top} A${r} ${r} 0 0 0 ${bot} A${rx} ${r} 0 0 ${sw} ${top} Z`;
+  }
+  return s+`<path d="${d}" fill="#f6e7b0"/>`;
+}
+const PH=[
+  {en:"new moon",zh:"新月",s:"we cannot see the moon"},
+  {en:"waxing crescent",zh:"蛾眉月",s:"a thin moon on the right"},
+  {en:"first quarter",zh:"上弦月",s:"half moon, right side lit"},
+  {en:"waxing gibbous",zh:"盈凸月",s:"more than half, getting bigger"},
+  {en:"full moon",zh:"满月",s:"the whole moon is bright"},
+  {en:"waning gibbous",zh:"亏凸月",s:"more than half, getting smaller"},
+  {en:"last quarter",zh:"下弦月",s:"half moon, left side lit"},
+  {en:"waning crescent",zh:"残月",s:"a thin moon on the left"}
+];
+(function(){
+  const g=$("#moonRing"); let h="";
+  h+=`<path d="M60 70 H840" stroke="#9fb2ff" stroke-width="1.5" stroke-dasharray="4 6" marker-end="url(#ahw)" fill="none"/>`;
+  h+=`<text x="450" y="40" fill="#c9d3ff" font-size="15" text-anchor="middle" font-family="Noto Sans SC">waxing 变大 →　　　　　　　　　　　　　→ waning 变小</text>`;
+  for(let i=0;i<8;i++){
+    const cx=60+i*111;
+    h+=`<g class="mo" data-i="${i}" style="cursor:pointer" tabindex="0" role="button" aria-label="${PH[i].en}">${moonSVG(cx,140,40,i)}
+      <text x="${cx}" y="208" fill="#e8eaf6" font-size="15" text-anchor="middle" font-family="Noto Sans SC">${i+1}</text></g>`;
+  }
+  g.innerHTML=h;
+  g.querySelectorAll(".mo").forEach(el=>{
+    const f=()=>{const p=PH[+el.dataset.i];$("#moonInfo").innerHTML=`<b>${+el.dataset.i+1}. ${p.en}</b>　${p.zh}　·　${p.s}`;};
+    el.addEventListener("click",f); el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f();}});
+  });
+  $("#moonTable").innerHTML=PH.map((p,i)=>`<tr><td>${i+1}</td><td class="en">${p.en}</td><td>${p.zh}</td><td>${p.s}</td></tr>`).join("");
+})();
+
+/* ---------- dots ---------- */
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;}}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function dots(type,seed,w=300,h=200){
+  const r=rng(seed), pts=[];
+  if(type==="con"){const cx=60+r()*180,cy=50+r()*100;for(let i=0;i<70;i++)pts.push([cx+gauss(r)*22,cy+gauss(r)*16]);}
+  if(type==="sca"){for(let i=0;i<26;i++)pts.push([15+r()*(w-30),15+r()*(h-30)]);}
+  if(type==="even"){for(let x=0;x<8;x++)for(let y=0;y<5;y++)pts.push([25+x*36+(r()-.5)*6,25+y*38+(r()-.5)*6]);}
+  return pts.filter(p=>p[0]>6&&p[0]<w-6&&p[1]>6&&p[1]<h-6);
+}
+function dotSVG(type,seed){
+  const p=dots(type,seed);
+  return `<svg viewBox="0 0 300 200" role="img" aria-label="dot pattern"><rect x="2" y="2" width="296" height="196" rx="10" fill="var(--paper)" stroke="var(--line)"/>`+
+    p.map(([x,y])=>`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="var(--accent)" opacity=".85"/>`).join("")+`</svg>`;
+}
+const DTYPE={con:{en:"concentrated / clustered",zh:"集中",s:"Many dots are close together in one area."},
+             sca:{en:"scattered / spread out",zh:"分散",s:"The dots are far apart."},
+             even:{en:"evenly distributed",zh:"均匀分布",s:"The dots are spread out evenly."}};
+$("#distTrio").innerHTML=["con","sca","even"].map((t,i)=>`<div class="panel"><span class="tag">${DTYPE[t].zh}</span><div class="pic">${dotSVG(t,11+i*7)}</div>
+  <p style="margin:8px 0 0"><span class="en">${DTYPE[t].en}</span><span class="ex">${DTYPE[t].s}</span></p></div>`).join("");
+
+function scatterSVG(kind,seed){
+  const r=rng(seed);let c="";
+  for(let i=0;i<30;i++){const x=40+r()*240;const y=kind==="up"?170-(x-40)*0.6+gauss(r)*9:20+r()*150;
+    c+=`<circle cx="${x.toFixed(1)}" cy="${Math.max(14,Math.min(176,y)).toFixed(1)}" r="4" fill="var(--accent)"/>`;}
+  return `<svg viewBox="0 0 300 200" role="img" aria-label="scatter plot"><rect x="2" y="2" width="296" height="196" rx="10" fill="var(--paper)" stroke="var(--line)"/>
+  <path d="M30 180H285M30 180V12" stroke="var(--muted)" stroke-width="1.5" fill="none"/>${c}</svg>`;
+}
+$("#scatterPair").innerHTML=`<div class="panel"><span class="tag">集中在一条线附近</span><div class="pic">${scatterSVG("up",5)}</div>
+<p style="margin:8px 0 0">The dots are <b>closely clustered</b> along a line going up.<span class="ex">There is a strong positive relationship.（65+ 可加）</span></p></div>
+<div class="panel"><span class="tag">到处都是</span><div class="pic">${scatterSVG("no",9)}</div>
+<p style="margin:8px 0 0">The dots are <b>widely scattered</b>.<span class="ex">There is no clear pattern.</span></p></div>`;
+
+/* ---------- nature pictures ---------- */
+const T=(x,y,t,a="middle",fs=14,c="var(--ink)")=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="${fs}" fill="${c}" font-family="Noto Sans SC">${t}</text>`;
+const ARR=(d)=>`<path d="${d}" stroke="var(--accent)" stroke-width="2.5" fill="none" marker-end="url(#ah)"/>`;
+const PICS={
+  water:`<svg viewBox="0 0 400 260" role="img" aria-label="water cycle">
+    <rect width="400" height="260" fill="var(--paper)" rx="10"/>
+    <circle cx="60" cy="50" r="24" fill="#f2b84b"/>
+    <path d="M0 210 Q100 200 200 210 L200 260 L0 260Z" fill="#5b8def"/>
+    <path d="M190 260 L270 120 L330 190 L370 150 L400 200 L400 260Z" fill="#7aa36b"/>
+    <g fill="#c9d3e8"><circle cx="230" cy="55" r="20"/><circle cx="255" cy="45" r="24"/><circle cx="282" cy="56" r="18"/></g>
+    ${ARR("M100 195 C100 140 160 90 205 65")}${T(120,140,"evaporation","start",13)}
+    ${ARR("M300 70 C340 80 350 100 345 130")}${T(355,105,"precipitation","end",13)}
+    <g stroke="#5b8def" stroke-width="2"><path d="M250 80v18M262 84v18M274 80v18"/></g>
+    ${ARR("M330 230 C280 240 240 235 205 228")}${T(290,252,"collection","middle",13)}
+    ${T(256,22,"condensation","middle",13)}
+  </svg>`,
+  seasons:`<svg viewBox="0 0 400 260" role="img" aria-label="four seasons">
+    <rect width="400" height="260" fill="var(--paper)" rx="10"/>
+    <ellipse cx="200" cy="130" rx="150" ry="80" fill="none" stroke="var(--muted)" stroke-dasharray="5 5"/>
+    <circle cx="200" cy="130" r="28" fill="#f2b84b"/>${T(200,135,"Sun","middle",13,"#3a2a00")}
+    ${[[50,130,"spring"],[200,50,"summer"],[350,130,"autumn"],[200,210,"winter"]].map(([x,y,t])=>`<g transform="translate(${x} ${y})"><circle r="16" fill="#5b8def"/><path d="M-4 -20 L4 20" stroke="var(--ink)" stroke-width="1.5"/></g>${T(x,y+(y>150?-24:y<70?34:34),t)}`).join("")}
+    ${ARR("M110 72 Q150 52 170 50")}${ARR("M300 60 Q335 85 345 105")}
+  </svg>`,
+  day:`<svg viewBox="0 0 400 260" role="img" aria-label="day and night">
+    <rect width="400" height="260" fill="var(--paper)" rx="10"/>
+    <circle cx="55" cy="130" r="34" fill="#f2b84b"/>${T(55,185,"Sun")}
+    <g stroke="#f2b84b" stroke-width="2">${[95,115,145,165].map(y=>`<path d="M100 ${y} H200"/>`).join("")}</g>
+    <circle cx="270" cy="130" r="70" fill="#2b3566"/>
+    <path d="M270 60 A70 70 0 0 0 270 200Z" fill="#7fb0ff"/>
+    ${T(240,135,"day","middle",15,"#0b1a3a")}${T(305,135,"night","middle",15,"#e8eaf6")}
+    ${ARR("M215 220 Q270 250 325 220")}${T(270,252,"the Earth turns","middle",13)}
+  </svg>`,
+  tide:`<svg viewBox="0 0 400 260" role="img" aria-label="tides">
+    <rect width="400" height="260" fill="var(--paper)" rx="10"/>
+    <ellipse cx="160" cy="130" rx="105" ry="72" fill="#5b8def" opacity=".55"/>
+    <circle cx="160" cy="130" r="62" fill="#7aa36b"/>${T(160,135,"Earth","middle",14,"#0f2a12")}
+    <circle cx="350" cy="130" r="22" fill="#c9ccd8"/>${T(350,172,"Moon")}
+    ${ARR("M320 130 H275")}${T(298,118,"pull","middle",13)}
+    ${T(280,60,"high tide","middle",13)}${T(160,40,"low tide","middle",13)}
+    <path d="M265 70 L262 100" stroke="var(--muted)"/><path d="M160 46 L160 60" stroke="var(--muted)"/>
+  </svg>`,
+  eclipse:`<svg viewBox="0 0 400 260" role="img" aria-label="solar eclipse">
+    <rect width="400" height="260" fill="var(--paper)" rx="10"/>
+    <circle cx="55" cy="130" r="42" fill="#f2b84b"/>${T(55,195,"Sun")}
+    <path d="M90 100 L330 118 L330 142 L90 160Z" fill="#f2b84b" opacity=".18"/>
+    <circle cx="210" cy="130" r="14" fill="#555c78"/>${T(210,165,"Moon")}
+    <path d="M222 124 L330 128 L330 132 L222 136Z" fill="#1b2340" opacity=".55"/>
+    <circle cx="340" cy="130" r="40" fill="#5b8def"/>${T(340,195,"Earth")}
+    ${T(285,100,"shadow","middle",13)}
+  </svg>`,
+  moon:null
+};
+
+/* ---------- templates (58 · template E / D) ---------- */
+const TPL={
+  moon:{title:"模板 E · 月相",key:["eight phases","new moon","bigger","full moon","Earth and the Sun","one month"],
+    s:["This picture shows the eight phases of the moon.",
+       "The process begins with the new moon, when we cannot see the moon.",
+       "Next, the moon gets bigger, from a thin crescent to a half moon.",
+       "Finally, it becomes a full moon, and then it gets smaller again.",
+       "We can also see the Earth and the Sun in this diagram.",
+       "Overall, the picture is mainly about how the moon changes in one month."]},
+  dist:{title:"模板 D · 分布地图",key:["where people live","south","close together","centre","a few dots","largest group","north","where people live"],
+    s:["This map shows where people live in a country.",
+       "In the south, we can see many dots close together.",
+       "In the centre, there are only a few dots, and they are far apart.",
+       "The largest group is at the bottom of the map.",
+       "We can also see some small towns in the north on this map.",
+       "Overall, the map is mainly about where people live."]},
+  flow:{title:"模板 E · 通用骨架",key:["how ___ works","begins with","Next","Finally","arrows","stages"],
+    s:["This picture shows how ___ works.",
+       "The process begins with ___.",
+       "Next, ___.",
+       "Finally, ___, and the cycle repeats.",
+       "We can also see arrows and ___ stages in this diagram.",
+       "Overall, the picture is mainly about ___."]},
+  water:{title:"模板 E · 水循环 Water cycle",key:["water cycle","sea","up into the air","clouds","rain falls","sun","mountains","moves around the Earth"],
+    s:["This picture shows the water cycle.",
+       "The process begins with water from the sea going up into the air.",
+       "Next, the water becomes clouds in the sky.",
+       "Finally, rain falls back to the land and the sea, and the cycle repeats.",
+       "We can also see the sun and some mountains in this diagram.",
+       "Overall, the picture is mainly about how water moves around the Earth."]},
+  seasons:{title:"模板 E · 四季 Seasons",key:["four seasons","spring","longer","summer","hottest","autumn and winter","sun","one year"],
+    s:["This picture shows the four seasons on Earth.",
+       "The process begins with spring, when days get longer.",
+       "Next, summer comes, and it is the hottest season.",
+       "Finally, autumn and winter come, and the cycle repeats.",
+       "We can also see the sun in the centre of this diagram.",
+       "Overall, the picture is mainly about how the Earth moves around the sun in one year."]},
+  day:{title:"模板 E · 昼夜 Day and night",key:["day and night","sun","one side","day","night","turns","arrow","why"],
+    s:["This picture shows day and night on Earth.",
+       "The process begins with the sun shining on one side of the Earth.",
+       "Next, this side has day, and the other side has night.",
+       "Finally, the Earth turns, so day and night change.",
+       "We can also see an arrow and the sun in this diagram.",
+       "Overall, the picture is mainly about why we have day and night."]},
+  tide:{title:"模板 E · 潮汐 Tides",key:["high tide","low tide","moon","pulling","goes up","goes down","Earth","changes the sea"],
+    s:["This picture shows high tide and low tide.",
+       "The process begins with the moon pulling the sea water.",
+       "Next, the water goes up, and we get a high tide.",
+       "Finally, the water goes down, and we get a low tide.",
+       "We can also see the Earth and the moon in this diagram.",
+       "Overall, the picture is mainly about how the moon changes the sea."]},
+  eclipse:{title:"模板 E · 日食 Solar eclipse",key:["solar eclipse","between","sun","Earth","blocks the light","dark","shadow","how"],
+    s:["This picture shows a solar eclipse.",
+       "The process begins with the moon moving between the sun and the Earth.",
+       "Next, the moon blocks the light from the sun.",
+       "Finally, the sky becomes dark for a short time.",
+       "We can also see the shadow of the moon on the Earth.",
+       "Overall, the picture is mainly about how a solar eclipse happens."]}
+};
+function hl(s,keys){let out=s;keys.forEach(k=>{if(k.includes("___"))return;const re=new RegExp("("+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","i");out=out.replace(re,'<span class="kw">$1</span>');});return out;}
+function blankify(s,keys){ // level 1: only key words visible
+  let out=s;const marks=[];keys.forEach(k=>{const i=out.toLowerCase().indexOf(k.toLowerCase());if(i>=0&&!k.includes("___"))marks.push([i,k.length]);});
+  if(!marks.length)return s.split(" ").slice(0,2).join(" ")+' <span class="blank">…</span>';
+  marks.sort((a,b)=>a[0]-b[0]);
+  return marks.map(([i,l])=>s.substr(i,l)).map(w=>'<span class="kw">'+w+'</span>').join(' <span class="blank">…</span> ');
+}
+function renderTpl(el,id){
+  const t=TPL[id];let level=0;
+  const draw=()=>{
+    el.innerHTML=`<div class="qhead"><b>${t.title}（六句）</b><div class="ctl">
+      <button class="btn" data-l="0">隐藏</button><button class="btn" data-l="1">关键词</button><button class="btn pri" data-l="2">全部</button></div></div>
+      <ol>${t.s.map((s,i)=>`<li class="${[0,4,5].includes(i)?"shared":""}"><span class="n">${"①②③④⑤⑥"[i]}</span><span class="s">${
+        level===0?'<span class="blank">________________</span>':level===1?blankify(s,t.key):hl(s,t.key)}</span></li>`).join("")}</ol>
+      <div class="tip" style="margin-top:12px">①⑤⑥ 三句所有模板通用，只换 ②③④。目标说满 32 秒以上。</div>`;
+    el.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{level=+b.dataset.l;draw();});
+  };
+  draw();
+}
+$$("[data-tpl]").forEach(el=>renderTpl(el,el.dataset.tpl));
+
+/* ---------- nature view ---------- */
+const NAT=[
+ {id:"water",zh:"水循环",words:[["evaporation","蒸发","water goes up into the air"],["condensation","凝结","water becomes clouds"],["precipitation","降水","rain or snow falls"],["collection","汇集","water goes back to the sea"]]},
+ {id:"seasons",zh:"四季",words:[["spring / summer","春 / 夏",""],["autumn / winter","秋 / 冬","NZ 说 autumn，不说 fall"],["move around the sun","绕太阳转","takes one year"],["tilt","倾斜","the Earth is tilted"]]},
+ {id:"day",zh:"昼夜",words:[["day / night","白天 / 夜晚",""],["the Earth turns","地球自转","once a day"],["one side","一面","faces the sun"],["the other side","另一面","is dark"]]},
+ {id:"tide",zh:"潮汐",words:[["high tide","涨潮",""],["low tide","退潮",""],["pull","拉（引力）","the moon pulls the water"],["go up / go down","上升 / 下降",""]]},
+ {id:"eclipse",zh:"日食",words:[["solar eclipse","日食","sun–moon–Earth in a line"],["lunar eclipse","月食","sun–Earth–moon in a line"],["block the light","挡住光",""],["shadow","影子",""]]}
+];
+let natCur="water";
+function drawNat(){
+  $("#natNav").innerHTML=NAT.map(n=>`<button data-n="${n.id}" aria-pressed="${n.id===natCur}">${n.zh}</button>`).join("");
+  $$("#natNav button").forEach(b=>b.onclick=()=>{natCur=b.dataset.n;drawNat();});
+  const n=NAT.find(x=>x.id===natCur);
+  $("#natPic").innerHTML=PICS[natCur];
+  $("#natWords").innerHTML=`<span class="tag">关键词</span><table class="vt"><tbody>${n.words.map(w=>`<tr><td class="en">${w[0]}</td><td>${w[1]}</td><td class="ex" style="display:table-cell">${w[2]}</td></tr>`).join("")}</tbody></table>
+   <div class="tip">58 版不用背难词：evaporation 说 <b>water goes up</b> 就行。</div>`;
+  renderTpl($("#natTpl"),natCur);
+}
+drawNat();
+
+/* ---------- tabs ---------- */
+function show(v){
+  if(!document.getElementById("v-"+v))v="moon";
+  $$("[data-view]").forEach(s=>s.hidden=s.id!=="v-"+v);
+  $$("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+}
+$$("#tabs button").forEach(b=>b.onclick=()=>{location.hash=b.dataset.v;});
+addEventListener("hashchange",()=>show(location.hash.slice(1)));
+show(location.hash.slice(1)||"moon");
+
+/* ---------- drills ---------- */
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const SC={};
+function score(k,ok){SC[k]=SC[k]||{r:0,n:0};SC[k].n++;if(ok)SC[k].r++;$("#s"+k).textContent=`${SC[k].r} / ${SC[k].n}`;}
+function mcq(k,opts,ans,onDone){
+  const box=$("#q"+k+"opts"),fb=$("#q"+k+"fb");fb.textContent="";fb.className="fb";let done=false;
+  box.innerHTML=shuffle(opts).map(o=>`<button class="opt">${o}</button>`).join("");
+  box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(done)return;const ok=b.textContent===ans;
+    b.classList.add(ok?"right":"wrong");
+    if(ok){done=true;fb.textContent="✓ "+(onDone?onDone():"对");fb.className="fb ok";score(k,!b.dataset.tried&&!box.dataset.miss);}
+    else{box.dataset.miss=1;fb.textContent="✗ 再想想";fb.className="fb no";}
+  });
+  delete box.dataset.miss;
+}
+$$("#drillNav button").forEach(b=>b.onclick=()=>{
+  $$("#drillNav button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  $$("[data-drill]").forEach(p=>p.hidden=p.dataset.drill!==b.dataset.d);
+});
+// P1
+function q1(){const i=Math.floor(Math.random()*8);$("#q1pic").innerHTML=moonSVG(100,100,72,i);
+  const ans=PH[i].en,others=shuffle(PH.filter(p=>p.en!==ans).map(p=>p.en)).slice(0,3);
+  mcq(1,[ans,...others],ans,()=>`${PH[i].en} = ${PH[i].zh}`);}
+$("#q1next").onclick=q1;q1();
+// P2
+function q2(){const t=pick(["con","sca","even"]);$("#q2pic").innerHTML=dotSVG(t,Math.floor(Math.random()*9999)+1);
+  mcq(2,["concentrated / clustered","scattered / spread out","evenly distributed"],DTYPE[t].en,()=>DTYPE[t].s);}
+$("#q2next").onclick=q2;q2();
+// P3
+const FILL=[
+ ["The moon is ____, so it is getting bigger.","waxing",["waning","waxing","full"]],
+ ["The moon is ____, so it is getting smaller.","waning",["waxing","waning","crescent"]],
+ ["At the ____ moon, we cannot see the moon.","new",["new","full","half"]],
+ ["At the ____ moon, the whole moon is bright.","full",["new","full","quarter"]],
+ ["A very thin moon is called a ____.","crescent",["crescent","gibbous","quarter"]],
+ ["Most people are ____ in the south.","concentrated",["concentrated","scattered","evenly"]],
+ ["Small towns are ____ across the country.","scattered",["clustered","scattered","dense"]],
+ ["The dots are ____ around the city centre.","clustered",["clustered","spread","far"]],
+ ["The centre is ____ populated, with only a few people.","sparsely",["densely","sparsely","evenly"]],
+ ["The process ____ with a seed under the ground.","begins",["begins","finally","next"]],
+ ["____, the water becomes clouds in the sky.","Next",["Next","Overall","Begins"]],
+ ["Finally, rain falls, and the cycle ____.","repeats",["repeats","begins","grows"]],
+ ["The moon ____ the light from the sun.","blocks",["blocks","pulls","turns"]],
+ ["The moon ____ the sea water, so we get a high tide.","pulls",["pulls","blocks","falls"]],
+ ["The Earth ____, so day and night change.","turns",["turns","falls","blocks"]]
+];
+let fillQ=shuffle(FILL),fi=0;
+function q3(){if(fi>=fillQ.length){fillQ=shuffle(FILL);fi=0;}const [s,a,o]=fillQ[fi++];
+  $("#q3text").innerHTML=s.replace("____",'<span class="blank">______</span>');
+  mcq(3,o,a,()=>s.replace("____",a));}
+$("#q3next").onclick=q3;q3();
+// P4
+const ORD=[
+ {t:"水循环 Water cycle",s:["water goes up from the sea","it becomes clouds","rain falls","water goes back to the sea"]},
+ {t:"月相 Moon phases",s:["new moon","waxing crescent","first quarter","waxing gibbous","full moon"]},
+ {t:"月亮变小 Waning",s:["full moon","waning gibbous","last quarter","waning crescent","new moon"]},
+ {t:"日食 Solar eclipse",s:["the moon moves between the sun and the Earth","the moon blocks the light","the sky becomes dark"]},
+ {t:"种子长成树",s:["a seed under the ground","roots grow down","a small plant comes up","a full tree"]}
+];
+let oi=-1;
+function q4(){oi=(oi+1)%ORD.length;const o=ORD[oi];let step=0;
+  $("#q4title").textContent="排顺序：「"+o.t+"」";$("#q4done").innerHTML="";$("#q4fb").textContent="";$("#q4fb").className="fb";let miss=false;
+  const box=$("#q4opts");box.innerHTML=shuffle(o.s).map(x=>`<button>${x}</button>`).join("");
+  box.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    if(b.classList.contains("done"))return;
+    if(b.textContent===o.s[step]){b.classList.add("done");step++;
+      const w=step===1?"The process begins with":step===o.s.length?"Finally,":"Next,";
+      $("#q4done").insertAdjacentHTML("beforeend",`<li><b>${w}</b> ${b.textContent}</li>`);
+      if(step===o.s.length){$("#q4fb").textContent="✓ 全对，把上面几句连起来读一遍";$("#q4fb").className="fb ok";score(4,!miss);}
+    } else {miss=true;$("#q4fb").textContent="✗ 不是这一步";$("#q4fb").className="fb no";}
+  });}
+$("#q4next").onclick=q4;q4();
+// P5
+const SPK=[["moon","月相"],["dist","人口分布图"],["water","水循环"],["seasons","四季"],["day","昼夜"],["tide","潮汐"],["eclipse","日食"]];
+$("#q5sel").innerHTML=SPK.map(([k,z])=>`<option value="${k}">${z}</option>`).join("");
+function q5pic(k){
+  if(k==="moon")return `<div class="sky" style="padding:6px"><svg viewBox="0 0 900 250" style="min-width:0">${[...Array(8)].map((_,i)=>moonSVG(60+i*111,125,40,i)).join("")}</svg></div>`;
+  if(k==="dist"){ // country map with dots at bottom
+    const r=rng(42);let c="";for(let i=0;i<60;i++)c+=`<circle cx="${(200+gauss(r)*55).toFixed(1)}" cy="${(205+gauss(r)*14).toFixed(1)}" r="3.5" fill="var(--accent)"/>`;
+    for(let i=0;i<9;i++)c+=`<circle cx="${(90+r()*220).toFixed(1)}" cy="${(70+r()*90).toFixed(1)}" r="3.5" fill="var(--accent)"/>`;
+    return `<svg viewBox="0 0 400 260" role="img" aria-label="population map"><rect width="400" height="260" rx="10" fill="var(--paper)"/>
+      <path d="M70 60 Q120 30 200 40 Q300 30 340 70 Q360 140 330 210 Q260 245 200 240 Q120 245 70 210 Q45 140 70 60Z" fill="var(--chip)" stroke="var(--muted)"/>${c}
+      ${T(200,28,"Population of Country X","middle",14)}${T(375,40,"N ↑","middle",13)}</svg>`;}
+  return PICS[k];
+}
+let tmr=null;
+function q5load(){clearInterval(tmr);const k=$("#q5sel").value;$("#q5pic").innerHTML=q5pic(k);renderTpl($("#q5tpl"),k);
+  $("#q5phase").textContent="准备好就点开始";$("#q5time").textContent="0:25";$("#q5bar").style.width="0";$("#q5go").disabled=false;}
+$("#q5sel").onchange=q5load;$("#q5reset").onclick=q5load;
+$("#q5go").onclick=()=>{$("#q5go").disabled=true;run(25,"准备 Prepare",()=>run(40,"说 Speak 🎤",()=>{$("#q5phase").textContent="时间到 — 对照下面六句自查";}));};
+function run(sec,label,next){let t=sec;$("#q5phase").textContent=label;const tick=()=>{
+  $("#q5time").textContent=`0:${String(t).padStart(2,"0")}`;$("#q5bar").style.width=((sec-t)/sec*100)+"%";
+  if(t<=0){clearInterval(tmr);next();return;}t--;};clearInterval(tmr);tick();tmr=setInterval(tick,1000);}
+q5load();
+</script>
+
+</body></html>
